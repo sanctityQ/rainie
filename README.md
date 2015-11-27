@@ -1,2 +1,2 @@
-# galaxy
-后端基础框架
+# rainie
+后端RPC框架
