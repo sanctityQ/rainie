@@ -1,6 +1,5 @@
-package com.itiancai.inject
+package com.itiancai.galaxy.inject
 
-import com.itiancai.galaxy.inject.Injector
 import org.junit.runner.RunWith
 import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner

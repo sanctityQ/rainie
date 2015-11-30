@@ -14,12 +14,16 @@ lazy val buildSettings = Seq(
 
 
 lazy val versions = new {
-  val finagle = "6.29.0"
+  val finagle = "6.30.0"
+  val twitterServer = "1.15.0"
   val logback = "1.0.13"
   val spring = "3.2.15.RELEASE"
   val slf4j = "1.7.12"
   val scrooge = "4.2.0"
   val grizzled = "1.0.2"
+
+  val commonsIo = "2.4"
+  val jodaTime = "2.5"
 }
 
 lazy val compilerOptions = scalacOptions ++= Seq(
@@ -141,18 +145,20 @@ lazy val inject = (project in file("inject")).
     libraryDependencies ++= Seq(
       "org.springframework" % "spring-context" % versions.spring,
       "com.twitter" %% "finagle-core" % versions.finagle,
+      "com.twitter" %% "finagle-stats" % versions.finagle,
+      "com.twitter" %% "twitter-server" % versions.twitterServer,
       "ch.qos.logback" % "logback-classic" % versions.logback,
       "org.clapper" %% "grizzled-slf4j" % versions.grizzled,
       "org.slf4j" % "jcl-over-slf4j" % versions.slf4j,
-      "org.slf4j" % "jul-to-slf4j" % versions.slf4j
+      "org.slf4j" % "jul-to-slf4j" % versions.slf4j,
+      "commons-io" % "commons-io" % versions.commonsIo,
+      "joda-time" % "joda-time" % versions.jodaTime
     ),
     credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
   )
 
 lazy val thrift = project.
   settings(rainieSettings).
-  settings(
-  ).
   settings(
     name := "rainie-thrift",
     moduleName := "rainie-thrift",
@@ -167,6 +173,10 @@ lazy val thrift = project.
 
 lazy val slf4j = project.
   settings(rainieSettings).
+  settings(
+    name := "rainie-slf4j",
+    moduleName := "rainie-slf4j"
+  ).
   dependsOn(
     inject
   )

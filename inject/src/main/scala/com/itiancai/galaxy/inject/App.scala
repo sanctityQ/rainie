@@ -20,13 +20,11 @@ trait App extends TwitterUtilApp with Logging {
 
   private var installedModules: InstalledModules = _
 
- // protected[inject] val appContext: AnnotationConfigApplicationContext = new AnnotationConfigApplicationContext()
-
   //default environment
   protected[inject] val environment = new ConfigureEnvironment()
 
   init {
-    info("app started")
+    info("App starting")
 
   }
 

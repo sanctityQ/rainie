@@ -1,48 +1,25 @@
 package com.itiancai.galaxy.thrift
 
-import com.itiancai.galaxy.inject.modules.StatsReceiverModule
-import com.itiancai.galaxy.inject.Module
+import com.itiancai.galaxy.inject.server.{PortUtils, TwitterServer}
 import com.twitter.finagle.{Thrift, ListeningServer}
 import com.twitter.util.{Future, Time, Await}
 import grizzled.slf4j.Logging
-import com.itiancai.galaxy.inject.{ContextConfig, App}
+import com.itiancai.galaxy.inject.{ContextConfig}
 import com.twitter.conversions.time._
 
 
 
-abstract class ThriftServer extends App with Logging{
+abstract class ThriftServer extends TwitterServer with Logging{
 
 
   private val thriftPortFlag = flag("thrift.port", ":9999", "External Thrift server port")
   private val thriftShutdownTimeout = flag("thrift.shutdown.time", 1.minute, "Maximum amount of time to wait for pending requests to complete on shutdown")
 
-  addFrameworkModule(statsModule)
-
-  protected def statsModule: Module = StatsReceiverModule
-
-
-  protected def waitForServer() {
-    Await.ready(thriftServer)
-  }
-
-  /* Overrides */
-
-  override final def main() {
-    super.main() // Call GuiceApp.main() to create injector
-
-    info("Startup complete, server ready.")
-    waitForServer()
-  }
-
 
   /* Private Mutable State */
   private var thriftServer: ListeningServer = _
 
-
   protected def configureThrift(router: ThriftRouter)
-
-
-  protected def configureSpring(): ContextConfig
 
   /* Lifecycle */
 
@@ -57,8 +34,10 @@ abstract class ThriftServer extends App with Logging{
       Await.result(
         close(thriftServer, thriftShutdownTimeout().fromNow))
     }
-   // info("Thrift server started on port: " + thriftPort.get)
+    info("Thrift server started on port: " + thriftPort.get)
   }
+
+  override def thriftPort = Option(thriftServer) map PortUtils.getPort
 
 
   /* Private */
