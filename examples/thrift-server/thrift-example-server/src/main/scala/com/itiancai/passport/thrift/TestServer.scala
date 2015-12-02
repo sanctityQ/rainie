@@ -12,23 +12,14 @@ import com.twitter.util.Future
 
 object TestServer extends ThriftServer{
 
+  addAnnotationClass[SpringBoot]
+
   override protected def configureThrift(router: ThriftRouter): Unit = {
     router.filter[LoggingMDCFilter[ThriftRequest,Any]]
     .filter[TraceIdMDCFilter[ThriftRequest, Any]]
     .add[PassportServiceImpl](PassporServiceFilterCreator.create)
   }
 
-  override  protected def configureSpring(): ContextConfig = {
-    new ContextConfig {
-      override def registerClass(): Seq[Class[_]] = {
-        Seq(classOf[SpringBoot])
-      }
-
-      override def scanPackageName(): Seq[String] = {
-        Seq("com.itiancai.passport")
-      }
-    }
-  }
 }
 
 object PassporServiceFilterCreator {

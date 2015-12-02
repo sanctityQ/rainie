@@ -1,7 +1,12 @@
 package com.itiancai.galaxy.inject.tests.server
 
+import java.net.{InetSocketAddress, URI}
+import java.util.concurrent.TimeUnit._
+
 import com.google.common.net.{HttpHeaders, MediaType}
 import com.google.inject.Stage
+import com.itiancai.galaxy.inject.server.{Ports, PortUtils}
+import com.itiancai.galaxy.inject.tests.EmbeddedApp
 import com.twitter.conversions.time._
 import com.twitter.finagle.builder.ClientBuilder
 import com.twitter.finagle.http._
@@ -9,16 +14,10 @@ import com.twitter.finagle.service.Backoff._
 import com.twitter.finagle.service.RetryPolicy
 import com.twitter.finagle.service.RetryPolicy._
 import com.twitter.finagle.stats.{InMemoryStatsReceiver, NullStatsReceiver, StatsReceiver}
-import com.twitter.finagle.{ListeningServer, ChannelClosedException, Service}
-import com.twitter.inject.app.{App, EmbeddedApp}
-import com.twitter.inject.modules.InMemoryStatsReceiverModule
-import com.twitter.inject.server.EmbeddedTwitterServer._
-import com.twitter.inject.server.PortUtils._
-import com.twitter.server.AdminHttpServer
+import com.twitter.finagle.{ChannelClosedException, ListeningServer, Service}
 import com.twitter.util._
-import java.net.{InetSocketAddress, URI}
-import java.util.concurrent.TimeUnit._
 import org.apache.commons.lang.reflect.FieldUtils
+
 import scala.collection.immutable.SortedMap
 
 object EmbeddedTwitterServer {
@@ -73,7 +72,7 @@ class EmbeddedTwitterServer(
   maxStartupTimeSeconds: Int = 60)
   extends EmbeddedApp(
     app = twitterServer,
-    clientFlags = resolveClientFlags(useSocksProxy, clientFlags),
+    clientFlags = EmbeddedTwitterServer.resolveClientFlags(useSocksProxy, clientFlags),
     resolverMap = Map(),
     extraArgs = extraArgs,
     waitForWarmup = waitForWarmup,
@@ -90,9 +89,9 @@ class EmbeddedTwitterServer(
   /* Main Constructor */
 
   // Add framework override modules
-  if (isGuiceApp) {
-    guiceApp.addFrameworkOverrideModules(InMemoryStatsReceiverModule)
-  }
+//  if (isGuiceApp) {
+//    guiceApp.addFrameworkModule(InMemoryStatsReceiverModule)
+//  }
 
   /* Lazy Fields */
 
@@ -156,7 +155,7 @@ class EmbeddedTwitterServer(
     // HACK: Here's the temporary workaround
     val adminHttpServerField = FieldUtils.getField(twitterServer.getClass, "adminHttpServer", true)
     val listeningServer = adminHttpServerField.get(twitterServer).asInstanceOf[ListeningServer]
-    getPort(listeningServer)
+    PortUtils.getPort(listeningServer)
   }
 
   def clearStats() = {

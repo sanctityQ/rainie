@@ -10,7 +10,7 @@ import scala.collection.JavaConverters._
 
 abstract class AbstractApp extends App
 
-trait App extends TwitterUtilApp with Logging {
+trait App extends TwitterUtilApp with Logging with ContextConfig{
 
   private[inject] var runAppMain: Boolean = true
 
@@ -39,10 +39,10 @@ trait App extends TwitterUtilApp with Logging {
 
   def main() {
 
-    ContextHolder.env(environment).config(configureSpring)
+    ContextHolder.config(registerClass():_*)
     installedModules = loadModules()
-    ContextHolder.refresh
     installedModules.postStartup()
+    ContextHolder.refresh
 
     postStartup()
 
@@ -129,5 +129,5 @@ trait App extends TwitterUtilApp with Logging {
     InstalledModules.create(ContextHolder.injector, requiredModules)
   }
 
-  protected def configureSpring(): ContextConfig
+  //protected def configureSpring(): ContextConfig
 }

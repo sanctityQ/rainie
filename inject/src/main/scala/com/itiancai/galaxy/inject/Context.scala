@@ -1,27 +1,34 @@
 package com.itiancai.galaxy.inject
 
+import com.itiancai.galaxy.inject.config.ConfigureEnvironment
 import org.springframework.beans.factory.BeanFactory
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
-import org.springframework.context.annotation.AnnotationConfigApplicationContext
+import org.springframework.context.annotation.{Bean, ComponentScan, Configuration, AnnotationConfigApplicationContext}
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer
-import org.springframework.core.env.{ConfigurableEnvironment}
+
+import scala.collection.mutable.ArrayBuffer
+
+//import org.springframework.core.env.{ConfigurableEnvironment}
 
 import scala.reflect._
 
 
 private[inject] object ContextHolder {
 
-  private[this] val appContext: AnnotationConfigApplicationContext = new AnnotationConfigApplicationContext()
+  protected[inject] val environment = new ConfigureEnvironment()
 
-  private[inject] def env(environment: ConfigurableEnvironment) = {
-    appContext.setEnvironment(environment)
-    this
+  private[this] val appContext: AnnotationConfigApplicationContext = {
+      val appContext = new AnnotationConfigApplicationContext()
+      appContext.setEnvironment(environment)
+      appContext
   }
 
-  private[inject] def config(configure: ContextConfig) = {
-    appContext.scan(configure.scanPackageName() ++ Seq("com.itiancai.galaxy"): _*)
-    appContext.register(configure.registerClass():_*)
-    appContext.register(classOf[PropertySourcesPlaceholderConfigurer])
+
+  private[inject] def config(annotationClasses: Class[_]*) = {
+//    appContext.scan(configure.scanPackageName() : _*)
+    appContext.register(annotationClasses:_*)
+    appContext.register(classOf[InjectContextConfig])
+   // appContext.register(classOf[PropertySourcesPlaceholderConfigurer])
     this
   }
 
@@ -64,12 +71,29 @@ case class Injector(underlying: BeanFactory) {
   // def instance[T](key: Key[T]): T = underlying.getInstance(key)
 }
 
+@Configuration
+@ComponentScan(Array("com.itiancai.galaxy"))
+private[this] class InjectContextConfig{
+
+  @Bean
+  def getPropertySourcesPlaceholderConfigurer = {new PropertySourcesPlaceholderConfigurer}
+
+}
+
 
 trait ContextConfig{
 
-  def scanPackageName(): Seq[String];
+  private val registerAnnotationClasses: ArrayBuffer[ClassTag[_]] = ArrayBuffer(classTag[InjectContextConfig])
 
-  def registerClass(): Seq[Class[_]];
+  def registerClass (): Seq[Class[_]] = {
+    registerAnnotationClasses.toSeq map (cl => cl.runtimeClass)
+  }
+
+  def addAnnotationClass[T: ClassTag] = {
+    registerAnnotationClasses += classTag[T]
+  }
+
+
 }
 
 
