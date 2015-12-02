@@ -1,7 +1,5 @@
 package com.itiancai.galaxy.inject
 
-import com.itiancai.galaxy.inject.config.ConfigureEnvironment
-import com.itiancai.galaxy.inject.modules.InjectorModule
 import com.twitter.app.{App => TwitterUtilApp}
 
 import scala.collection.mutable.ArrayBuffer
@@ -19,9 +17,6 @@ trait App extends TwitterUtilApp with Logging with ContextConfig{
   private[inject] lazy val requiredModules = modules ++ javaModules.asScala ++ frameworkModules
 
   private var installedModules: InstalledModules = _
-
-  //default environment
-  protected[inject] val environment = new ConfigureEnvironment()
 
   init {
     info("App starting")
