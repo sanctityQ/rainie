@@ -18,15 +18,6 @@ class TwitterServerTest extends WordSpec {
 
   var server: TwitterServer = new TwitterServer {
     addAnnotationClass[Configure]
-//    override protected def configureSpring(): ContextConfig = {
-//      new ContextConfig {
-//
-//        //override def scanPackageName(): Seq[String] = Seq("com.itiancai.galaxy.inject.tests")
-//
-//       // override def registerClass(): Seq[Class[_]] = Seq(classOf[Configure])
-//        addAnnotationClass[Configure]
-//      }
-//    }
   }
 
   var appName = server.name
@@ -87,7 +78,7 @@ class TwitterServerTest extends WordSpec {
      }
     waitForAppStarted()
     started = true
-     println("xxxxxxxxxxx"+server.httpExternalPort.getOrElse(throw new Exception("External HTTP port not bound")))
+//     println("xxxxxxxxxxx"+server.httpExternalPort.getOrElse(throw new Exception("External HTTP port not bound")))
   }
 
 

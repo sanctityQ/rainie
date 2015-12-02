@@ -7,48 +7,36 @@ import org.springframework.context.annotation.{Bean, ComponentScan, Configuratio
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer
 
 import scala.collection.mutable.ArrayBuffer
-
-//import org.springframework.core.env.{ConfigurableEnvironment}
-
 import scala.reflect._
 
 
 private[inject] object ContextHolder {
 
-  protected[inject] val environment = new ConfigureEnvironment()
+  private[this] val environment = new ConfigureEnvironment()
 
   private[this] val appContext: AnnotationConfigApplicationContext = {
-      val appContext = new AnnotationConfigApplicationContext()
-      appContext.setEnvironment(environment)
-      appContext
+    val appContext = new AnnotationConfigApplicationContext()
+    appContext.setEnvironment(environment)
+    appContext
   }
 
+  private[this] val binder_ = Binder(appContext.getBeanFactory)
+  private[this] val injector_ = Injector(appContext.getBeanFactory)
 
-  private[inject] def config(annotationClasses: Class[_]*) = {
-//    appContext.scan(configure.scanPackageName() : _*)
-    appContext.register(annotationClasses:_*)
-    appContext.register(classOf[InjectContextConfig])
-   // appContext.register(classOf[PropertySourcesPlaceholderConfigurer])
-    this
-  }
+  binder_ bind injector_
 
-  private[inject] def refresh = {
+  private[inject] def injector(annotationClasses: Seq[Class[_]], modules: Seq[Module]): Injector = {
+    appContext.register(annotationClasses: _*)
+    modules foreach (module => module.config(binder_))
     appContext.refresh()
-  }
-
-  private[inject] def binder: Binder = {
-    Binder(appContext.getBeanFactory)
-  }
-
-  private[inject] def injector: Injector = {
-    Injector(appContext.getBeanFactory)
+    injector_
   }
 
 }
 
 case class Binder(beanFactory: ConfigurableBeanFactory) {
   def bind(anyRef: AnyRef): Unit = {
-    beanFactory.registerSingleton(anyRef.getClass.getCanonicalName,anyRef)
+    beanFactory.registerSingleton(anyRef.getClass.getCanonicalName, anyRef)
   }
 }
 
@@ -73,26 +61,28 @@ case class Injector(underlying: BeanFactory) {
 
 @Configuration
 @ComponentScan(Array("com.itiancai.galaxy"))
-private[this] class InjectContextConfig{
+private[this] class InjectContextConfig {
 
   @Bean
-  def getPropertySourcesPlaceholderConfigurer = {new PropertySourcesPlaceholderConfigurer}
+  def getPropertySourcesPlaceholderConfigurer = {
+    new PropertySourcesPlaceholderConfigurer
+  }
 
 }
 
 
-trait ContextConfig{
+trait ContextConfig {
 
   private val registerAnnotationClasses: ArrayBuffer[ClassTag[_]] = ArrayBuffer(classTag[InjectContextConfig])
 
-  def registerClass (): Seq[Class[_]] = {
+  def registerClass(): Seq[Class[_]] = {
     registerAnnotationClasses.toSeq map (cl => cl.runtimeClass)
   }
 
   def addAnnotationClass[T: ClassTag] = {
     registerAnnotationClasses += classTag[T]
+    this
   }
-
 
 }
 

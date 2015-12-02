@@ -10,9 +10,7 @@ case class MethodFilters(
   statsReceiver: StatsReceiver,
   commonFilter: Filter[ThriftRequest, Any, ThriftRequest, Any]) {
 
-  def create[T](
-    thriftMethod: ThriftMethod)(
-    service: Service[T, thriftMethod.SuccessType]): Service[T, thriftMethod.SuccessType] = {
+  def create[T](thriftMethod: ThriftMethod)(service: Service[T, thriftMethod.SuccessType]): Service[T, thriftMethod.SuccessType] = {
 
     new ThriftRequestWrapFilter[T, thriftMethod.SuccessType](thriftMethod.name) andThen
       commonFilter.asInstanceOf[Filter[ThriftRequest, thriftMethod.SuccessType, ThriftRequest, thriftMethod.SuccessType]] andThen

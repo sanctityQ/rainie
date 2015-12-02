@@ -1,6 +1,5 @@
 package com.itiancai.galaxy.inject.server.internal
 
-import com.twitter.server.Lifecycle.PromoteToOldGen
 import com.twitter.server.PrvObjFactory
 
 /**

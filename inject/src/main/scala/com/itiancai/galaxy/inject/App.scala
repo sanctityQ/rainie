@@ -39,13 +39,10 @@ trait App extends TwitterUtilApp with Logging with ContextConfig{
 
   def main() {
 
-    ContextHolder.config(registerClass():_*)
     installedModules = loadModules()
     installedModules.postStartup()
-    ContextHolder.refresh
 
     postStartup()
-
     info("Warming up.")
     warmup()
     beforePostWarmup()
@@ -105,7 +102,7 @@ trait App extends TwitterUtilApp with Logging with ContextConfig{
   /** Production modules from Java */
   protected def javaModules: java.util.Collection[Module] = new java.util.ArrayList[Module]()
 
-  private val frameworkModules: ArrayBuffer[Module] = ArrayBuffer(InjectorModule)
+  private val frameworkModules: ArrayBuffer[Module] = ArrayBuffer()
 
 
   def appMain() {
@@ -126,8 +123,7 @@ trait App extends TwitterUtilApp with Logging with ContextConfig{
   }
 
   protected[inject] def loadModules() = {
-    InstalledModules.create(ContextHolder.injector, requiredModules)
+    InstalledModules.create(this, requiredModules)
   }
 
-  //protected def configureSpring(): ContextConfig
 }

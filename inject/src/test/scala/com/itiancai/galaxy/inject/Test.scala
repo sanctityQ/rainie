@@ -1,11 +1,13 @@
 package com.itiancai.galaxy.inject
 
-import com.twitter.util.{Await, Future}
 import java.util.TimeZone
+
+import com.twitter.util.{Await, Future}
 import org.apache.commons.io.IOUtils
-import org.joda.time.{DateTimeZone, Duration}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
+import org.joda.time.{DateTimeZone, Duration}
+
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Matchers, WordSpec}
 
 @RunWith(classOf[JUnitRunner])

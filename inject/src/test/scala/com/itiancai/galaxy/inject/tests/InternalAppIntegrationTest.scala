@@ -76,7 +76,7 @@ class InternalAppIntegrationTest extends com.itiancai.galaxy.inject.Test {
 
 
 object FooModule extends AbstractModule {
-  override def configure(binder: Binder): Unit = {
+  override def configure(): Unit = {
     binder bind new Foo("bar")
   }
 }

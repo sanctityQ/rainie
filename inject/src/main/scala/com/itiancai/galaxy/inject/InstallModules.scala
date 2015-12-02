@@ -2,13 +2,8 @@ package com.itiancai.galaxy.inject
 
 object InstalledModules {
 
-  def create(injector: Injector, modules: Seq[Module]): InstalledModules = {
-    modules foreach configModules
-    new InstalledModules(injector, modules)
-  }
-
-  private def configModules(module: Module) = {
-    module.config()
+  def create(contextConfig: ContextConfig, modules: Seq[Module]): InstalledModules = {
+    new InstalledModules(ContextHolder.injector(contextConfig.registerClass(), modules), modules)
   }
 }
 
