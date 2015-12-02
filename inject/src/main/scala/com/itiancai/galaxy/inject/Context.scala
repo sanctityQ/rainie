@@ -3,6 +3,7 @@ package com.itiancai.galaxy.inject
 import org.springframework.beans.factory.BeanFactory
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer
 import org.springframework.core.env.{ConfigurableEnvironment}
 
 import scala.reflect._
@@ -20,6 +21,7 @@ private[inject] object ContextHolder {
   private[inject] def config(configure: ContextConfig) = {
     appContext.scan(configure.scanPackageName() ++ Seq("com.itiancai.galaxy"): _*)
     appContext.register(configure.registerClass():_*)
+    appContext.register(classOf[PropertySourcesPlaceholderConfigurer])
     this
   }
 

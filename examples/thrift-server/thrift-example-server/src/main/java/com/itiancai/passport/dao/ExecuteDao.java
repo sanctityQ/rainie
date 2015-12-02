@@ -7,6 +7,7 @@ import com.itiancai.passport.thrift.User$;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Repository;
 
@@ -22,10 +23,13 @@ public class ExecuteDao {
   @Autowired
   private Environment environment;
 
+  @Value("${server.port}")
+  private String serverPort;
+
   public PassportResult msg2(String msg){
 
 
-    logger.info(222 + "= " + environment.getProperty("server.port2"));
+    logger.info(222 + "= " + environment.getProperty("server.port2") +"---="+serverPort);
 
     return  myvar.apply("1","1", Option.apply(User$.MODULE$.apply("1", "1", Source$.MODULE$.apply(1), Option.apply(
         "11"))));
