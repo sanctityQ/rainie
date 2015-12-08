@@ -12,10 +12,6 @@ import org.springframework.stereotype.Component
 @Component
 class ThriftRouter @Autowired()(injector: Injector, statsReceiver: StatsReceiver) {
 
-
-  //private val injector: Injector = _
-
-
   private type ThriftFilter = Filter[ThriftRequest, Any, ThriftRequest, Any]
 
   private[galaxy] var filterChain: ThriftFilter = Filter.identity

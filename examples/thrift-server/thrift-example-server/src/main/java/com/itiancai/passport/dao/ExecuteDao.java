@@ -4,6 +4,7 @@ import com.itiancai.passport.thrift.PassportResult;
 import com.itiancai.passport.thrift.PassportResult$;
 import com.itiancai.passport.thrift.Source$;
 import com.itiancai.passport.thrift.User$;
+import com.twitter.finagle.stats.StatsReceiver;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +24,15 @@ public class ExecuteDao {
   @Autowired
   private Environment environment;
 
+  @Autowired
+  private StatsReceiver statsReceiver;
+
   @Value("${server.port}")
   private String serverPort;
 
   public PassportResult msg2(String msg){
 
+    statsReceiver.scope("message").counter0("aaa").incr();
 
     logger.info(222 + "= " + environment.getProperty("server.port2") +"---="+serverPort);
 
