@@ -1,7 +1,7 @@
 package com.itiancai.passport.thrift
 
 import com.itiancai.galaxy.logger.filter.{TraceIdMDCFilter, LoggingMDCFilter}
-import com.itiancai.galaxy.thrift.filter.StatsFilter
+import com.itiancai.galaxy.thrift.filter.{RateLimitingFilter, StatsFilter}
 import com.itiancai.galaxy.thrift.codegen.MethodFilters
 import com.itiancai.galaxy.thrift.{ThriftRequest, ThriftRouter, ThriftServer}
 import com.itiancai.passport.SpringBoot
@@ -16,17 +16,17 @@ object TestServer extends ThriftServer{
 
   val counter = statsReceiver.counter("login_requests_counter")
 
-
   override protected def configureThrift(router: ThriftRouter): Unit = {
     router.filter[LoggingMDCFilter[ThriftRequest,Any]]
     .filter[TraceIdMDCFilter[ThriftRequest, Any]]
     .filter[StatsFilter]
-    .add[PassportServiceImpl](PassporServiceFilterCreator.create)
+    .filter[RateLimitingFilter[ThriftRequest, Any]]
+    .add[PassportServiceImpl](PassportServiceFilterCreator.create)
   }
 
 }
 
-object PassporServiceFilterCreator {
+object PassportServiceFilterCreator {
 
   def create(filters: MethodFilters, underlying: PassportService[Future]) = {
     new PassportService[Future] {

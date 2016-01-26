@@ -34,9 +34,8 @@ public class ExecuteDao {
 
     statsReceiver.scope("message").counter0("aaa").incr();
 
-    logger.info(222 + "= " + environment.getProperty("server.port2") +"---="+serverPort);
+    logger.info(222 + "= " + environment.getProperty("server.port2") + "---=" + serverPort);
 
-    return  myvar.apply("1","1", Option.apply(User$.MODULE$.apply("1", "1", Source$.MODULE$.apply(1), Option.apply(
-        "11"))));
+    return  myvar.apply("1","1", Option.apply(User$.MODULE$.apply("1", "1", Source$.MODULE$.apply(1), Option.apply("11"))));
   }
 }

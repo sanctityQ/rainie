@@ -7,7 +7,7 @@ lazy val aggregated = taskKey[Unit]("Print currently aggregated tasks under the 
 
 lazy val buildSettings = Seq(
   name := "rainie",
-  version := "0.0.1-SNAPSHOT",
+  version := "0.0.2-SNAPSHOT",
   scalaVersion := "2.11.7",
   crossScalaVersions := Seq("2.10.5", "2.11.7")
 )
@@ -48,7 +48,7 @@ lazy val publishSettings = Seq(
   publishArtifact in Test := false,
   publishArtifact in (Compile, packageDoc) := true,
   publishArtifact in (Test, packageDoc) := true,
-  pomIncludeRepository := { _ => false },
+  pomIncludeRepository := { _ => true },
   publishTo := {
     val nexus = "http://123.57.227.107:8086/nexus/"
     if (isSnapshot.value)
@@ -164,7 +164,8 @@ lazy val thrift = project.
     moduleName := "rainie-thrift",
     libraryDependencies ++= Seq(
       "com.twitter" %% "scrooge-core" % versions.scrooge,
-      "com.twitter" %% "finagle-thrift" % versions.finagle
+      "com.twitter" %% "finagle-thrift" % versions.finagle,
+      "com.twitter" %% "finagle-serversets" % versions.finagle
     )
   ).
   dependsOn(
