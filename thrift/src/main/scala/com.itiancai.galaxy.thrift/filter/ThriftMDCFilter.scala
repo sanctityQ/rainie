@@ -2,8 +2,8 @@ package com.itiancai.galaxy.thrift.filter
 
 import javax.inject.Singleton
 
-import com.itiancai.galaxy.thrift.ThriftRequest
-import com.twitter.finagle.{Service, SimpleFilter}
+import com.itiancai.galaxy.thrift.{ThriftFilter, ThriftRequest}
+import com.twitter.finagle.Service
 import com.twitter.util.Future
 import org.slf4j.MDC
 
@@ -12,10 +12,9 @@ import org.slf4j.MDC
  * to ensure that diagnostic context is properly managed.
  */
 @Singleton
-class ThriftMDCFilter
-  extends SimpleFilter[ThriftRequest, Any] {
+class ThriftMDCFilter extends ThriftFilter{
 
-  override def apply(request: ThriftRequest, service: Service[ThriftRequest, Any]): Future[Any] = {
+  override def apply[T, U](request: ThriftRequest[T], service: Service[ThriftRequest[T], U]): Future[U] = {
     MDC.put("method", request.methodName)
 
     for (id <- request.clientId) {

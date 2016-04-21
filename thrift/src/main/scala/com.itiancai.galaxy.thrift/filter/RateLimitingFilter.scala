@@ -4,11 +4,12 @@ import javax.annotation.PostConstruct
 import javax.inject.Inject
 
 import com.itiancai.galaxy.inject.Logging
-import com.itiancai.galaxy.thrift.ThriftRequest
+import com.itiancai.galaxy.thrift.{ThriftRequest, ThriftFilter}
 import com.twitter.app.Flags
-import com.twitter.finagle.{Service, SimpleFilter}
-import com.twitter.finagle.service.{RateLimitingFilter => TwitterRateLimitingFilter}
-import com.twitter.finagle.stats.{StatsReceiver}
+import com.twitter.finagle.tracing.TraceId
+import com.twitter.finagle.thrift.ClientId
+import com.twitter.finagle.{RefusedByRateLimiter, Service}
+import com.twitter.finagle.stats.{NullStatsReceiver, StatsReceiver}
 import com.twitter.util.{Time, Duration, Future}
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
@@ -21,13 +22,13 @@ import scala.collection.mutable
   * 在.properties中使用 rateLimit:request.methodName, duration, rate,其中duration按照s为单位
   * 如果出现多个rateLimit:request.methodName1, duration1, rate1;request.methodName2, duration2, rate2
   * 支持通配符写法如对所有方法为: rateLimit:*,duration,rate
+  *
   * @param statsReceiver
-  * @tparam Req
-  * @tparam Rep
   */
 @Component
-class RateLimitingFilter[Req, Rep] @Inject()(statsReceiver: StatsReceiver)
-  extends SimpleFilter[ThriftRequest, Any] with Logging {
+class ThriftRateLimitingFilter @Inject()
+(statsReceiver: StatsReceiver = NullStatsReceiver)
+  extends ThriftFilter with Logging {
 
   val flag = new Flags(this.getClass.getName)
 
@@ -37,7 +38,7 @@ class RateLimitingFilter[Req, Rep] @Inject()(statsReceiver: StatsReceiver)
     * rateLimit.methodName
     */
   @Value("${rateLimit}")
-  private val rateLimit:String = null
+  private val rateLimit: String = null
 
   @PostConstruct
   def init: Unit = {
@@ -53,7 +54,7 @@ class RateLimitingFilter[Req, Rep] @Inject()(statsReceiver: StatsReceiver)
     }
   }
 
-  def categorize(request: ThriftRequest) = {
+  def categorize(request: LocalThriftRequet) = {
     val value: Option[(Duration, Int)] = rateLimitStrategy.get(request.methodName)
     if (value.nonEmpty) {
       val (duration, rate) = value.get
@@ -71,26 +72,35 @@ class RateLimitingFilter[Req, Rep] @Inject()(statsReceiver: StatsReceiver)
     }
   }
 
-  private val strategy = new LocalRateLimitingStrategy[ThriftRequest](categorize)
+  private[this] val refused = statsReceiver.counter("refused")
 
-  private val filter = new TwitterRateLimitingFilter[ThriftRequest, Any](strategy, statsReceiver)
 
-  override def apply(request: ThriftRequest, service: Service[ThriftRequest, Any]): Future[Any] = {
-    filter.apply(request, service)
+  private val strategy = new LocalRateLimitingStrategy(categorize)
+
+  override def apply[T, U](request: ThriftRequest[T], service: Service[ThriftRequest[T], U]): Future[U] = {
+
+    strategy(request) flatMap { isAuthorized =>
+      if (isAuthorized)
+        service(request)
+      else {
+        refused.incr()
+        Future.exception(new RefusedByRateLimiter)
+      }
+    }
   }
-
 
 }
 
-class LocalRateLimitingStrategy[Req](
-  categorizer: Req => (String, Duration, Int)
-) extends (Req => Future[Boolean]) {
+class LocalRateLimitingStrategy(
+    categorizer: (LocalThriftRequet => (String, Duration, Int))
+  ){
 
-  private[this] val rates = mutable.HashMap.empty[String, (Int,Time)]
 
-  def apply(req: Req) = synchronized {
+  private[this] val rates = mutable.HashMap.empty[String, (Int, Time)]
+
+  def apply[T](req: ThriftRequest[T]) = synchronized {
     val now = Time.now
-    val (id, windowSize, rate) = categorizer(req)
+    val (id, windowSize, rate) = categorizer(LocalThriftRequet(req.methodName, req.traceId, req.clientId, req.args))
     val (remainingRequests, timestamp) = rates.getOrElse(id, (rate, now))
 
     val accept = if (timestamp.until(now) > windowSize) {
@@ -108,3 +118,27 @@ class LocalRateLimitingStrategy[Req](
     Future.value(accept)
   }
 }
+
+case class LocalThriftRequet(methodName:String,traceId: TraceId, clientId: Option[ClientId], args: Any)
+
+class RateLimitingFilter[Req](
+  strategy: LocalRateLimitingStrategy,
+  statsReceiver: StatsReceiver = NullStatsReceiver
+  ) extends ThriftFilter {
+
+  private[this] val refused = statsReceiver.counter("refused")
+
+  override def apply[T, U](request: ThriftRequest[T], service: Service[ThriftRequest[T], U]): Future[U] =
+
+    strategy(request) flatMap { isAuthorized =>
+      if (isAuthorized)
+        service(request)
+      else {
+        refused.incr()
+        Future.exception(new RefusedByRateLimiter)
+      }
+  }
+
+}
+
+

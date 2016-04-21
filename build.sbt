@@ -7,19 +7,19 @@ lazy val aggregated = taskKey[Unit]("Print currently aggregated tasks under the 
 
 lazy val buildSettings = Seq(
   name := "rainie",
-  version := "0.0.2-SNAPSHOT",
+  version := "0.0.3-SNAPSHOT",
   scalaVersion := "2.11.7",
   crossScalaVersions := Seq("2.10.5", "2.11.7")
 )
 
 
 lazy val versions = new {
-  val finagle = "6.30.0"
-  val twitterServer = "1.15.0"
+  val finagle = "6.34.0"
+  val twitterServer = "1.19.0"
   val logback = "1.0.13"
   val spring = "3.2.15.RELEASE"
   val slf4j = "1.7.12"
-  val scrooge = "4.2.0"
+  val scrooge = "4.6.0"
   val grizzled = "1.0.2"
 
   val commonsIo = "2.4"
@@ -169,7 +169,8 @@ lazy val thrift = project.
     )
   ).
   dependsOn(
-    inject
+    inject,
+    slf4j
   )
 
 lazy val slf4j = project.

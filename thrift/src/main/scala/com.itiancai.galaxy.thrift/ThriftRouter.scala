@@ -1,20 +1,16 @@
 package com.itiancai.galaxy.thrift
 
-import com.itiancai.galaxy.inject.Injector
-import com.itiancai.galaxy.thrift.codegen.MethodFilters
-import com.twitter.finagle.Filter
+import com.itiancai.galaxy.inject.{Logging, Injector}
 import com.twitter.finagle.stats.StatsReceiver
-import com.twitter.scrooge.ThriftService
+import com.twitter.scrooge.{ToThriftService, ThriftService}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 
 @Component
-class ThriftRouter @Autowired()(injector: Injector, statsReceiver: StatsReceiver) {
+class ThriftRouter @Autowired()(injector: Injector, statsReceiver: StatsReceiver) extends Logging{
 
-  private type ThriftFilter = Filter[ThriftRequest, Any, ThriftRequest, Any]
-
-  private[galaxy] var filterChain: ThriftFilter = Filter.identity
+  private[galaxy] var filterChain = ThriftFilter.Identity
 
   private[galaxy] var name: String = ""
 
@@ -24,24 +20,36 @@ class ThriftRouter @Autowired()(injector: Injector, statsReceiver: StatsReceiver
 
 
   /** Add global filter used for all requests */
-  def filter[FilterType <: ThriftFilter : Manifest] = {
-    filterChain = filterChain andThen injector.instance[FilterType]
+  def filter[FilterType <: ThriftFilter : Manifest]: ThriftRouter = {
+    filter(injector.instance[FilterType])
+  }
+
+  /** Add global filter used for all requests */
+  def filter(clazz: Class[_ <: ThriftFilter]): ThriftRouter = {
+    filter(injector.instance(clazz))
+  }
+
+  /** Add global filter used for all requests */
+  def filter(filter: ThriftFilter): ThriftRouter = {
+    assert(filteredService == null, "'filter' must be called before 'add'.")
+    filterChain = filterChain andThen filter
     this
   }
 
-  def filter(clazz: Class[_ <: ThriftFilter]) = {
-    filterChain = filterChain andThen injector.instance(clazz)
-    this
-  }
 
+  def add[C <: Controller with ToThriftService : Manifest]: ThriftRouter = {
 
-  def add[T <: ThriftService : Manifest](filterFactory: (MethodFilters, T) => ThriftService) {
-    addFilteredService(filterFactory.apply(createMethodFilters, injector.instance[T]))
-  }
+    val controller = injector.instance[C]
+//    controller.getClass.getMethods.foreach(method=>method.getName)
+    for (m <- controller.methods) {
+      m.setFilter(filterChain)
+    }
+    info("Adding methods\n" + (controller.methods.map(method => s"${controller.getClass.getSimpleName}.${method.name}") mkString "\n"))
+    if (controller.methods.isEmpty) error(s"${controller.getClass.getCanonicalName} contains no methods!")
+    filteredService = controller.toThriftService
 
-  @deprecated("Thrift services should be added with a filter factory.", "since Scrooge 4.x")
-  def addUnfiltered[T <: ThriftService : Manifest] = {
-    addFilteredService(injector.instance[T])
+    assert(!done, "ThriftRouter#add cannot be called multiple times, as we don't currently support serving multiple thrift services.")
+    done = true
     this
   }
 
@@ -56,8 +64,5 @@ class ThriftRouter @Autowired()(injector: Injector, statsReceiver: StatsReceiver
     filteredService = thriftService
   }
 
-  private def createMethodFilters: MethodFilters = {
-    new MethodFilters(statsReceiver.scope(name), filterChain)
-  }
 
 }
