@@ -1,21 +1,15 @@
 package com.itiancai.passport
 
-import java.net.InetSocketAddress
-
-import com.itiancai.galaxy.logger.filter.LoggingMDCFilter
-import com.itiancai.passport.thrift.PassportService.Login
+import com.itiancai.passport.dao.ExecuteDao
 import com.itiancai.passport.thrift.Source.Web
-import com.itiancai.passport.thrift.{PassportResult, PassportService, UserLogin}
-import com.twitter.common.quantity.{Time, Amount}
-import com.twitter.common.zookeeper.{ServerSets, ServerSetImpl, ZooKeeperClient}
-import com.twitter.finagle.service.ExpiringService
+import com.itiancai.passport.thrift._
 import com.twitter.finagle.{Service, SimpleFilter, Thrift}
 import com.twitter.util.Future._
 import com.twitter.util.{Timer, Duration, Await, Future}
+import org.apache.commons.lang.{ObjectUtils, ClassUtils}
 import org.junit.runner.RunWith
 import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
-import scala.collection.JavaConversions._
 
 
 @RunWith(classOf[JUnitRunner])
@@ -38,19 +32,28 @@ class TestClient extends WordSpec{
 //        ServerSets.deserializeServiceInstance(serverData, jsonCodec)
 //    }
 
+
+
+
+
+
     //client 1
-    val client = Thrift.newIface[PassportService.FutureIface]("192.168.0.11:8000")//123.57.227.107
+    val client = Thrift.newIface[PassportService[Future]]("127.0.0.1:8000")//123.57.227.107
 //    val client = Thrift.newIface[PassportService.FutureIface]("zk2!192.168.0.11:2182!/com.itiancai.passport.thrift.TestServer")//123.57.227.107
 
-    val userLogin = UserLogin.apply("aaa","1123123",Web)
+//    val userLogin = UserLogin.apply("aaa","1123123",Web)
 
 
-    val result1: Future[PassportResult] = client.login(userLogin)
-
-
-    println("aaa" + Await.result(result1, DEFAULT_TIMEOUT).errMsg)
-
-    var i = 0
+    val result1: Future[RegResponse] = client.reg(RegRequest("13333333333"))
+//
+//
+    println("aaa" + Await.result(result1))
+//
+//
+//    val result2: Future[Boolean] = client.userInfo()
+//    println("bbb" + Await.result(result2))
+//
+//    var i = 0
 //    while (i<100000) {
 //      client.login(userLogin).onSuccess{
 //        response => println(s"aaa${i}" + response.errMsg)
@@ -65,14 +68,14 @@ class TestClient extends WordSpec{
 
 
 
-    val clientServiceIface: PassportService.ServiceIface = Thrift.newServiceIface[PassportService.ServiceIface]("192.168.0.11:8000")
+//    val clientServiceIface: PassportService.ServiceIface = Thrift.newServiceIface[PassportService.ServiceIface]("192.168.0.11:8000")
 //    val clientServiceIface: PassportService.ServiceIface = Thrift.newServiceIface[PassportService.ServiceIface]("zk2!192.168.0.11:2182!/com.itiancai.passport.thrift.TestServer")
 
 
-    val result2: Future[Login.Result] = clientServiceIface.login(Login.Args(userLogin))
+//    val result2: Future[Login.Result] = clientServiceIface.login(Login.Args(userLogin))
     //#thriftclientapi-call
 
-    println("aaa3" + Await.result(result2).success.get.errMsg)
+//    println("aaa3" + Await.result(result2).success.get.errMsg)
 
 
     //

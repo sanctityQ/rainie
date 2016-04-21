@@ -1,5 +1,5 @@
-namespace java com.twitter.adder.thriftjava
-#@namespace scala com.twitter.adder.thriftscala
+namespace java com.itiancai.adder.thriftjava
+#@namespace scala com.itiancai.adder.thriftscala
 namespace rb Adder
 
 include "finatra-thrift/finatra_thrift_exceptions.thrift"
