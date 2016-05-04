@@ -164,7 +164,7 @@ lazy val thrift = project.
     moduleName := "rainie-thrift",
     libraryDependencies ++= Seq(
       "com.twitter" %% "scrooge-core" % versions.scrooge,
-      "com.twitter" %% "finagle-thrift" % versions.finagle,
+      "com.twitter" %% "finagle-thriftmux" % versions.finagle,
       "com.twitter" %% "finagle-serversets" % versions.finagle
     )
   ).

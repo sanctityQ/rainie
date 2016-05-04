@@ -40,7 +40,6 @@ class ThriftRouter @Autowired()(injector: Injector, statsReceiver: StatsReceiver
   def add[C <: Controller with ToThriftService : Manifest]: ThriftRouter = {
 
     val controller = injector.instance[C]
-//    controller.getClass.getMethods.foreach(method=>method.getName)
     for (m <- controller.methods) {
       m.setFilter(filterChain)
     }

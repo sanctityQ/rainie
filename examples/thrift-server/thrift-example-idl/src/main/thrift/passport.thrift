@@ -29,8 +29,8 @@ enum SysCode {
 
 
 /**
-* 用户信息
-**/
+ * 用户信息
+ **/
 struct PassportUser {
     1: required i64 id
     2: required string mobile //手机号

@@ -38,8 +38,8 @@ class TestClient extends WordSpec{
 
 
     //client 1
-    val client = Thrift.newIface[PassportService[Future]]("127.0.0.1:8000")//123.57.227.107
-//    val client = Thrift.newIface[PassportService.FutureIface]("zk2!192.168.0.11:2182!/com.itiancai.passport.thrift.TestServer")//123.57.227.107
+//    val client = Thrift.newIface[PassportService[Future]]("127.0.0.1:8000")//123.57.227.107
+    val client = Thrift.newIface[PassportService.FutureIface]("zk2!192.168.0.173:2182!/testServer")//123.57.227.107
 
 //    val userLogin = UserLogin.apply("aaa","1123123",Web)
 

@@ -12,6 +12,8 @@ object TestServer extends ThriftServer{
 
   val counter = statsReceiver.counter("login_requests_counter")
 
+  override val defaultThriftServerName = "testServer"
+
   override def configureThrift(router: ThriftRouter) = {
     router.filter[LoggingMDCFilter]
       .filter[TraceIdMDCFilter]
@@ -23,6 +25,7 @@ object TestServer extends ThriftServer{
 
   override def warmup() {
     info("Warm-up done.")
+
   }
 
 }

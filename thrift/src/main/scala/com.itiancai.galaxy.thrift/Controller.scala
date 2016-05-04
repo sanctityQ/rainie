@@ -17,7 +17,7 @@ trait Controller extends Logging { self: ToThriftService =>
     val thriftMethodService =
       new ThriftMethodService[Args, Result](method, method.functionToService(f))
     methods += thriftMethodService
-    logger.info(s"methods's length:${methods.size}")
+    info(s"methods's length:${methods.size}")
     thriftMethodService
   }
 }

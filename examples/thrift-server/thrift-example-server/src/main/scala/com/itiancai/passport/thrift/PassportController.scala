@@ -20,7 +20,7 @@ class PassportController @Inject()(excu: ExecuteDao)
   val log = LoggerFactory.getLogger(getClass)
 
 
-  override val reg = handle(Reg)({ args: Reg.Args =>
+  override val reg = handle(Reg){ args: Reg.Args =>
 
       val passportResult = PassportResult.apply("001", "",
         Option.apply(User.apply(args.request.mobile, "1111", "qicheng"))
@@ -31,7 +31,7 @@ class PassportController @Inject()(excu: ExecuteDao)
       val passportUser = PassportUser(1, args.request.mobile, s.getOrElse("b"), Source.Web, SysCode.P2p, DateTime.now().toDate.getTime)
       log.info("--222---")
       Future.value(RegResponse.apply(passportUser, Option("111")))
-  })
+  }
 
   override val userValidate = handle(UserValidate){ args: UserValidate.Args =>
       Future.value(true)
