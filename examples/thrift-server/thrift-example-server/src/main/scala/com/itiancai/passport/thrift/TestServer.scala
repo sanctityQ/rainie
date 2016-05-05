@@ -1,6 +1,5 @@
 package com.itiancai.passport.thrift
 
-import com.itiancai.galaxy.inject.Logging
 import com.itiancai.galaxy.thrift.filter._
 import com.itiancai.galaxy.thrift.{ThriftRouter, ThriftServer}
 import com.itiancai.passport.SpringBoot

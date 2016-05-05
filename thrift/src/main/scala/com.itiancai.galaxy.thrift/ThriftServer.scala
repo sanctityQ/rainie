@@ -26,7 +26,7 @@ trait ThriftServer extends TwitterServer with Logging{
 
   private val zkServerAddress = flag("zk.address",StringUtils.EMPTY, "zkServer address, mutilServer use ',' seperator")
 
-  private val zkNodePath = flag("zk.path", "/" + thriftServerNameFlag(), "zkServer node path, default is className")
+  private val zkNodePath = flag("zk.path",  thriftServerNameFlag(), "zkServer node path, default is className")
 
   private val zkAnnounce = "zk"
 
@@ -60,11 +60,14 @@ trait ThriftServer extends TwitterServer with Logging{
     thriftServer = ThriftMux.server.withLabel(defaultThriftServerName)
         .serveIface(thriftPortFlag(), router.filteredService)
 
-    val address = "%s!%s!%s!0".format(zkAnnounce, zkServerAddress(), zkNodePath())
 
-    info("Thrift server register address:" + address)
-    // zk!host!/full/path!shardId
-    thriftServer.announce(address)
+    if(zkServerAddress.isDefined){
+
+      val address = "%s!%s!/%s!0".format(zkAnnounce, zkServerAddress(), zkNodePath())
+      info("Thrift server register address:" + address)
+      // zk!host!/full/path!shardId
+      thriftServer.announce(address)
+    }
 
     onExit {
       Await.result(close(thriftServer, thriftShutdownTimeout().fromNow))
