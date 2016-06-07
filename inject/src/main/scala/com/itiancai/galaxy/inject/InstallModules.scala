@@ -3,7 +3,7 @@ package com.itiancai.galaxy.inject
 object InstalledModules {
 
   def create(contextConfig: ContextConfig, modules: Seq[Module]): InstalledModules = {
-    new InstalledModules(ContextHolder.injector(contextConfig.registerClass(), modules), modules)
+    new InstalledModules(ContextHolder.injector(contextConfig, modules), modules)
   }
 }
 

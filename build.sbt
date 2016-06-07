@@ -7,7 +7,7 @@ lazy val aggregated = taskKey[Unit]("Print currently aggregated tasks under the 
 
 lazy val buildSettings = Seq(
   name := "rainie",
-  version := "0.0.3-SNAPSHOT",
+  version := "0.0.4-SNAPSHOT",
   scalaVersion := "2.11.7",
   crossScalaVersions := Seq("2.10.5", "2.11.7")
 )

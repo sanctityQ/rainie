@@ -2,7 +2,6 @@ package com.itiancai.galaxy.inject.config;
 
 
 import com.google.common.collect.Maps;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.MapPropertySource;
@@ -22,7 +21,7 @@ import java.util.Map;
 /**
  * mutile-config
  */
-public class ConfigureEnvironment extends StandardEnvironment {
+public class ConfigureEnvironment2 extends StandardEnvironment {
 
   private static final Logger logger = LoggerFactory.getLogger(ConfigureEnvironment.class);
 
@@ -30,7 +29,14 @@ public class ConfigureEnvironment extends StandardEnvironment {
 
   private static final String DEFAULT_ENV_VAL = "dev";
 
-  private static final String CONFIG_PATH = "/config/${" + COMMAND_PRAM_ENV + "}/**/*.properties";
+  private static final String DEFAULT_CONFIG_PATH = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + "/config/${" + COMMAND_PRAM_ENV + "}/**/*.properties";
+
+  private static String configPath = DEFAULT_CONFIG_PATH;
+
+  public ConfigureEnvironment2(){
+      super();
+      configPath = "111";
+  }
 
   @Override
   protected void customizePropertySources(MutablePropertySources propertySources) {
@@ -45,13 +51,12 @@ public class ConfigureEnvironment extends StandardEnvironment {
         new SystemEnvironmentPropertySource(SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
                                             Collections.unmodifiableMap(systemEnv)));
 
-    String resourceSourcePath = this.resolvePlaceholders(CONFIG_PATH);
+    String resourceSourcePath = this.resolvePlaceholders(DEFAULT_CONFIG_PATH);
     MutablePropertySources
         envPropertySources = this.getPropertySources();
     ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
     try {
-      Resource[] resources = resolver.getResources(
-          ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + resourceSourcePath);
+      Resource[] resources = resolver.getResources(resourceSourcePath);
       for (Resource resource : resources) {
         envPropertySources.addLast(new ResourcePropertySource(resource));
       }

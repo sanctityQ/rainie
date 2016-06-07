@@ -24,7 +24,7 @@ trait ThriftServer extends TwitterServer with Logging{
 
   private val thriftServerNameFlag = flag("thrift.name", defaultThriftServerName, "Thrift server name")
 
-  private val zkServerAddress = flag("zk.address",StringUtils.EMPTY, "zkServer address, mutilServer use ',' seperator")
+  private val zkServerAddress = flag("zk.address",StringUtils.EMPTY, "zkServer address, multiServer use ',' seperator")
 
   private val zkNodePath = flag("zk.path",  thriftServerNameFlag(), "zkServer node path, default is className")
 
@@ -34,7 +34,7 @@ trait ThriftServer extends TwitterServer with Logging{
   private val zkShareId: String = "0"
 
 
-  private val zkServerSessionTimeOut = flag("zk.sessionTimeout", 1000, "zkServer session timeOut time")
+//  private val zkServerSessionTimeOut = flag("zk.sessionTimeout", 1000, "zkServer session timeOut time")
 
   /* Private Mutable State */
   private var thriftServer: ListeningServer = _
@@ -43,7 +43,7 @@ trait ThriftServer extends TwitterServer with Logging{
 
   protected def run(): Unit = {}
 
-  private val amount = Amount.of(zkServerSessionTimeOut(), Time2.MILLISECONDS)
+//  private val amount = Amount.of(zkServerSessionTimeOut(), Time2.MILLISECONDS)
 
   private[this] def zkServerFlagError: IllegalArgumentException =
     new IllegalArgumentException("zkServerFlag '%s' format error, use 'ip:port,ip:port'".format(zkServerAddress()))
