@@ -48,7 +48,7 @@ lazy val publishSettings = Seq(
   publishArtifact in Test := false,
   publishArtifact in (Compile, packageDoc) := true,
   publishArtifact in (Test, packageDoc) := true,
-  pomIncludeRepository := { _ => true },
+  pomIncludeRepository := { _ => false },
   publishTo := {
     val nexus = "http://123.57.227.107:8086/nexus/"
     if (isSnapshot.value)
@@ -95,6 +95,7 @@ lazy val rainieSettings = baseSettings ++ publishSettings ++ buildSettings ++ Se
 lazy val baseServerBuildSettings = baseSettings ++ buildSettings ++ publishSettings ++ Seq(
   publishLocal := {},
   publish := {},
+  publishM2 := {},
   assemblyMergeStrategy in assembly := {
     case "BUILD" => MergeStrategy.discard
     case other => MergeStrategy.defaultMergeStrategy(other)
