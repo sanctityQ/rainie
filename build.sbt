@@ -22,6 +22,7 @@ lazy val versions = new {
   val scrooge = "4.6.0"
   val grizzled = "1.0.2"
 
+  val aspectj = "1.8.2"
   val commonsIo = "2.4"
   val jodaTime = "2.5"
 }
@@ -79,7 +80,6 @@ val baseSettings = Seq(
   resolvers ++= Seq(
     Resolver.mavenLocal,
     "tc-nexus" at "http://123.57.227.107:8086/nexus/content/groups/tftiancai-nexus-group",
-    "oschina2" at "http://maven.oschina.net/content/groups/public",
     Resolver.sonatypeRepo("releases")
   ),
   compilerOptions,
@@ -211,7 +211,31 @@ lazy val thriftExampleServer = (project in file("examples/thrift-server/thrift-e
     thrift
   )
 
+lazy val dtsCore = project.
+  settings(rainieSettings).
+  settings(
+    name := "dts-core",
+    moduleName := "dts-core",
+    libraryDependencies ++= Seq(
+      "org.springframework" %% "spring-beans" % versions.spring,
+      "org.springframework" %% "spring-orm" % versions.spring,
+      "org.springframework" %% "spring-context" % versions.spring,
+      "org.springframework.data" %% "spring-data-jpa" % "1.5.3.RELEASE",
+      "org.hibernate" %% "hibernate-entitymanager" % "3.6.10.Final",
+      "org.apache.commons" %% "commons-dbcp2" % "2.0.1",
+      "org.hibernate.javax.persistence" %% "hibernate-jpa-2.0-api" % "1.0.1.Final"
+    )
+  )
 
-
-
-    
+lazy val dtsClient = project.
+  settings(rainieSettings).
+  settings(
+    name := "dts-client",
+    moduleName := "dts-client",
+    libraryDependencies ++= Seq(
+      "org.springframework" %% "spring-beans" % versions.spring
+    )
+  ).
+  dependsOn(
+    dtsCore
+  )
