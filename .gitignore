@@ -35,3 +35,7 @@ project/plugins/project/
 .worksheet
 
 # Created by .ignore support plugin (hsz.mobi)
+
+
+#mac spcific
+.DS_Store

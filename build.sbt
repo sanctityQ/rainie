@@ -211,30 +211,26 @@ lazy val thriftExampleServer = (project in file("examples/thrift-server/thrift-e
     thrift
   )
 
-lazy val dtsCore = project.
+lazy val dtsCore = (project in file("dts/dts-core")).
   settings(rainieSettings).
   settings(
     name := "dts-core",
     moduleName := "dts-core",
     libraryDependencies ++= Seq(
-      "org.springframework" %% "spring-beans" % versions.spring,
-      "org.springframework" %% "spring-orm" % versions.spring,
-      "org.springframework" %% "spring-context" % versions.spring,
-      "org.springframework.data" %% "spring-data-jpa" % "1.5.3.RELEASE",
-      "org.hibernate" %% "hibernate-entitymanager" % "3.6.10.Final",
-      "org.apache.commons" %% "commons-dbcp2" % "2.0.1",
-      "org.hibernate.javax.persistence" %% "hibernate-jpa-2.0-api" % "1.0.1.Final"
+      "org.springframework" % "spring-beans" % versions.spring,
+      "org.springframework" % "spring-orm" % versions.spring,
+      "org.springframework" % "spring-context" % versions.spring,
+      "org.springframework.data" % "spring-data-jpa" % "1.5.3.RELEASE",
+      "org.hibernate" % "hibernate-entitymanager" % "3.6.10.Final",
+      "org.hibernate.javax.persistence" % "hibernate-jpa-2.0-api" % "1.0.1.Final"
     )
   )
 
-lazy val dtsClient = project.
+lazy val dtsClient = (project in file("dts/dts-client")).
   settings(rainieSettings).
   settings(
     name := "dts-client",
-    moduleName := "dts-client",
-    libraryDependencies ++= Seq(
-      "org.springframework" %% "spring-beans" % versions.spring
-    )
+    moduleName := "dts-client"
   ).
   dependsOn(
     dtsCore
