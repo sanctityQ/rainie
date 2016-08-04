@@ -3,9 +3,7 @@ package com.itiancai.galaxy.dts.domain;
 import javax.persistence.*;
 import java.util.Date;
 
-/**
- * Created by lsp on 16/7/28.
- */
+
 @Entity
 @Table(name = "dts_action")
 public class Action {
@@ -36,9 +34,8 @@ public class Action {
     /**
      * 子事务状态(UNKNOWN,PREPARE,SUCCESS,FAIL)
      */
-    @Enumerated(EnumType.ORDINAL)
     @Column(name = "status", nullable = false)
-    private Status.Action status;
+    private int status;
 
     /**
      * 服务名称
@@ -72,7 +69,7 @@ public class Action {
                   Date mTime, String context, String instructionId){
         this.txId = txId;
         this.actionId = actionId;
-        this.status = status;
+        this.status = status.getStatusAction();
         this.serviceName = serviceName;
         this.cTime = cTime;
         this.mTime = mTime;
@@ -113,11 +110,11 @@ public class Action {
     }
 
     public Status.Action getStatus() {
-        return status;
+        return Status.Action.getStatusAction(status);
     }
 
     public void setStatus(Status.Action status) {
-        this.status = status;
+        this.status = status.getStatusAction();
     }
 
     public String getServiceName() {

@@ -3,20 +3,12 @@ package com.itiancai.galaxy.dts.annotation;
 import java.lang.annotation.*;
 
 /**
- * Created by lsp on 16/7/28.
- *
  * 主事务注解
  */
 @Target({ElementType.METHOD,ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Activity {
-
-    /**
-     * 业务参数名称
-     * @return string
-     */
-    String businessId() default "";
 
     /**
      * 子事务是否实时commit或rollback

@@ -3,9 +3,6 @@ package com.itiancai.galaxy.dts.domain;
 import javax.persistence.*;
 import java.util.Date;
 
-/**
- * Created by lsp on 16/7/28.
- */
 @Entity
 @Table(name = "dts_activity")
 public class Activity {
@@ -30,9 +27,8 @@ public class Activity {
     /**
      * 主事务状态(UNKNOWN,SUCCESS,FAIL)
      */
-    @Enumerated(EnumType.ORDINAL)
     @Column(name = "status", nullable = false)
-    private Status.Activity status;
+    private int status;
 
     /**
      * 服务名称
@@ -59,17 +55,17 @@ public class Activity {
     private Date mTime;
 
     /**
-     * 请求参数
+     * 超时时间 毫秒
      */
     @Column(name = "time_out", nullable = false)
-    private Long timeOut;
+    private int timeOut;
 
     public Activity(){}
 
-    public Activity(Long txId, Status.Activity status, String businessType, Date cTime,Long timeOut,
+    public Activity(Long txId, Status.Activity status, String businessType, Date cTime,int timeOut,
                     Date mTime,Integer finish, String businessId){
         this.txId = txId;
-        this.status = status;
+        this.status = status.getStatusActivity();
         this.businessType = businessType;
         this.cTime = cTime;
         this.mTime = mTime;
@@ -103,11 +99,11 @@ public class Activity {
     }
 
     public Status.Activity getStatus() {
-        return status;
+        return Status.Activity.getStatusActivity(status);
     }
 
     public void setStatus(Status.Activity status) {
-        this.status = status;
+        this.status = status.getStatusActivity();
     }
 
     public String getBusinessType() {
@@ -142,11 +138,11 @@ public class Activity {
         this.mTime = mTime;
     }
 
-    public Long getTimeOut() {
+    public int getTimeOut() {
         return timeOut;
     }
 
-    public void setTimeOut(Long timeOut) {
+    public void setTimeOut(int timeOut) {
         this.timeOut = timeOut;
     }
 }

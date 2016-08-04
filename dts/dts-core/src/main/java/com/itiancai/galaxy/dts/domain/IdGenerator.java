@@ -1,10 +1,10 @@
 package com.itiancai.galaxy.dts.domain;
 
-/**
- * Created by lsp on 16/7/28.
- *
- * 主/子事务id生成器
- */
+
+import com.itiancai.galaxy.dts.DTSException;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 public class IdGenerator {
     private long workerId;
     private long datacenterId;
@@ -20,6 +20,8 @@ public class IdGenerator {
     private long timestampLeftShift = sequenceBits + workerIdBits + datacenterIdBits; //时间毫秒数左移22位
     private long sequenceMask = -1L ^ (-1L << sequenceBits); //4095
     private long lastTimestamp = -1L;
+
+    private Lock lock = new ReentrantLock();
 
     /**
      * 主事务id
@@ -68,31 +70,36 @@ public class IdGenerator {
         this.datacenterId = datacenterId;
     }
 
-    public synchronized long nextId() {
+    public long nextId() {
+        lock.lock();
         //获取当前毫秒数
         long timestamp = timeGen();
-        //如果服务器时间有问题(时钟后退)报错。
-        if (timestamp < lastTimestamp) {
-            throw new RuntimeException(String.format(
-                    "Clock moved backwards.  Refusing to generate id for %d milliseconds", lastTimestamp - timestamp));
-        }
-        //如果上次生成时间和当前时间相同,在同一毫秒内
-        if (lastTimestamp == timestamp) {
-            //sequence自增，因为sequence只有12bit，所以和sequenceMask相与一下，去掉高位
-            sequence = (sequence + 1) & sequenceMask;
-            //判断是否溢出,也就是每毫秒内超过4095，当为4096时，与sequenceMask相与，sequence就等于0
-            if (sequence == 0) {
-                timestamp = tilNextMillis(lastTimestamp); //自旋等待到下一毫秒
+        try {
+            //如果服务器时间有问题(时钟后退)报错。
+            if (timestamp < lastTimestamp) {
+                throw new RuntimeException(String.format(
+                        "Clock moved backwards.  Refusing to generate id for %d milliseconds", lastTimestamp - timestamp));
             }
-        } else {
-            sequence = 0L; //如果和上次生成时间不同,重置sequence，就是下一毫秒开始，sequence计数重新从0开始累加
+            //如果上次生成时间和当前时间相同,在同一毫秒内
+            if (lastTimestamp == timestamp) {
+                //sequence自增，因为sequence只有12bit，所以和sequenceMask相与一下，去掉高位
+                sequence = (sequence + 1) & sequenceMask;
+                //判断是否溢出,也就是每毫秒内超过4095，当为4096时，与sequenceMask相与，sequence就等于0
+                if (sequence == 0) {
+                    timestamp = tilNextMillis(lastTimestamp); //自旋等待到下一毫秒
+                }
+            } else {
+                sequence = 0L; //如果和上次生成时间不同,重置sequence，就是下一毫秒开始，sequence计数重新从0开始累加
+            }
+            lastTimestamp = timestamp;
+            return ((timestamp - twepoch) << timestampLeftShift) | (datacenterId << datacenterIdShift)
+                    | (workerId << workerIdShift) | sequence;
+        }catch (Throwable e){
+            throw new DTSException(e.getMessage());
+        }finally {
+            lock.unlock();
         }
-        lastTimestamp = timestamp;
-        // 最后按照规则拼出ID。
-        // 000000000000000000000000000000000000000000  00000            00000       000000000000
-        // time                                        atacenterId   workerId       sequence
-        return ((timestamp - twepoch) << timestampLeftShift) | (datacenterId << datacenterIdShift)
-                | (workerId << workerIdShift) | sequence;
+
     }
 
     protected long tilNextMillis(long lastTimestamp) {
@@ -106,10 +113,10 @@ public class IdGenerator {
     protected long timeGen() {
         return System.currentTimeMillis();
     }
+
     public static void main(String []args){
-        for(int i =0; i<200 ;i++){
-            System.out.println(IdGenerator.get().nextId());
-        }
+        int num = 8;
+        System.out.println(num >> 9);
 
     }
 }

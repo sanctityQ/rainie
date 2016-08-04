@@ -1,19 +1,15 @@
 package com.itiancai.galaxy.dts.domain;
 
+import com.itiancai.galaxy.dts.DTSException;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by lsp on 16/7/28.
- * 1.缓存name->path地址
- * 2.检查name是否存在对应的Bean
- */
 @Component
 public class ActionNameResolver {
 
-    //缓存name->path TODO NAME做一个解析
     private static Map<String,String> map = new HashMap<String, String>();
     /**
      * 检查name在服务端是否存在对应的bean
@@ -21,9 +17,7 @@ public class ActionNameResolver {
      * @throws Exception 调用path name不存在或请求异常
      */
     public void checkActionName(String actionName){
-        //TODO 1.解析name 获取服务名称
-        String[] names = actionName.split(":");
-        //TODO 2.判断name(服务名.模块名)是否被缓存,如缓存直接获取path,没有缓存直接调用server服务获取id
+        String[] names = getNames(actionName);
         if(!map.containsKey(names[0])){
             getRemotePath(actionName);
         }
@@ -35,9 +29,7 @@ public class ActionNameResolver {
      * @return
      */
     public  String getPath(String name){
-        //TODO 1.缓存中是否存在path,
-        // TODO 如path不存在,在server中获取,如在没有直接抛出异常.
-        String[] names = name.split(":");
+        String[] names =  getNames(name);
         if(!map.containsKey(names[0])){
             getRemotePath(name);
         }
@@ -45,12 +37,29 @@ public class ActionNameResolver {
     }
 
     /**
-     * 在server中获取path并缓存
+     * 检查字符串是否正确
+     * @param name
+     * @return
+     */
+    public String[] getNames(String name){
+        //1.缓存中是否存在path
+        String[] names = name.split(":");
+        if (names != null && names.length !=2){
+            throw new DTSException("The action name format is not correct,name is "+name);
+        }
+        return names;
+    }
+
+    /**
+     * TODO 在server中获取path并缓存
      * @param name
      */
     private  void getRemotePath(String name){
-        //TODO 在server中获取path 如不存直接抛出异常
-        map.put(name,"path");
+        //TODO 调用远程服务获取path
+//        String path = "";
+//        if (StringUtils.isEmpty(path)){
+//            throw new DTSException(name +" commit/rollback method not in DtsService,DtsService not cache ");
+//        }
+//        map.put(name,"path");
     }
-
 }

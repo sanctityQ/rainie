@@ -1,13 +1,12 @@
 package com.itiancai.galaxy.dts.dao;
 
 import com.itiancai.galaxy.dts.domain.Activity;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
-/**
- * Created by lsp on 16/7/28.
- */
+@Repository
 public interface ActivityDao extends PagingAndSortingRepository<Activity,Long> {
 
 
@@ -17,6 +16,6 @@ public interface ActivityDao extends PagingAndSortingRepository<Activity,Long> {
      * @return
      */
     @Query("select a from Activity a where a.txId = ?1 ")
-    Activity findActivityByTxIdStatus(long txId);
+    Activity findActivityByTxId(long txId);
 
 }

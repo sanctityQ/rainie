@@ -1,42 +1,45 @@
 package com.itiancai.galaxy.dts.domain;
 
-/**
- * Created by lsp on 16/7/28.
- *
- * 事务状态
- */
 public class Status {
 
     public enum Activity {
-        UNKNOWN(0), SUCCESS(2), FAILL(3);
+        UNKNOWN(0),SUCCESS(2), FAILL(3);
 
-        private int status;
+        private final int statusActivity;
 
-        Activity(int status) {
-            this.status = status;
+        Activity(int statusActivity) {
+            this.statusActivity = statusActivity;
         }
 
-        public int getStatus() {
-            return status;
+        public int getStatusActivity() {
+            return statusActivity;
+        }
+        public static Activity getStatusActivity(int status){
+            for(Activity activity : Activity.values()){
+                if(activity.getStatusActivity() == status){
+                    return activity;
+                }
+            }
+            return null;
         }
     }
 
     public enum Action {
         UNKNOWN(0), PREPARE(1), SUCCESS(2), FAILL(3);
 
-        private int status;
+        public final int statusAction;
 
-        Action(int status) {
-            this.status = status;
+        Action(int statusAction) {
+            this.statusAction = statusAction;
         }
 
-        public int getStatus() {
-            return status;
+        public int getStatusAction() {
+            return statusAction;
         }
 
         public static Action getStatusAction(int status){
             for(Action action : Action.values()){
-                if(action.getStatus() == status){
+                if(action.getStatusAction() == status){
                     return action;
                 }
             }

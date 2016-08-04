@@ -22,7 +22,6 @@ lazy val versions = new {
   val scrooge = "4.6.0"
   val grizzled = "1.0.2"
 
-  val aspectj = "1.8.2"
   val commonsIo = "2.4"
   val jodaTime = "2.5"
 }
@@ -217,12 +216,19 @@ lazy val dtsCore = (project in file("dts/dts-core")).
     name := "dts-core",
     moduleName := "dts-core",
     libraryDependencies ++= Seq(
-      "org.springframework" % "spring-beans" % versions.spring,
-      "org.springframework" % "spring-orm" % versions.spring,
-      "org.springframework" % "spring-context" % versions.spring,
       "org.springframework.data" % "spring-data-jpa" % "1.5.3.RELEASE",
-      "org.hibernate" % "hibernate-entitymanager" % "3.6.10.Final",
-      "org.hibernate.javax.persistence" % "hibernate-jpa-2.0-api" % "1.0.1.Final"
+      "org.hibernate.javax.persistence" % "hibernate-jpa-2.0-api" % "1.0.1.Final",
+      "com.alibaba" % "druid" % "1.0.23",
+      "com.twitter" %% "finagle-core" % versions.finagle,
+      "com.twitter" %% "finagle-stats" % versions.finagle,
+      "com.alibaba" % "fastjson" % "1.2.14",
+      "org.springframework" % "spring-context" % "3.2.8.RELEASE",
+      "org.springframework" % "spring-beans" % "3.2.8.RELEASE",
+      "mysql" % "mysql-connector-java" % "5.1.37" ,
+      //测试使用
+      "org.springframework" % "spring-test" % "3.2.8.RELEASE" ,
+      "org.hibernate" % "hibernate-entitymanager" % "3.6.10.Final" ,
+      "org.aspectj" % "aspectjweaver" % "1.7.0"
     )
   )
 
