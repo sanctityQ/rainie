@@ -26,5 +26,5 @@ public @interface Activity {
      * 主线程超时时间 单位:毫秒
      * @return
      */
-    long timeOut() default 30000;
+    int timeOut() default 30000;
 }

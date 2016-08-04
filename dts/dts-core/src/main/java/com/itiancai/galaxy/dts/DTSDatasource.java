@@ -2,14 +2,15 @@ package com.itiancai.galaxy.dts;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.*;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.hibernate3.HibernateExceptionTranslator;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.vendor.HibernateJpaDialect;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -18,37 +19,27 @@ import javax.sql.DataSource;
 
 
 @Configuration
+@Component
 @EnableAspectJAutoProxy(proxyTargetClass=false)
-@EnableJpaRepositories(basePackages="com.itiancai.galaxy.dts")
 @EnableTransactionManagement
-@ComponentScan(basePackages = "com.itiancai.galaxy.dts")
-public class DatasourceTest {
+@EnableJpaRepositories(
+        basePackages = "com.itiancai.galaxy.dts.dao",
+        entityManagerFactoryRef = "dtsEntityManagerFactory",
+        transactionManagerRef = "dtsTransactionManager"
+)
+public class DTSDatasource {
 
-    private static AnnotationConfigApplicationContext context;
+    @Value("${dts.db.driver}")
+    private String driver;
+    @Value("${dts.db.url}")
+    private String url;
+    @Value("${dts.db.userName}")
+    private String userName;
+    @Value("${dts.db.password}")
+    private String password;
 
-    protected static void init() {
-        context = new AnnotationConfigApplicationContext();
-        context.register(DatasourceTest.class);
-        context.refresh();
-    }
-    public static final AnnotationConfigApplicationContext context() {
-        if (context == null) {
-            init();
-        }
-        return context;
-    }
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-        return new PropertySourcesPlaceholderConfigurer();
-    }
-
-    private String driver = "com.mysql.jdbc.Driver";
-    private String url = "jdbc:mysql://127.0.0.1:3306/dts?autoReconnect=true&interactiveClient=true&characterEncoding=UTF-8";
-    private String userName = "root";
-    private String password = "123456";
-
-    @Bean
-    public DruidDataSource dataSource() {
+    @Bean(name="dtsDataSource")
+    public DataSource dtsDataSource() {
         DruidDataSource dataSource = new DruidDataSource();
         dataSource.setDriverClassName(driver);
         dataSource.setUrl(url);
@@ -64,17 +55,18 @@ public class DatasourceTest {
         dataSource.setMaxPoolPreparedStatementPerConnectionSize(20);
         //配置一个连接在池中最小生存的时间，单位是毫秒 -->
         dataSource.setMinEvictableIdleTimeMillis(300000);
-        dataSource.setValidationQuery("SELECT 1 ");
+        dataSource.setValidationQuery("SELECT 'x'");
         dataSource.setTestWhileIdle(true);
         return dataSource;
     }
 
+    @Value("${hibernate.sql.show}")
+    private boolean show;
+    @Value("${hibernate.sql.ddl}")
+    private boolean ddl;
 
-    private boolean show = false;
-    private boolean ddl = false;
-
-    @Bean
-    public EntityManagerFactory entityManagerFactory() {
+    @Bean(name="dtsEntityManagerFactory")
+    public EntityManagerFactory dtsEntityManagerFactory() {
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         vendorAdapter.setGenerateDdl(ddl);
         vendorAdapter.setShowSql(show);
@@ -82,20 +74,20 @@ public class DatasourceTest {
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setJpaVendorAdapter(vendorAdapter);
         factory.setPackagesToScan("com.itiancai.galaxy.dts.domain");
-        factory.setDataSource(dataSource());
+        factory.setDataSource(dtsDataSource());
         factory.afterPropertiesSet();
         return factory.getObject();
     }
 
-    @Bean
-    public PlatformTransactionManager transactionManager() {
+    @Bean(name = "dtsTransactionManager")
+    public PlatformTransactionManager dtsTransactionManager() {
         JpaTransactionManager txManager = new JpaTransactionManager();
-        txManager.setEntityManagerFactory(entityManagerFactory());
+        txManager.setEntityManagerFactory(dtsEntityManagerFactory());
         return txManager;
     }
 
-    @Bean
-    public HibernateExceptionTranslator hibernateExceptionTranslator(){
+    @Bean(name="dtsHibernateExceptionTranslator")
+    public HibernateExceptionTranslator dtsHibernateExceptionTranslator(){
         return new HibernateExceptionTranslator();
     }
 }

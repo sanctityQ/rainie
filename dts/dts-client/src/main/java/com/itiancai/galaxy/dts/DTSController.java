@@ -1,9 +1,8 @@
 package com.itiancai.galaxy.dts;
 
-import com.itiancai.galaxy.dts.annotation.Action;
-import com.itiancai.galaxy.dts.annotation.Activity;
-import com.itiancai.galaxy.dts.annotation.Instruction;
 import com.itiancai.galaxy.dts.domain.Status;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,10 +12,12 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class  DTSController{
-
     @Autowired
     private DTSServiceManager manager;
+    @Autowired
+    private NameResolver nameResolver;
 
+    private Logger logger = LoggerFactory.getLogger(DTSController.class);
 
     /**
      * 开启主事务,流程:
@@ -26,8 +27,10 @@ public class  DTSController{
      * @param type 服务名称
      * @param timeOut 超时时间
      */
-    public void startActivity(String bizId, String type, int timeOut){
-        manager.startActivity(bizId, type, timeOut);
+    public String startActivity(String bizId, String type, int timeOut){
+        logger.info("DTSController.startActivity Paramter{bizId="+bizId+",type="+type+",timeout="+timeOut);
+        nameResolver.checkActionName(type);
+        return manager.startActivity(bizId, type, timeOut);
     }
 
     /**
@@ -39,7 +42,8 @@ public class  DTSController{
      * @param activityStatus 状态 SUCCESS FAIL
      *
      */
-    public void finishActivity(boolean isImmediately, Status.Activity activityStatus){
+    public void finishActivity( boolean isImmediately, Status.Activity activityStatus){
+        logger.info("DTSController.finishActivity Paramter{isImmediately="+isImmediately+",status="+activityStatus.getStatus());
         manager.finishActivity(activityStatus, isImmediately);
     }
 
@@ -50,10 +54,11 @@ public class  DTSController{
      * @param context 请求参数json
      * @return long
      */
-    public long startAction(String idempotency, String name, String context){
+    public String startAction(String idempotency, String name, String context){
+        logger.info("DTSController.startAction Paramter{idempotency="+idempotency+",name="+name+",context="+context);
+        nameResolver.checkActionName(name);
         return manager.startAction(idempotency, name, context);
     }
-
 
     /**
      * 子事务处理准备完成
@@ -61,7 +66,8 @@ public class  DTSController{
      * @param actionId
      *
      */
-    public void finishAction(Status.Action status, long actionId){
+    public void finishAction(Status.Action status, String actionId){
+        logger.info("DTSController.finishAction Paramter{status="+status.getStatus() +",actionId="+actionId);
         manager.finishAction(status, actionId);
     }
 

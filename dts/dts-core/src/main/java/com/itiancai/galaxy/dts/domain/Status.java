@@ -3,20 +3,20 @@ package com.itiancai.galaxy.dts.domain;
 public class Status {
 
     public enum Activity {
-        UNKNOWN(0),SUCCESS(2), FAILL(3);
+        UNKNOWN(0),SUCCESS(2), FAIL(3);
 
-        private final int statusActivity;
+        private final int status;
 
-        Activity(int statusActivity) {
-            this.statusActivity = statusActivity;
+        Activity(int status) {
+            this.status = status;
         }
 
-        public int getStatusActivity() {
-            return statusActivity;
+        public int getStatus() {
+            return status;
         }
-        public static Activity getStatusActivity(int status){
+        public static Activity getStatus(int status){
             for(Activity activity : Activity.values()){
-                if(activity.getStatusActivity() == status){
+                if(activity.getStatus() == status){
                     return activity;
                 }
             }
@@ -25,21 +25,21 @@ public class Status {
     }
 
     public enum Action {
-        UNKNOWN(0), PREPARE(1), SUCCESS(2), FAILL(3);
+        UNKNOWN(0), PREPARE(1), SUCCESS(2), FAIL(3);
 
-        public final int statusAction;
+        public final int status;
 
-        Action(int statusAction) {
-            this.statusAction = statusAction;
+        Action(int status) {
+            this.status = status;
         }
 
-        public int getStatusAction() {
-            return statusAction;
+        public int getStatus() {
+            return status;
         }
 
-        public static Action getStatusAction(int status){
+        public static Action getStatus(int status){
             for(Action action : Action.values()){
-                if(action.getStatusAction() == status){
+                if(action.getStatus() == status){
                     return action;
                 }
             }
@@ -49,6 +49,6 @@ public class Status {
     }
 
     public static void main(String []args){
-        System.out.println(Action.getStatusAction(1).name());
+        System.out.println(Action.getStatus(1).name());
     }
 }

@@ -1,9 +1,9 @@
 package com.itiancai.galaxy.dts.dao;
 
 import com.itiancai.galaxy.dts.domain.Action;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,8 +16,18 @@ public interface ActionDao extends PagingAndSortingRepository<Action,Long> {
      * @param actionId 子事务id
      * @return Action
      */
-    @Query("select a from Action a where a.actionId = ?1 ")
-    Action findActionByActionId(long actionId);
+    Action findByActionId(String actionId);
+
+    /**
+     * 修改子事务状态
+     * @param actionId
+     * @param afterStatus
+     * @param beforeStatus
+     * @return
+     */
+    @Modifying
+    @Query("update Action a set a.status =?2 where a.actionId = ?1 and a.status = ?3")
+    int updateActionStatus(String actionId,int afterStatus, int beforeStatus);
 
 
     /**
@@ -25,7 +35,6 @@ public interface ActionDao extends PagingAndSortingRepository<Action,Long> {
      * @param txId 子事务id
      * @return Action
      */
-    @Query("select a from Action a where a.txId = ?1 ")
-    List<Action> findActionByTxId(long txId);
+    List<Action> findByTxId(String txId);
 
 }

@@ -221,14 +221,15 @@ lazy val dtsCore = (project in file("dts/dts-core")).
       "com.alibaba" % "druid" % "1.0.23",
       "com.twitter" %% "finagle-core" % versions.finagle,
       "com.twitter" %% "finagle-stats" % versions.finagle,
-      "com.alibaba" % "fastjson" % "1.2.14",
-      "org.springframework" % "spring-context" % "3.2.8.RELEASE",
-      "org.springframework" % "spring-beans" % "3.2.8.RELEASE",
-      "mysql" % "mysql-connector-java" % "5.1.37" ,
-      //测试使用
-      "org.springframework" % "spring-test" % "3.2.8.RELEASE" ,
-      "org.hibernate" % "hibernate-entitymanager" % "3.6.10.Final" ,
-      "org.aspectj" % "aspectjweaver" % "1.7.0"
+      "org.springframework" % "spring-context" % versions.spring,
+      "org.springframework" % "spring-beans" % versions.spring,
+      "mysql" % "mysql-connector-java" % "5.1.37"  ,
+      "org.aspectj" % "aspectjweaver" % "1.7.0",
+      "org.springframework" % "spring-test" % versions.spring ,
+      "commons-beanutils" % "commons-beanutils" % "1.9.2",
+      "com.fasterxml.jackson.core" % "jackson-databind" % "2.6.5",
+      "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.6.5",
+      "org.hibernate" % "hibernate-entitymanager" % "3.6.10.Final"% "test"
     )
   )
 

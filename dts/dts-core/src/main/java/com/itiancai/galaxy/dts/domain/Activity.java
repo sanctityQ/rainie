@@ -16,7 +16,7 @@ public class Activity {
      * 主事务id
      */
     @Column(name = "tx_id", nullable = false)
-    private Long txId;
+    private String txId;
 
     /**
      * 业务为号
@@ -62,10 +62,10 @@ public class Activity {
 
     public Activity(){}
 
-    public Activity(Long txId, Status.Activity status, String businessType, Date cTime,int timeOut,
+    public Activity(String txId, Status.Activity status, String businessType, Date cTime,int timeOut,
                     Date mTime,Integer finish, String businessId){
         this.txId = txId;
-        this.status = status.getStatusActivity();
+        this.status = status.getStatus();
         this.businessType = businessType;
         this.cTime = cTime;
         this.mTime = mTime;
@@ -82,11 +82,11 @@ public class Activity {
         this.id = id;
     }
 
-    public Long getTxId() {
+    public String getTxId() {
         return txId;
     }
 
-    public void setTxId(Long txId) {
+    public void setTxId(String txId) {
         this.txId = txId;
     }
 
@@ -99,11 +99,11 @@ public class Activity {
     }
 
     public Status.Activity getStatus() {
-        return Status.Activity.getStatusActivity(status);
+        return Status.Activity.getStatus(status);
     }
 
     public void setStatus(Status.Activity status) {
-        this.status = status.getStatusActivity();
+        this.status = status.getStatus();
     }
 
     public String getBusinessType() {

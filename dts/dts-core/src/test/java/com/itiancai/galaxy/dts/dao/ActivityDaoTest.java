@@ -1,9 +1,10 @@
 package com.itiancai.galaxy.dts.dao;
 
-import com.itiancai.galaxy.dts.DatasourceTest;
+import com.itiancai.galaxy.dts.SpringBootTest;
 import com.itiancai.galaxy.dts.domain.Activity;
 import com.itiancai.galaxy.dts.domain.IdGenerator;
 import com.itiancai.galaxy.dts.domain.Status;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -14,33 +15,40 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@ContextConfiguration(classes = {DatasourceTest.class})
-@TransactionConfiguration(defaultRollback = false, transactionManager = "transactionManager")
+@ContextConfiguration(classes = {SpringBootTest.class})
+@TransactionConfiguration(defaultRollback = false, transactionManager = "dtsTransactionManager")
 public class ActivityDaoTest extends AbstractTransactionalJUnit4SpringContextTests {
 
     @Autowired
     private ActivityDao activityDao;
-
+    @Autowired
+    private IdGenerator idGenerator;
     @Test
     public void save(){
         Activity activity = new Activity();
         activity.setBusinessId("123456789lll");
-        activity.setBusinessType("p2p.lending:save");
+        activity.setBusinessType("p2p.lending:::save");
         activity.setcTime(new Date());
         activity.setmTime(new Date());
         activity.setFinish(0);
-        activity.setStatus(Status.Activity.FAILL);
+        activity.setStatus(Status.Activity.FAIL);
         activity.setTimeOut(30000);
-        activity.setTxId(IdGenerator.genTXId());
+        activity.setTxId(idGenerator.getTxId("p2p.lending:::save"));
 
         List<Activity> list = new ArrayList<Activity>();
         list.add(activity);
-        activityDao.save(list);
+        Assert.assertTrue(activityDao.save(list) instanceof List);
     }
-
     @Test
-    public void findActivityByTxId(){
-      Activity activity = activityDao.findActivityByTxId(760735587194896385L);
-      System.out.println("findActivityByTxId==" + activity.getBusinessId());
+    public void findByTxId(){
+        Assert.assertTrue(activityDao.findByTxId("tx:p2p.lending:::save:343ed264a0e717") instanceof Activity);
+    }
+    @Test
+    public void updateActivityFinish(){
+        Assert.assertTrue(activityDao.updateActivityFinish("tx:p2p.lending:::save:343ed264a0e717",3) == 1);
+    }
+    @Test
+    public void updateAcvityStatus(){
+        Assert.assertTrue(activityDao.updateAcvityStatus("TX:p2p.lending:name:343ed0a051d673",2,2) == 1);
     }
 }
