@@ -14,17 +14,22 @@ lazy val buildSettings = Seq(
 
 
 lazy val versions = new {
+
   val finagle = "6.34.0"
+  val scrooge = "4.6.0"
   val twitterServer = "1.19.0"
+  val utilVersion = "6.35.0"
+
   val logback = "1.0.13"
   val spring = "3.2.15.RELEASE"
   val slf4j = "1.7.12"
-  val scrooge = "4.6.0"
   val grizzled = "1.0.2"
-
+  val guava = "16.0.1"
   val aspectj = "1.8.2"
   val commonsIo = "2.4"
+  val commonsLang = "2.6"
   val jodaTime = "2.5"
+  val servletApi = "2.5"
 }
 
 lazy val compilerOptions = scalacOptions ++= Seq(
@@ -47,8 +52,8 @@ lazy val publishSettings = Seq(
   publishMavenStyle := true,
   publishArtifact := true,
   publishArtifact in Test := false,
-  publishArtifact in (Compile, packageDoc) := true,
-  publishArtifact in (Test, packageDoc) := true,
+  publishArtifact in(Compile, packageDoc) := true,
+  publishArtifact in(Test, packageDoc) := true,
   pomIncludeRepository := { _ => false },
   publishTo := {
     val nexus = "http://123.57.227.107:8086/nexus/"
@@ -115,7 +120,8 @@ lazy val aggregatedProjects = {
 lazy val rainieModules = Seq(
   inject,
   thrift,
-  slf4j
+  slf4j,
+  utils
 )
 
 lazy val exampleModules =
@@ -208,7 +214,31 @@ lazy val thriftExampleServer = (project in file("examples/thrift-server/thrift-e
   dependsOn(
     thriftExampleIdl,
     slf4j,
-    thrift
+    thrift,
+    dtsClient
+  )
+
+lazy val utils = project.settings(rainieSettings)
+  .settings(
+    name := "rainie-utils",
+    moduleName := "rainie-utils",
+    libraryDependencies ++= Seq(
+      "com.twitter" %% "util-core" % versions.utilVersion,
+      "commons-lang" % "commons-lang" % versions.commonsLang
+    )
+  )
+
+
+lazy val http = project.settings(rainieSettings)
+  .settings(
+    name := "rainie-http",
+    moduleName := "rainie-http",
+    libraryDependencies ++= Seq(
+      "javax.servlet" % "servlet-api" % versions.servletApi
+    )
+  ).dependsOn(
+    inject,
+    utils
   )
 
 lazy val dtsCore = (project in file("dts/dts-core")).
@@ -217,6 +247,7 @@ lazy val dtsCore = (project in file("dts/dts-core")).
     name := "dts-core",
     moduleName := "dts-core",
     libraryDependencies ++= Seq(
+
       "org.springframework" % "spring-beans" % versions.spring,
       "org.springframework" % "spring-orm" % versions.spring,
       "org.springframework" % "spring-context" % versions.spring,
@@ -224,14 +255,21 @@ lazy val dtsCore = (project in file("dts/dts-core")).
       "org.hibernate" % "hibernate-entitymanager" % "3.6.10.Final",
       "org.hibernate.javax.persistence" % "hibernate-jpa-2.0-api" % "1.0.1.Final"
     )
-  )
+  ).dependsOn(
+  inject,
+  slf4j
+)
 
 lazy val dtsClient = (project in file("dts/dts-client")).
   settings(rainieSettings).
   settings(
     name := "dts-client",
-    moduleName := "dts-client"
+    moduleName := "dts-client",
+    libraryDependencies ++= Seq(
+      "com.google.guava" % "guava" % "16.0.1"
+    )
   ).
   dependsOn(
-    dtsCore
+    dtsCore,
+    http
   )
