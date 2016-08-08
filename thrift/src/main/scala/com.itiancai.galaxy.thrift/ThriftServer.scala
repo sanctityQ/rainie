@@ -10,7 +10,7 @@ import com.twitter.conversions.time._
 import org.apache.commons.lang.StringUtils
 
 
-trait ThriftServer extends TwitterServer with Logging{
+trait ThriftServer extends TwitterServer with Logging {
 
   addFrameworkModule(
     Slf4jBridgeModule)
@@ -51,7 +51,7 @@ trait ThriftServer extends TwitterServer with Logging{
 
   /* Lifecycle */
 
-  override def postWarmup() {
+  override protected def postWarmup() {
     super.postWarmup()
 
     val router = injector.instance[ThriftRouter]
