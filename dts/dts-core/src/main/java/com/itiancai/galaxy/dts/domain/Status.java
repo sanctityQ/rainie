@@ -1,16 +1,11 @@
 package com.itiancai.galaxy.dts.domain;
 
-/**
- * Created by lsp on 16/7/28.
- *
- * 事务状态
- */
 public class Status {
 
     public enum Activity {
-        UNKNOWN(0), SUCCESS(2), FAILL(3);
+        UNKNOWN(0),SUCCESS(2), FAIL(3);
 
-        private int status;
+        private final int status;
 
         Activity(int status) {
             this.status = status;
@@ -19,12 +14,20 @@ public class Status {
         public int getStatus() {
             return status;
         }
+        public static Activity getStatus(int status){
+            for(Activity activity : Activity.values()){
+                if(activity.getStatus() == status){
+                    return activity;
+                }
+            }
+            return null;
+        }
     }
 
     public enum Action {
-        UNKNOWN(0), PREPARE(1), SUCCESS(2), FAILL(3);
+        UNKNOWN(0), PREPARE(1), SUCCESS(2), FAIL(3);
 
-        private int status;
+        public final int status;
 
         Action(int status) {
             this.status = status;
@@ -34,7 +37,7 @@ public class Status {
             return status;
         }
 
-        public static Action getStatusAction(int status){
+        public static Action getStatus(int status){
             for(Action action : Action.values()){
                 if(action.getStatus() == status){
                     return action;
@@ -46,6 +49,6 @@ public class Status {
     }
 
     public static void main(String []args){
-        System.out.println(Action.getStatusAction(1).name());
+        System.out.println(Action.getStatus(1).name());
     }
 }

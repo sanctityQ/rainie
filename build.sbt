@@ -22,14 +22,19 @@ lazy val versions = new {
 
   val logback = "1.0.13"
   val spring = "3.2.15.RELEASE"
+  val springData = "1.5.3.RELEASE"
+
   val slf4j = "1.7.12"
   val grizzled = "1.0.2"
+  val jackson = "2.6.5"
+
   val guava = "16.0.1"
   val aspectj = "1.8.2"
   val commonsIo = "2.4"
   val commonsLang = "2.6"
   val jodaTime = "2.5"
   val servletApi = "2.5"
+
 }
 
 lazy val compilerOptions = scalacOptions ++= Seq(
@@ -251,9 +256,21 @@ lazy val dtsCore = (project in file("dts/dts-core")).
       "org.springframework" % "spring-beans" % versions.spring,
       "org.springframework" % "spring-orm" % versions.spring,
       "org.springframework" % "spring-context" % versions.spring,
-      "org.springframework.data" % "spring-data-jpa" % "1.5.3.RELEASE",
-      "org.hibernate" % "hibernate-entitymanager" % "3.6.10.Final",
-      "org.hibernate.javax.persistence" % "hibernate-jpa-2.0-api" % "1.0.1.Final"
+      "org.springframework.data" % "spring-data-jpa" % versions.springData,
+      "org.hibernate.javax.persistence" % "hibernate-jpa-2.0-api" % "1.0.1.Final",
+      "com.twitter" %% "finagle-core" % versions.finagle,
+      "com.twitter" %% "finagle-stats" % versions.finagle,
+      "org.springframework" % "spring-context" % versions.spring,
+      "org.springframework" % "spring-beans" % versions.spring,
+      "org.aspectj" % "aspectjweaver" % "1.7.0",
+
+      "commons-beanutils" % "commons-beanutils" % "1.9.2",
+      "com.fasterxml.jackson.core" % "jackson-databind" % versions.jackson,
+      "com.fasterxml.jackson.module" %% "jackson-module-scala" % versions.jackson,
+
+      "org.springframework" % "spring-test" % versions.spring % "test",
+      "com.alibaba" % "druid" % "1.0.23" % "test",
+      "org.hibernate" % "hibernate-entitymanager" % "3.6.10.Final"% "test"
     )
   ).dependsOn(
   inject,

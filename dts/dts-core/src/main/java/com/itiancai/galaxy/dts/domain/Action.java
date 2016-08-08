@@ -3,9 +3,7 @@ package com.itiancai.galaxy.dts.domain;
 import javax.persistence.*;
 import java.util.Date;
 
-/**
- * Created by lsp on 16/7/28.
- */
+
 @Entity
 @Table(name = "dts_action")
 public class Action {
@@ -19,7 +17,7 @@ public class Action {
      * 主事务id
      */
     @Column(name = "tx_id", nullable = false)
-    private Long txId;
+    private String txId;
 
     /**
      * 幂等值
@@ -31,14 +29,13 @@ public class Action {
      * 子事务id
      */
     @Column(name = "action_id", nullable = false)
-    private Long actionId;
+    private String actionId;
 
     /**
      * 子事务状态(UNKNOWN,PREPARE,SUCCESS,FAIL)
      */
-    @Enumerated(EnumType.ORDINAL)
     @Column(name = "status", nullable = false)
-    private Status.Action status;
+    private int status;
 
     /**
      * 服务名称
@@ -68,11 +65,11 @@ public class Action {
 
     public Action(){}
 
-    public Action(Long txId, Long actionId, Status.Action status, String serviceName, Date cTime,
+    public Action(String txId, String actionId, Status.Action status, String serviceName, Date cTime,
                   Date mTime, String context, String instructionId){
         this.txId = txId;
         this.actionId = actionId;
-        this.status = status;
+        this.status = status.getStatus();
         this.serviceName = serviceName;
         this.cTime = cTime;
         this.mTime = mTime;
@@ -88,11 +85,11 @@ public class Action {
         this.id = id;
     }
 
-    public Long getTxId() {
+    public String getTxId() {
         return txId;
     }
 
-    public void setTxId(Long txId) {
+    public void setTxId(String txId) {
         this.txId = txId;
     }
 
@@ -104,20 +101,20 @@ public class Action {
         this.instructionId = instructionId;
     }
 
-    public Long getActionId() {
+    public String getActionId() {
         return actionId;
     }
 
-    public void setActionId(Long actionId) {
+    public void setActionId(String actionId) {
         this.actionId = actionId;
     }
 
     public Status.Action getStatus() {
-        return status;
+        return Status.Action.getStatus(status);
     }
 
     public void setStatus(Status.Action status) {
-        this.status = status;
+        this.status = status.getStatus();
     }
 
     public String getServiceName() {
