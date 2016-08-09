@@ -31,6 +31,11 @@ lazy val versions = new {
   val commonsLang = "2.6"
   val jodaTime = "2.5"
   val servletApi = "2.5"
+  val druid = "1.0.23"
+  val springDataJpa = "1.5.3.RELEASE"
+  val hibernateEntitymanage = "3.6.10.Final"
+  val mysqlConnectorJava = "5.1.37"
+  val commonsBeanutils = "1.9.2"
 }
 
 lazy val compilerOptions = scalacOptions ++= Seq(
@@ -250,13 +255,18 @@ lazy val dtsCore = (project in file("dts/dts-core")).
     name := "dts-core",
     moduleName := "dts-core",
     libraryDependencies ++= Seq(
-
       "org.springframework" % "spring-beans" % versions.spring,
       "org.springframework" % "spring-orm" % versions.spring,
       "org.springframework" % "spring-context" % versions.spring,
-      "org.springframework.data" % "spring-data-jpa" % "1.5.3.RELEASE",
-      "org.hibernate" % "hibernate-entitymanager" % "3.6.10.Final",
-      "org.hibernate.javax.persistence" % "hibernate-jpa-2.0-api" % "1.0.1.Final"
+      "org.springframework.data" % "spring-data-jpa" % versions.springDataJpa,
+      "org.hibernate" % "hibernate-entitymanager" % versions.hibernateEntitymanage,
+      "com.alibaba" % "druid" % versions.druid,
+      "com.twitter" %% "finagle-core" % versions.finagle,
+      "com.twitter" %% "finagle-stats" % versions.finagle,
+      "org.aspectj" % "aspectjweaver" %  versions.aspectj,
+      "org.springframework" % "spring-test" % versions.spring % "test" ,
+      "mysql" % "mysql-connector-java" % versions.mysqlConnectorJava % "test" ,
+      "commons-beanutils" % "commons-beanutils" % versions.commonsBeanutils
     )
   ).dependsOn(
   inject,
