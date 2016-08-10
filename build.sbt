@@ -36,6 +36,10 @@ lazy val versions = new {
   val hibernateEntitymanage = "3.6.10.Final"
   val mysqlConnectorJava = "5.1.37"
   val commonsBeanutils = "1.9.2"
+
+  val redis = "2.7.2"
+  val commons_lang3 = "3.1"
+  val fastjson = "1.2.6"
 }
 
 lazy val compilerOptions = scalacOptions ++= Seq(
@@ -279,10 +283,78 @@ lazy val dtsClient = (project in file("dts/dts-client")).
     name := "dts-client",
     moduleName := "dts-client",
     libraryDependencies ++= Seq(
-      "com.google.guava" % "guava" % "16.0.1"
+      "com.google.guava" % "guava" % versions.guava
     )
   ).
   dependsOn(
     dtsCore,
     http
+  )
+
+lazy val dtsServer = (project in file("dts/dts-server")).
+  settings(rainieSettings).
+  settings(
+    name := "dts-server",
+    moduleName := "dts-server",
+    libraryDependencies ++= Seq(
+      "redis.clients" % "jedis" % versions.redis,
+      "org.apache.commons" % "commons-lang3" % versions.commons_lang3,
+      "mysql" % "mysql-connector-java" % versions.mysqlConnectorJava,
+      "com.alibaba" % "fastjson" % versions.fastjson,
+      "org.springframework" % "spring-test" % versions.spring  % "test"
+    ),
+    excludeDependencies ++= Seq(
+      "org.sonatype.sisu.inject" % "cglib",
+      "org.slf4j" % "slf4j-log4j12",
+      "org.slf4j" % "slf4j-jdk14"
+    )
+  ).
+  dependsOn(
+    thrift,
+    dtsCore,
+    dtsServerIdl
+  )
+  .settings(
+    mainClass in assembly := Some("com.itiancai.galaxy.dts.server.DTSServer"),
+    assemblyMergeStrategy in assembly := {
+      case x if Assembly.isConfigFile(x) =>
+        MergeStrategy.concat
+      case PathList(ps@_*) if Assembly.isReadme(ps.last) || Assembly.isLicenseFile(ps.last) =>
+        MergeStrategy.rename
+      case PathList("org", "apache", "commons", "logging", xs@_*) => MergeStrategy.first
+      case PathList("META-INF", xs@_*) =>
+        (xs map {
+          _.toLowerCase
+        }) match {
+          case ("manifest.mf" :: Nil) | ("index.list" :: Nil) | ("dependencies" :: Nil) =>
+            MergeStrategy.discard
+          case ps@(x :: xs) if ps.last.endsWith(".sf") || ps.last.endsWith(".dsa") =>
+            MergeStrategy.discard
+          case "plexus" :: xs =>
+            MergeStrategy.discard
+          case "spring.tooling" :: xs =>
+            MergeStrategy.discard
+          case "services" :: xs =>
+            MergeStrategy.filterDistinctLines
+          case ("spring.schemas" :: Nil) | ("spring.handlers" :: Nil) =>
+            MergeStrategy.filterDistinctLines
+          case _ => MergeStrategy.deduplicate
+        }
+      case "asm-license.txt" | "overview.html" | "changelog.txt" | "com/twitter/common/args/apt/cmdline.arg.info.txt.1" =>
+        MergeStrategy.discard
+      case _ => MergeStrategy.deduplicate
+    }
+  )
+
+lazy val dtsServerIdl = (project in file("dts/dts-server-idl")).
+  settings(rainieSettings).
+  settings(
+    name := "dts-server-client",
+    moduleName := "dts-server-client",
+    scroogeThriftSourceFolder in Compile <<= baseDirectory {
+      base => base / "thrift"
+    }
+  ).
+  dependsOn(
+    thrift
   )

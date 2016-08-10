@@ -88,7 +88,7 @@ class DTSServiceManager {
   private def updateActivityAction(status: Status.Activity, txId: String) {
     val activity: Activity = activityDao.findByTxId(txId)
     if (activity != null) {
-      activityDao.updateAcvityStatus(activity.getTxId,status.getStatus,activity.getStatus.getStatus)
+      activityDao.updateStatus(activity.getTxId,status.getStatus,activity.getStatus.getStatus)
     }
   }
 
@@ -119,6 +119,6 @@ class DTSServiceManager {
   @Transactional
   def finishAction(status: Status.Action, actionId: String) {
     val action: Action = actionDao.findByActionId(actionId)
-    actionDao.updateActionStatus(action.getActionId,status.getStatus,action.getStatus.getStatus)
+    actionDao.updateStatus(action.getActionId,status.getStatus,action.getStatus.getStatus)
   }
 }

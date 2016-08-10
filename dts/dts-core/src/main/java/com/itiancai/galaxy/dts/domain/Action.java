@@ -3,13 +3,15 @@ package com.itiancai.galaxy.dts.domain;
 import javax.persistence.*;
 import java.util.Date;
 
-
+/**
+ * Created by lsp on 16/7/28.
+ */
 @Entity
 @Table(name = "dts_action")
 public class Action {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
@@ -46,13 +48,15 @@ public class Action {
     /**
      * 数据创建时间
      */
-    @Column(name = "c_time", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "c_time")
     private Date cTime;
 
     /**
      * 数据修改时间
      */
-    @Column(name = "m_time", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "m_time")
     private Date mTime;
 
     /**
@@ -60,8 +64,6 @@ public class Action {
      */
     @Column(name = "context", nullable = false)
     private String context;
-
-
 
     public Action(){}
 
