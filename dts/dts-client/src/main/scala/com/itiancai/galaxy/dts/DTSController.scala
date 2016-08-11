@@ -2,7 +2,6 @@ package com.itiancai.galaxy.dts
 
 import com.itiancai.galaxy.dts.domain.Status
 import com.itiancai.galaxy.dts.utils.NameChecker
-import com.twitter.util.Future
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -25,16 +24,13 @@ class DTSController {
     * @param typeName    服务名称
     * @param timeOut 超时时间
     */
-  def startActivity(bizId: String, typeName: String, timeOut: Int): Future[String] = {
+  def startActivity(bizId: String, typeName: String, timeOut: Int): String = {
     logger.info("DTSController.startActivity Paramter{bizId=" + bizId + ",typeName=" + typeName + ",timeout=" + timeOut)
-    nameChecker.checkName(typeName).map(isHave =>{
-      if(isHave){
-        manager.startActivity(bizId, typeName, timeOut)
-      }else{
-        logger.info(s"Controller start Activity is fail, name=${typeName} => path is not exist")
-        null
-      }
-    })
+    if (nameChecker.checkName(typeName)) {
+      manager.startActivity(bizId, typeName, timeOut)
+    }else {
+      throw new DTSException(s"Controller start Activity is fail, name=${typeName} => path is not exist")
+    }
   }
 
   /**
@@ -60,16 +56,13 @@ class DTSController {
     * @param context     请求参数json
     * @return long
     */
-  def startAction(idempotency: String, name: String, context: String): Future[String] = {
+  def startAction(idempotency: String, name: String, context: String): String = {
     logger.info("DTSController.startAction Paramter{idempotency=" + idempotency + ",name=" + name + ",context=" + context)
-    nameChecker.checkName(name).map(isHave =>{
-      if(isHave){
-        manager.startAction(idempotency, name, context)
-      }else{
-        logger.info(s"Controller start Action is fail, name=${name} => path is not exist")
-        null
-      }
-    })
+    if (nameChecker.checkName(name)) {
+      manager.startAction(idempotency, name, context)
+    }else {
+      throw new DTSException(s"Controller start Action is fail, name=${name} => path is not exist")
+    }
   }
 
   /**

@@ -69,7 +69,6 @@ class DTSAspect {
                   + ",timeOut=" + timeOut
                   + ",methodName=" + method.getName)
       ActivityAnnotation(businessType, timeOut, isImmediately,Integer.parseInt(map.get("index").get), map.get("value").get)
-
     }
   }
 
@@ -77,6 +76,8 @@ class DTSAspect {
     * 获取参数注解值(ActionInstruction,ActivityAnnotation)
     *
     * @param method
+  ActivityAnnotation(businessType, timeOut, isImmediately,Integer.parseInt(map.get("index").get), map.get("value").get)
+
     * @param dtsAnName
     * @return
     */
@@ -163,12 +164,9 @@ class ActivityAspect extends DTSAspect{
       + ",businessType="+ txAnValue.businessType
       + ",timeOut=" + txAnValue.timeOut
       + ",bizId" + joinPoint.getArgs()(txAnValue.index).toString))
-    controller.startActivity(bizId, txAnValue.businessType, txAnValue.timeOut).map(txId =>{
-      //事务协调
-      if(Option(txId).isDefined){
-        handleActivityTransaction(txAnValue.isImmediately, txId, joinPoint)
-      }
-    })
+    val txId = controller.startActivity(bizId, txAnValue.businessType, txAnValue.timeOut)
+    handleActivityTransaction(txAnValue.isImmediately, txId, joinPoint)
+
   }
 
   /**
@@ -241,12 +239,9 @@ class ActionAspect extends DTSAspect{
     logger.info("activity start methodArgs="+ JsonUtil.toJson(JsonUtil.toJson(args)
                                             + ",name="+ actionAnValue.name
                                             + ",idempotency=" + idempotency))
-    controller.startAction(idempotency, actionAnValue.name, JsonUtil.toJson(args)).map(actionId =>{
-      if(Option(actionId).isDefined){
-        //子事务协调
-        handleActionTransaction(actionId,joinPoint)
-      }
-    })
+    val actionId = controller.startAction(idempotency, actionAnValue.name, JsonUtil.toJson(args))
+    handleActionTransaction(actionId,joinPoint)
+
   }
 
   /**

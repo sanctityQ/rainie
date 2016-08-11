@@ -1,11 +1,14 @@
 package com.itiancai.galaxy.dts;
 
+import com.twitter.util.Await;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.context.transaction.TransactionConfiguration;
+
+import java.util.concurrent.ExecutionException;
 
 
 @ContextConfiguration(classes = {SpringBootTest.class})
@@ -20,8 +23,12 @@ public class AspectTest extends AbstractTransactionalJUnit4SpringContextTests {
     @Test
     public void successScalaFuture(){
         testScalaController.set(testScalaController);
-        String str =  testScalaController.testSuccessActivity("name","1111111111","sssssssssssssss").toString();
-        Assert.assertEquals(str,"success");
+        try {
+            Assert.assertEquals(Await.result(testScalaController.testSuccessActivity("name","1111111111","sssssssssssssss")),"success");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Test
@@ -44,7 +51,8 @@ public class AspectTest extends AbstractTransactionalJUnit4SpringContextTests {
     @Test
     public void successJavaReturn(){
         testJavaController.set(testJavaController);
-        Assert.assertEquals(testJavaController.testSuccessActivity("name","1111111111","sssssssssssssss"),"success");
+        Object object = testJavaController.testSuccessActivity("name","1111111111","sssssssssssssss");
+        Assert.assertEquals(object,"success");
     }
 
     @Test
