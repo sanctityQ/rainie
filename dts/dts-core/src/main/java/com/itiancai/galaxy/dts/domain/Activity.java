@@ -55,6 +55,7 @@ public class Activity {
     /**
      * 数据创建时间
      */
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "c_time")
     private Date cTime;
 
@@ -68,7 +69,6 @@ public class Activity {
     /**
      * 超时时间 毫秒
      */
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "time_out", nullable = false)
     private int timeOut;
 

@@ -14,7 +14,7 @@ import scala.collection.mutable
   * Created by bao on 16/8/4.
   */
 @Component
-class ClientFactory {
+class ClientFactory extends RecoveryClientFactory {
 
   val logger = LoggerFactory.getLogger(getClass)
 
@@ -23,7 +23,8 @@ class ClientFactory {
   @Autowired
   val env:Environment = null
 
-  def getHttpClient(pathKey: String): Service[Request, Response] = {
+  def getClient(sysName: String, moduleName: String): Service[Request, Response] = {
+    val pathKey = NameResolver.pathKey(sysName, moduleName)
     clientMap.getOrElse(pathKey, {
       val path = env.getProperty(pathKey, classOf[String])
       logger.info(s"gen client pathKey:${pathKey} path:${path}")
@@ -35,25 +36,4 @@ class ClientFactory {
 
 }
 
-object NameResolver {
 
-  val ACTIVITY_HANDLE_PATH = "/dts/activity"
-
-  val ACTION_HANDLE_PATH = "/dts/action"
-
-  def eval(name: String): (String, String, String) = {
-    val array = name.split(":")
-    if(array.length != 3) {
-      //TODO 异常处理
-      throw new NameResolveException
-    }
-    val sysName = s"${array(0)}-${array(1)}"
-    val serviceName = array(2)
-    (array(0), array(1), array(2))
-  }
-
-  def pathKey(sysName: String, moduleName: String):String = {
-    s"recovery.${sysName}.${moduleName}"
-  }
-
-}

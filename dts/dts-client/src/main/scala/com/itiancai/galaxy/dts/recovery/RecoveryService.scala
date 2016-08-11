@@ -29,7 +29,7 @@ trait RecoveryService extends BaseHttpServer { self =>
 
 
     add(Route("activity", "/dts/activity", { request =>
-
+      //TODO 校验
       val businessType = request.getParam("businessType")
       val businessId = request.getParam("businessId")
 
@@ -40,22 +40,22 @@ trait RecoveryService extends BaseHttpServer { self =>
     }))
 
     add(Route("activity", "/dts/action", { request =>
-        val name = request.getParam("name")
-
-        val actionMethod = request.getParam("method")
-        val instructionId = request.getParam("id")
-        val handler = activity.getActionServiceHandler(name)
-        var result: Any = None
-        actionMethod match {
-          case "commit" => result = handler.commit(instructionId)
-          case "rollback" => result = handler.rollback(instructionId)
-          case _ => {
-            response404
-          }
+      //TODO 校验
+      val name = request.getParam("name")
+      val actionMethod = request.getParam("method")
+      val instructionId = request.getParam("id")
+      val handler = activity.getActionServiceHandler(name)
+      var result: Any = None
+      actionMethod match {
+        case "commit" => result = handler.commit(instructionId)
+        case "rollback" => result = handler.rollback(instructionId)
+        case _ => {
+          response404
         }
-        val response = Response(Version.Http11, Status.Ok)
-        response.contentString = String.valueOf(result)
-        Future.value(response)
+      }
+      val response = Response(Version.Http11, Status.Ok)
+      response.contentString = String.valueOf(result)
+      Future.value(response)
     }))
 
     routerBuilder = new Routers(routers.toArray)

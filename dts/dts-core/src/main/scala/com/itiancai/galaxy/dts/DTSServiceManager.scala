@@ -4,7 +4,11 @@ import java.util.Date
 
 import com.itiancai.galaxy.dts.dao.{ActionDao, ActivityDao}
 import com.itiancai.galaxy.dts.domain._
+import com.itiancai.galaxy.dts.repository.DTSRepository
+import com.itiancai.galaxy.dts.utils.{NameResolver, RecoveryClientFactory, SynchroException}
+import com.twitter.finagle.http.{Method, Request, Version}
 import com.twitter.util.Future
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -13,12 +17,19 @@ import scala.collection.JavaConversions._
 
 @Service
 class DTSServiceManager {
+
+  val logger = LoggerFactory.getLogger(getClass)
+
+  @Autowired
+  val clientFactory: RecoveryClientFactory = null
   @Autowired
   private val actionDao: ActionDao = null
   @Autowired
   private val activityDao: ActivityDao = null
   @Autowired
   private val idGenerator: IdGenerator = null
+  @Autowired
+  private val txRepository:DTSRepository = null
 
   /**
     * 开启主事务,流程如下
@@ -50,45 +61,26 @@ class DTSServiceManager {
     * @throws Exception
     */
   def finishActivity(status: Status.Activity, isImmediately: Boolean) {
-    val txId: String = TXIdLocal.current_txId
-    updateActivityAction(status, txId)
-    if (isImmediately) {
-      val actionList = actionDao.findByTxId(txId)
-      executeAction(actionList)
-    }
-  }
-
-  /**
-    * 远程调用子事务commit rollback方法
-    *
-    * @param list
-    */
-  @Transactional
-  def executeAction(list: Seq[Action]) {
-    if (Option(list).isDefined && list.length != 0) {
-      Future.collect(list.map(action =>{
-        //TODO HTTPClient调用 与小宝公用一个方法
-        Future(false)
-      })).map(resultList =>{
-        if(!resultList.contains(false)) {
-          val activity: Activity = activityDao.findByTxId(list.get(0).getTxId)
-          activityDao.updateActivityFinish(activity.getTxId ,activity.getStatus.getStatus)
-        }
-      })
-    }
-  }
-
-  /**90
-    * 修改activity action数据
-    *
-    * @param status
-    * @param txId
-    */
-  @Transactional
-  private def updateActivityAction(status: Status.Activity, txId: String) {
-    val activity: Activity = activityDao.findByTxId(txId)
-    if (activity != null) {
-      activityDao.updateStatus(activity.getTxId,status.getStatus,activity.getStatus.getStatus)
+    val txId = TXIdLocal.current_txId
+    logger.error(s"finishActivity tx:${txId} start")
+    //修改Activity状态
+    val flag = txRepository.updateActivityStatus(txId, status)
+    if(flag) {
+      logger.warn(s"activity tx:${txId} update status:${status} success")
+      if (isImmediately) { //立即提交
+        //finishActions
+        val finishActions_f = finishActions(txId, status)
+        finishActions_f.map(flag => {
+          if(flag) { //子事务提交成功
+            txRepository.finishActivity(txId)
+            logger.error(s"finishActivity tx:${txId} success")
+          } else {
+            logger.error(s"finishActivity tx:${txId} error")
+          }
+        })
+      }
+    } else {
+      logger.warn(s"activity tx:${txId} status had changed")
     }
   }
 
@@ -110,15 +102,49 @@ class DTSServiceManager {
     action.getActionId
   }
 
+
   /**
-    * 子事务处理状态变更处理
+    * 完成子事务(提交或回滚)
     *
-    * @param status 事务变更状态 PREPARE FAIL
-    * @throws Exception
+    * @param txId
+    * @param status
+    * @return
     */
-  @Transactional
-  def finishAction(status: Status.Action, actionId: String) {
-    val action: Action = actionDao.findByActionId(actionId)
-    actionDao.updateStatus(action.getActionId,status.getStatus,action.getStatus.getStatus)
+  def finishActions(txId: String, status: Status.Activity): Future[Boolean] = {
+    def finishAction(action: Action): Future[Boolean] = {
+      //resolve name
+      val (sysName, moduleName, serviceName) = NameResolver.eval(action.getServiceName)
+      //get client
+      logger.info(s"sysName:${sysName}, moduleName:${moduleName} serviceName:${serviceName}")
+      val client = clientFactory.getClient(sysName, moduleName)
+      val method = if (status == Status.Activity.SUCCESS) "commit" else "rollback" //提交 | 回滚
+      val path = s"${NameResolver.ACTION_HANDLE_PATH}?id=${action.getInstructionId}&name=${serviceName}&method=${method}"
+      val request = Request(Version.Http11, Method.Get, path)
+      val actionStatus = if (status == Status.Activity.SUCCESS) Status.Action.SUCCESS else Status.Action.FAIL
+      logger.info(s"finishAction ${sysName}-${serviceName}")
+      client(request).map(response => {
+        val result = response.contentString == "true"
+        if(!result) {
+          logger.info(s"finishAction:[${action.getId}] ${sysName}-${serviceName} fail, response:${response.contentString}")
+          false
+        } else {
+          logger.info(s"finishAction ${sysName}-${serviceName} success")
+          val flag = txRepository.finishAction(action.getActionId, actionStatus)
+          if (flag) {
+            logger.info(s"action [${action.getId}] updateStatus ${actionStatus} success")
+          } else {
+            logger.warn(s"action [${action.getId}] status had changed")
+          }
+          flag //子事务处理成功
+        }
+      }).handle({
+        case t: Throwable => {
+          logger.error(s"action [${action.getId}] execute ${method} fail.", t)
+          false //子事务失败
+        }
+      })
+    }
+    val finishList_f = Future collect actionDao.findByTxId(txId).map(finishAction)
+    finishList_f.map(!_.contains(false))
   }
 }

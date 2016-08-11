@@ -1,8 +1,7 @@
 package com.itiancai.galaxy.dts.repository
 
 import com.itiancai.galaxy.dts.dao.{ActionDao, ActivityDao}
-import com.itiancai.galaxy.dts.domain.Status
-import com.itiancai.galaxy.dts.utils._
+import com.itiancai.galaxy.dts.utils.{CollectException, RedisService}
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
@@ -11,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional
 import scala.collection.JavaConversions._
 
 /**
-  * Created by bao on 16/8/3.
+  * Created by bao on 16/8/11.
   */
 @Component
 class TXRepository {
@@ -76,10 +75,10 @@ class TXRepository {
       try {
         //push txId to queue
         val flag = redisService.lpush(compensateQueue, txId) > 0
-        if(!flag) {
+        if (!flag) {
           throw new CollectException("redisService push error")
         }
-        flag
+        true
       } catch {
         case t: Throwable => {
           //collect fail, rollback collect flag
@@ -105,65 +104,11 @@ class TXRepository {
 
   /**
     * reclaim tx collect = 0
+    *
     * @param txId
     */
   @Transactional
   def reclaimTX(txId: String): Unit = {
     activityDao.reclaim(txId)
   }
-
-  /**
-    * 同步主事务状态
-    * @param txId
-    * @param status
-    * @return
-    */
-  @Transactional
-  def synchroActivityStatus(txId: String, status: Status.Activity): Boolean = {
-    val count = activityDao.updateStatus(txId, status.getStatus, Status.Activity.UNKNOWN.getStatus)
-    val flag = (count == 1)
-    if(flag) {
-      logger.info(s"tx:[${txId}] updateStatus success")
-    } else {
-      logger.info(s"tx:[${txId}] status had changed")
-    }
-    flag
-  }
-
-  /**
-    * 完成子事务(提交或回滚)
-    *
-    * @param actionId
-    * @param status
-    * @return
-    */
-  @Transactional
-  def finishAction(actionId: String, status: Status.Action): Boolean = {
-    val count = actionDao.updateStatus(actionId, status.getStatus, Status.Action.PREPARE.getStatus)
-    if(count == 1) {
-      true
-    } else {
-      val entity = actionDao.findByActionId(actionId)
-      entity.getStatus == status
-    }
-  }
-
-  /**
-    * update activity finish = 1
-    * @param txId
-    * @return
-    */
-  @Transactional
-  def finishActivity(txId: String) = {
-    val count = activityDao.finishActivity(txId)
-    if(count == 1) {
-      true
-    } else {
-      val activity = activityDao.findByTxId(txId)
-      activity.getFinish == 1
-    }
-  }
-
 }
-
-

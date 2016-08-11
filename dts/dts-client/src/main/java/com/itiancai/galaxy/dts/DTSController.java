@@ -68,7 +68,8 @@ public class  DTSController{
      */
     public void finishAction(Status.Action status, String actionId){
         logger.info("DTSController.finishAction Paramter{status="+status.getStatus() +",actionId="+actionId);
-        manager.finishAction(status, actionId);
+        //// TODO 待修改
+        //manager.finishAction(status, actionId);
     }
 
 }
