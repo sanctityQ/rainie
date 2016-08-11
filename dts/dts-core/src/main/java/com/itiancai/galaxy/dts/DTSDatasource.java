@@ -1,6 +1,8 @@
 package com.itiancai.galaxy.dts;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.itiancai.galaxy.dts.thrift.DTSServerApi;
+import com.twitter.finagle.Thrift;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -90,4 +92,11 @@ public class DTSDatasource {
     public HibernateExceptionTranslator dtsHibernateExceptionTranslator(){
         return new HibernateExceptionTranslator();
     }
+//    @Value("${dts.server.url}")
+//    private String serverPath = null;
+//
+//    @Bean
+//    public DTSServerApi.FutureIface serverClient() {
+//        return Thrift.newIface(serverPath, DTSServerApi.FutureIface.class);
+//    }
 }

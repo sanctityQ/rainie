@@ -274,6 +274,7 @@ lazy val dtsCore = (project in file("dts/dts-core")).
     )
   ).dependsOn(
   inject,
+  dtsServerIdl,
   slf4j
 )
 
@@ -283,7 +284,8 @@ lazy val dtsClient = (project in file("dts/dts-client")).
     name := "dts-client",
     moduleName := "dts-client",
     libraryDependencies ++= Seq(
-      "com.google.guava" % "guava" % versions.guava
+      "com.google.guava" % "guava" % versions.guava,
+      "org.springframework" % "spring-test" % versions.spring % "test"
     )
   ).
   dependsOn(

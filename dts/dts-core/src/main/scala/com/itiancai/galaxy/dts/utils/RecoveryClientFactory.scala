@@ -9,5 +9,5 @@ import com.twitter.util.Future
   */
 trait RecoveryClientFactory {
 
-  def getClient(sysName: String, moduleName: String): Future[Service[Request, Response]]
+  def getClient(sysName: String, moduleName: String):Future[Service[Request, Response]]
 }

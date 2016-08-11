@@ -163,9 +163,12 @@ class ActivityAspect extends DTSAspect{
       + ",businessType="+ txAnValue.businessType
       + ",timeOut=" + txAnValue.timeOut
       + ",bizId" + joinPoint.getArgs()(txAnValue.index).toString))
-    val txId:String = controller.startActivity(bizId, txAnValue.businessType, txAnValue.timeOut)
-    //事务协调
-    handleActivityTransaction(txAnValue.isImmediately, txId, joinPoint)
+    controller.startActivity(bizId, txAnValue.businessType, txAnValue.timeOut).map(txId =>{
+      //事务协调
+      if(Option(txId).isDefined){
+        handleActivityTransaction(txAnValue.isImmediately, txId, joinPoint)
+      }
+    })
   }
 
   /**
@@ -238,9 +241,12 @@ class ActionAspect extends DTSAspect{
     logger.info("activity start methodArgs="+ JsonUtil.toJson(JsonUtil.toJson(args)
                                             + ",name="+ actionAnValue.name
                                             + ",idempotency=" + idempotency))
-    val actionId:String = controller.startAction(idempotency, actionAnValue.name, JsonUtil.toJson(args))
-    //子事务协调
-    handleActionTransaction(actionId,joinPoint)
+    controller.startAction(idempotency, actionAnValue.name, JsonUtil.toJson(args)).map(actionId =>{
+      if(Option(actionId).isDefined){
+        //子事务协调
+        handleActionTransaction(actionId,joinPoint)
+      }
+    })
   }
 
   /**
@@ -269,7 +275,6 @@ class ActionAspect extends DTSAspect{
         controller.finishAction(Status.Action.FAIL, actionId)
         throw e
       }
-    obj
     }
   }
 

@@ -5,7 +5,7 @@ import java.util.Date
 import com.itiancai.galaxy.dts.dao.{ActionDao, ActivityDao}
 import com.itiancai.galaxy.dts.domain._
 import com.itiancai.galaxy.dts.repository.DTSRepository
-import com.itiancai.galaxy.dts.utils.{NameResolver, RecoveryClientFactory, SynchroException}
+import com.itiancai.galaxy.dts.utils.{NameResolver, RecoveryClientFactory}
 import com.twitter.finagle.http.{Method, Request, Version}
 import com.twitter.util.Future
 import org.slf4j.LoggerFactory
@@ -19,9 +19,8 @@ import scala.collection.JavaConversions._
 class DTSServiceManager {
 
   val logger = LoggerFactory.getLogger(getClass)
-
   @Autowired
-  val clientFactory: RecoveryClientFactory = null
+  private val clientFactory: RecoveryClientFactory = null
   @Autowired
   private val actionDao: ActionDao = null
   @Autowired
@@ -29,7 +28,7 @@ class DTSServiceManager {
   @Autowired
   private val idGenerator: IdGenerator = null
   @Autowired
-  private val dtsRepository:DTSRepository = null
+  private val txRepository:DTSRepository = null
 
   /**
     * 开启主事务,流程如下
@@ -64,7 +63,7 @@ class DTSServiceManager {
     val txId = TXIdLocal.current_txId
     logger.error(s"finishActivity tx:${txId} start")
     //修改Activity状态
-    val flag = dtsRepository.updateActivityStatus(txId, status)
+    val flag = txRepository.updateActivityStatus(txId, status)
     if(flag) {
       logger.warn(s"activity tx:${txId} update status:${status} success")
       if (isImmediately) { //立即提交
@@ -72,7 +71,7 @@ class DTSServiceManager {
         val finishActions_f = finishActions(txId, status)
         finishActions_f.map(flag => {
           if(flag) { //子事务提交成功
-            dtsRepository.finishActivity(txId)
+            txRepository.finishActivity(txId)
             logger.error(s"finishActivity tx:${txId} success")
           } else {
             logger.error(s"finishActivity tx:${txId} error")
@@ -102,6 +101,13 @@ class DTSServiceManager {
     action.getActionId
   }
 
+  @Transactional
+  def finishAction(status: Status.Action, actionId: String): Unit ={
+    val action = actionDao.findByActionId(actionId)
+    if(Option(action).isDefined){
+      actionDao.updateStatus(actionId,status.getStatus,action.getStatus.getStatus)
+    }
+  }
 
   /**
     * 完成子事务(提交或回滚)
@@ -122,25 +128,33 @@ class DTSServiceManager {
       val request = Request(Version.Http11, Method.Get, path)
       val actionStatus = if (status == Status.Activity.SUCCESS) Status.Action.SUCCESS else Status.Action.FAIL
       logger.info(s"finishAction ${sysName}-${serviceName}")
-      client(request).map(response => {
-        val result = response.contentString == "true"
-        if(!result) {
-          logger.info(s"finishAction:[${action.getId}] ${sysName}-${serviceName} fail, response:${response.contentString}")
-          false
-        } else {
-          logger.info(s"finishAction ${sysName}-${serviceName} success")
-          val flag = dtsRepository.finishAction(action.getActionId, actionStatus)
-          if (flag) {
-            logger.info(s"action [${action.getId}] updateStatus ${actionStatus} success")
+
+      client.flatMap(service => {
+        service(request).map(response => {
+          val result = response.contentString == "true"
+          if(!result) {
+            logger.info(s"finishAction:[${action.getId}] ${sysName}-${serviceName} fail, response:${response.contentString}")
+            false
           } else {
-            logger.warn(s"action [${action.getId}] status had changed")
+            logger.info(s"finishAction ${sysName}-${serviceName} success")
+            val flag = txRepository.finishAction(action.getActionId, actionStatus)
+            if (flag) {
+              logger.info(s"action [${action.getId}] updateStatus ${actionStatus} success")
+            } else {
+              logger.warn(s"action [${action.getId}] status had changed")
+            }
+            flag //子事务处理成功
           }
-          flag //子事务处理成功
-        }
+        }).handle({
+          case t: Throwable => {
+            logger.error(s"action [${action.getId}] execute ${method} fail.", t)
+            false //子事务失败
+          }
+        })
       }).handle({
         case t: Throwable => {
-          logger.error(s"action [${action.getId}] execute ${method} fail.", t)
-          false //子事务失败
+          logger.error(s"client error sysName:${sysName}, moduleName:${moduleName}.", t)
+          false
         }
       })
     }
