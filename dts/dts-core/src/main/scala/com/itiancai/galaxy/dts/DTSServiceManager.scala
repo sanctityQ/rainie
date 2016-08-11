@@ -20,15 +20,15 @@ class DTSServiceManager {
 
   val logger = LoggerFactory.getLogger(getClass)
   @Autowired
-  private val clientFactory: RecoveryClientFactory = null
+  val clientFactory: RecoveryClientFactory = null
   @Autowired
-  private val actionDao: ActionDao = null
+  val actionDao: ActionDao = null
   @Autowired
-  private val activityDao: ActivityDao = null
+  val activityDao: ActivityDao = null
   @Autowired
-  private val idGenerator: IdGenerator = null
+  val idGenerator: IdGenerator = null
   @Autowired
-  private val txRepository:DTSRepository = null
+  val dtsRepository:DTSRepository = null
 
   /**
     * 开启主事务,流程如下
@@ -63,7 +63,7 @@ class DTSServiceManager {
     val txId = TXIdLocal.current_txId
     logger.error(s"finishActivity tx:${txId} start")
     //修改Activity状态
-    val flag = txRepository.updateActivityStatus(txId, status)
+    val flag = dtsRepository.updateActivityStatus(txId, status)
     if(flag) {
       logger.warn(s"activity tx:${txId} update status:${status} success")
       if (isImmediately) { //立即提交
@@ -71,7 +71,7 @@ class DTSServiceManager {
         val finishActions_f = finishActions(txId, status)
         finishActions_f.map(flag => {
           if(flag) { //子事务提交成功
-            txRepository.finishActivity(txId)
+            dtsRepository.finishActivity(txId)
             logger.error(s"finishActivity tx:${txId} success")
           } else {
             logger.error(s"finishActivity tx:${txId} error")
@@ -122,22 +122,21 @@ class DTSServiceManager {
       val (sysName, moduleName, serviceName) = NameResolver.eval(action.getServiceName)
       //get client
       logger.info(s"sysName:${sysName}, moduleName:${moduleName} serviceName:${serviceName}")
-      val client = clientFactory.getClient(sysName, moduleName)
+      val client_f = clientFactory.getClient(sysName, moduleName)
       val method = if (status == Status.Activity.SUCCESS) "commit" else "rollback" //提交 | 回滚
       val path = s"${NameResolver.ACTION_HANDLE_PATH}?id=${action.getInstructionId}&name=${serviceName}&method=${method}"
       val request = Request(Version.Http11, Method.Get, path)
       val actionStatus = if (status == Status.Activity.SUCCESS) Status.Action.SUCCESS else Status.Action.FAIL
       logger.info(s"finishAction ${sysName}-${serviceName}")
-
-      client.flatMap(service => {
-        service(request).map(response => {
+      client_f.flatMap(client => {
+        client(request).map(response => {
           val result = response.contentString == "true"
           if(!result) {
             logger.info(s"finishAction:[${action.getId}] ${sysName}-${serviceName} fail, response:${response.contentString}")
             false
           } else {
             logger.info(s"finishAction ${sysName}-${serviceName} success")
-            val flag = txRepository.finishAction(action.getActionId, actionStatus)
+            val flag = dtsRepository.finishAction(action.getActionId, actionStatus)
             if (flag) {
               logger.info(s"action [${action.getId}] updateStatus ${actionStatus} success")
             } else {

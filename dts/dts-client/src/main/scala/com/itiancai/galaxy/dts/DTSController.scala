@@ -1,7 +1,7 @@
 package com.itiancai.galaxy.dts
 
 import com.itiancai.galaxy.dts.domain.Status
-import com.itiancai.galaxy.dts.utils.{NameResolver}
+import com.itiancai.galaxy.dts.utils.NameChecker
 import com.twitter.util.Future
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,7 +12,7 @@ class DTSController {
   @Autowired
   private val manager: DTSServiceManager = null
   @Autowired
-  private val nameResolver: NameResolver = null
+  private val nameChecker: NameChecker = null
 
   private val logger: Logger = LoggerFactory.getLogger(getClass)
 
@@ -27,7 +27,7 @@ class DTSController {
     */
   def startActivity(bizId: String, typeName: String, timeOut: Int): Future[String] = {
     logger.info("DTSController.startActivity Paramter{bizId=" + bizId + ",typeName=" + typeName + ",timeout=" + timeOut)
-    nameResolver.checkName(typeName).map(isHave =>{
+    nameChecker.checkName(typeName).map(isHave =>{
       if(isHave){
         manager.startActivity(bizId, typeName, timeOut)
       }else{
@@ -62,7 +62,7 @@ class DTSController {
     */
   def startAction(idempotency: String, name: String, context: String): Future[String] = {
     logger.info("DTSController.startAction Paramter{idempotency=" + idempotency + ",name=" + name + ",context=" + context)
-    nameResolver.checkName(name).map(isHave =>{
+    nameChecker.checkName(name).map(isHave =>{
       if(isHave){
         manager.startAction(idempotency, name, context)
       }else{

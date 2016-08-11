@@ -1,8 +1,8 @@
 package com.itiancai.galaxy.dts.server
 
-import com.itiancai.galaxy.dts.utils.{ClientFactory, NameResolver}
-import com.twitter.finagle.Http
+import com.itiancai.galaxy.dts.utils.NameResolver
 import com.twitter.conversions.time._
+import com.twitter.finagle.Http
 import com.twitter.finagle.http.{Method, Request, Version}
 
 /**

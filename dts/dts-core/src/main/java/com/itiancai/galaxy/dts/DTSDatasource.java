@@ -1,8 +1,7 @@
 package com.itiancai.galaxy.dts;
 
 import com.alibaba.druid.pool.DruidDataSource;
-import com.itiancai.galaxy.dts.thrift.DTSServerApi;
-import com.twitter.finagle.Thrift;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

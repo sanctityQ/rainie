@@ -1,10 +1,11 @@
 package com.itiancai.galaxy.dts.server
 
-import com.itiancai.galaxy.dts.thrift.DTSServerApi
 import com.itiancai.galaxy.dts.thrift.DTSServerApi.ServicePath
+import com.itiancai.galaxy.dts.thrift.{DTSServerApi, ServiceNotFindException}
 import com.itiancai.galaxy.dts.utils.NameResolver
 import com.itiancai.galaxy.thrift.Controller
 import com.twitter.util.Future
+import org.apache.commons.lang3.StringUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.env.Environment
 import org.springframework.stereotype.Component
@@ -24,9 +25,9 @@ class DTSServerController extends Controller with DTSServerApi.BaseServiceIface 
   override val servicePath = handle(ServicePath) ({
     args => {
       info(s"servicePath--sysName:${args.sysName}, moduleName:${args.moduleName}")
-      //TODO 异常处理
       val pathKey = NameResolver.pathKey(args.sysName, args.moduleName)
-      val path = env.getProperty(pathKey, classOf[String])
+      if(StringUtils.isBlank(pathKey)) throw new ServiceNotFindException
+      val path = env.getProperty(pathKey)
       Future(path)
     }
   })

@@ -53,7 +53,7 @@ class TXRepository {
       val list2 = activityDao.listUnknownAndTimeout(maxRetryCount)
       (list1 ++ list2).toList
     } catch {
-      case t:Throwable => {
+      case t: Throwable => {
         logger.error("listUnfinished fail", t)
         List()
       }

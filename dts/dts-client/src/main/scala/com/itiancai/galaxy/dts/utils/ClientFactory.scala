@@ -1,9 +1,8 @@
-package com.itiancai.galaxy.dts
+package com.itiancai.galaxy.dts.utils
 
 import javax.annotation.PostConstruct
 
 import com.itiancai.galaxy.dts.thrift.DTSServerApi
-import com.itiancai.galaxy.dts.utils.{NameResolveException, NameResolver, RecoveryClientFactory}
 import com.twitter.conversions.time._
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.{Http, Service, Thrift}
@@ -15,7 +14,7 @@ import org.springframework.stereotype.Component
 import scala.collection.mutable
 
 @Component
-class ClientFactory extends RecoveryClientFactory{
+class ClientFactory extends RecoveryClientFactory {
   val logger = LoggerFactory.getLogger(getClass)
   @Value("${dts.server.url}")
   private val serverPath: String = null
@@ -24,15 +23,14 @@ class ClientFactory extends RecoveryClientFactory{
 
   private val pathMap = mutable.Map[String, String]()
 
-//  @Autowired
-  private var serverClient:DTSServerApi.FutureIface = null
+  private var serverClient: DTSServerApi.FutureIface = null
 
   @PostConstruct
   def init(): Unit = {
     serverClient = Thrift.newIface[DTSServerApi.FutureIface](serverPath)
   }
 
-  override def getClient(sysName: String, moduleName: String):Future[Service[Request, Response]] = {
+  override def getClient(sysName: String, moduleName: String): Future[Service[Request, Response]] = {
     val pathKey = NameResolver.pathKey(sysName, moduleName)
     clientMap.getOrElse(pathKey, {
       getPath(sysName, moduleName).map(path => {
@@ -42,6 +40,7 @@ class ClientFactory extends RecoveryClientFactory{
       })
     })
   }
+
   /**
     * 从dtsServer端获取path
     *
@@ -49,15 +48,15 @@ class ClientFactory extends RecoveryClientFactory{
     * @param moduleName
     * @return
     */
-  def getPath(sysName: String, moduleName: String):Future[String] ={
+  def getPath(sysName: String, moduleName: String): Future[String] = {
     val pathKey = NameResolver.pathKey(sysName, moduleName)
-    if(pathMap.contains(pathKey)){
+    if (pathMap.contains(pathKey)) {
       Future(pathMap.get(pathKey).get)
-    }else{
-      serverClient.servicePath(sysName,moduleName).map(path =>{
-        if(Option(path).isDefined && path.length != 0)
+    } else {
+      serverClient.servicePath(sysName, moduleName).map(path => {
+        if (Option(path).isDefined && path.length != 0)
           pathMap += (pathKey -> path)
-        else{
+        else {
           logger.error(s"dtsServer not have path,pathkey=${pathKey}")
           throw new NameResolveException
         }

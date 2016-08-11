@@ -20,7 +20,7 @@ class TXManager {
   @Autowired
   val clientFactory: RecoveryClientFactory = null
   @Autowired
-  private val activityDao: ActivityDao = null
+  val activityDao: ActivityDao = null
   @Autowired
   val coreRepository: DTSRepository = null
   @Autowired
@@ -104,7 +104,7 @@ class TXManager {
       }
     }).handle({
       case t:Throwable => {
-        logger.error(s"reclaimTX tx:[${txId}]", t)
+        logger.warn(s"reclaimTX tx:[${txId}]", t)
         txRepository.reclaimTX(txId)
       }
     })

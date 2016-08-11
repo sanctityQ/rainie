@@ -12,7 +12,6 @@ lazy val buildSettings = Seq(
   crossScalaVersions := Seq("2.10.5", "2.11.7")
 )
 
-
 lazy val versions = new {
 
   val finagle = "6.34.0"
@@ -267,16 +266,15 @@ lazy val dtsCore = (project in file("dts/dts-core")).
       "com.alibaba" % "druid" % versions.druid,
       "com.twitter" %% "finagle-core" % versions.finagle,
       "com.twitter" %% "finagle-stats" % versions.finagle,
-      "org.aspectj" % "aspectjweaver" %  versions.aspectj,
-      "org.springframework" % "spring-test" % versions.spring % "test" ,
-      "mysql" % "mysql-connector-java" % versions.mysqlConnectorJava % "test" ,
+      "org.aspectj" % "aspectjweaver" % versions.aspectj,
+      "org.springframework" % "spring-test" % versions.spring % "test",
+      "mysql" % "mysql-connector-java" % versions.mysqlConnectorJava % "test",
       "commons-beanutils" % "commons-beanutils" % versions.commonsBeanutils
     )
   ).dependsOn(
-  inject,
-  dtsServerIdl,
-  slf4j
-)
+    inject,
+    slf4j
+  )
 
 lazy val dtsClient = (project in file("dts/dts-client")).
   settings(rainieSettings).
@@ -290,6 +288,7 @@ lazy val dtsClient = (project in file("dts/dts-client")).
   ).
   dependsOn(
     dtsCore,
+    dtsServerIdl,
     http
   )
 
