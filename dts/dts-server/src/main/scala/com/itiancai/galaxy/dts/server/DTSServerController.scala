@@ -24,6 +24,7 @@ class DTSServerController extends Controller with DTSServerApi.BaseServiceIface 
   override val servicePath = handle(ServicePath) ({
     args => {
       info(s"servicePath--sysName:${args.sysName}, moduleName:${args.moduleName}")
+      //TODO 异常处理
       val pathKey = NameResolver.pathKey(args.sysName, args.moduleName)
       val path = env.getProperty(pathKey, classOf[String])
       Future(path)

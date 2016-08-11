@@ -3,12 +3,8 @@ package com.itiancai.galaxy.dts.domain
 import java.util.concurrent.{Executors, ScheduledExecutorService, TimeUnit}
 import javax.annotation.PostConstruct
 
-import com.itiancai.galaxy.dts.DTSServiceManager
-import com.itiancai.galaxy.dts.dao.{ActionDao, ActivityDao}
-import com.itiancai.galaxy.dts.repository.{DTSRepository, TXRepository}
 import com.itiancai.galaxy.dts.utils._
-import com.twitter.finagle.http.{Method, Request, Version}
-import com.twitter.util.{Await, Future}
+import com.twitter.util.Await
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
@@ -21,24 +17,17 @@ import org.springframework.stereotype.Component
 class TXConsumer {
 
   val logger = LoggerFactory.getLogger(getClass)
+
   /* 补偿queue key*/
   @Value("${tx.compensate.consumer.poolSize}")
   val consumerPoolSize :Int = 0
   /* 补偿queue key*/
   @Value("${tx.compensate.queue}")
   val compensateQueue: String = null
+
   @Autowired
   val redisService: RedisService = null
 
-  @Autowired
-  val dtsRepository: DTSRepository = null
-  @Autowired
-  val txRepository: TXRepository = null
-  @Autowired
-  val clientFactory: RecoveryClientFactory = null
-
-  @Autowired
-  val dtsManager: DTSServiceManager = null
   @Autowired
   val txManager: TXManager = null
 
@@ -77,30 +66,13 @@ class TXConsumer {
       Thread.sleep(1000)
       logger.info(s"TXConsumer[${index}] sleep ...")
     } else {
-      //获取主事务状态
-      val status_f = txManager.synchroActivityStatus(txId)
-
-      //finishActions
-      val finishActions_f = status_f.flatMap(dtsManager.finishActions(txId, _))
-
-      val result_f = finishActions_f.map(flag => {
-        //如果子事务都处理成功
-        if (flag) {
-          //修改Activity完成标志
-          dtsRepository.finishActivity(txId)
-          logger.info(s"tx:${txId} finish success")
-        } else {
-          logger.warn(s"tx:${txId} finish fail")
-          throw new RuntimeException("finish actions error")
-        }
-      })
-
+      //finish Activity
+      val result_f = txManager.finishActivity(txId)
       try {
         Await.result(result_f)
       } catch {
         case t:Throwable => {
-          logger.error(s"reclaimTX tx:[${txId}]", t)
-          txRepository.reclaimTX(txId)
+          logger.error(s"finishActivity tx:[${txId}] error", t)
         }
       }
     }

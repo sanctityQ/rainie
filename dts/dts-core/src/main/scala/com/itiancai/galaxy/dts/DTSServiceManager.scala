@@ -29,7 +29,7 @@ class DTSServiceManager {
   @Autowired
   private val idGenerator: IdGenerator = null
   @Autowired
-  private val txRepository:DTSRepository = null
+  private val dtsRepository:DTSRepository = null
 
   /**
     * 开启主事务,流程如下
@@ -64,7 +64,7 @@ class DTSServiceManager {
     val txId = TXIdLocal.current_txId
     logger.error(s"finishActivity tx:${txId} start")
     //修改Activity状态
-    val flag = txRepository.updateActivityStatus(txId, status)
+    val flag = dtsRepository.updateActivityStatus(txId, status)
     if(flag) {
       logger.warn(s"activity tx:${txId} update status:${status} success")
       if (isImmediately) { //立即提交
@@ -72,7 +72,7 @@ class DTSServiceManager {
         val finishActions_f = finishActions(txId, status)
         finishActions_f.map(flag => {
           if(flag) { //子事务提交成功
-            txRepository.finishActivity(txId)
+            dtsRepository.finishActivity(txId)
             logger.error(s"finishActivity tx:${txId} success")
           } else {
             logger.error(s"finishActivity tx:${txId} error")
@@ -129,7 +129,7 @@ class DTSServiceManager {
           false
         } else {
           logger.info(s"finishAction ${sysName}-${serviceName} success")
-          val flag = txRepository.finishAction(action.getActionId, actionStatus)
+          val flag = dtsRepository.finishAction(action.getActionId, actionStatus)
           if (flag) {
             logger.info(s"action [${action.getId}] updateStatus ${actionStatus} success")
           } else {

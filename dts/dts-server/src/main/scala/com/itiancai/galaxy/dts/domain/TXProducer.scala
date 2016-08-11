@@ -37,10 +37,7 @@ class TXProducer {
   val redisService:RedisService = null
 
   @Autowired
-  val txRepository: TXRepository = null
-
-  @Autowired
-  val activityDao:ActivityDao = null
+  val tXManager: TXManager = null
 
   /**
     * //TODO 配置文件可控制是否启动任务
@@ -52,16 +49,9 @@ class TXProducer {
       override def run(): Unit = {
         logger.info("TXProducer execute start ...")
         //查询所有未完成的数据
-        val list = txRepository.listUnfinished()
-        list.foreach(txId => {
-          try {
-            txRepository.collectTX(txId)
-          } catch {
-            case t:Throwable => logger.error(s"TXProducer collectTX fail", t)
-          }
-        })
+        tXManager.collectTX()
         //回收处理超时任务
-        txRepository.reclaimHandleTimeoutTX();
+        tXManager.reclaimHandleTimeoutTX()
         logger.info("TXProducer execute end ...")
       }
     }, 1000, 200, TimeUnit.MILLISECONDS)
