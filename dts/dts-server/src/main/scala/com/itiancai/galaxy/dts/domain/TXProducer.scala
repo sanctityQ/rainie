@@ -3,8 +3,6 @@ package com.itiancai.galaxy.dts.domain
 import java.util.concurrent.{Executors, TimeUnit}
 import javax.annotation.PostConstruct
 
-import com.itiancai.galaxy.dts.dao.ActivityDao
-import com.itiancai.galaxy.dts.repository.{DTSRepository, TXRepository}
 import com.itiancai.galaxy.dts.utils.RedisService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired

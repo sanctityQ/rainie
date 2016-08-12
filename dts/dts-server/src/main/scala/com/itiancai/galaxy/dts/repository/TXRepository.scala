@@ -2,6 +2,7 @@ package com.itiancai.galaxy.dts.repository
 
 import com.itiancai.galaxy.dts.dao.{ActionDao, ActivityDao}
 import com.itiancai.galaxy.dts.utils.{CollectException, RedisService}
+import org.apache.commons.lang3.StringUtils
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
@@ -14,6 +15,7 @@ import scala.collection.JavaConversions._
   */
 @Component
 class TXRepository {
+
 
   val logger = LoggerFactory.getLogger(getClass)
 
@@ -90,6 +92,26 @@ class TXRepository {
       //tx status had changed
       logger.warn(s"activity:${txId} status had changed")
       false
+    }
+  }
+
+  /**
+    * 消费一个TX
+    * @return txId
+    */
+  @Transactional
+  def consumerTX(): String = {
+    try {
+      val txId = redisService.rpop(compensateQueue)
+      if(StringUtils.isNotBlank(txId)) {
+        activityDao.handle(txId)
+      }
+      txId
+    } catch {
+      case t: Throwable => {
+        logger.error(s"redisService rpop ${compensateQueue} error", t)
+        null
+      }
     }
   }
 

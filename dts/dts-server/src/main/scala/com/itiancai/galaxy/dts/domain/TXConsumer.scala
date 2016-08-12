@@ -3,8 +3,8 @@ package com.itiancai.galaxy.dts.domain
 import java.util.concurrent.{Executors, ScheduledExecutorService, TimeUnit}
 import javax.annotation.PostConstruct
 
-import com.itiancai.galaxy.dts.utils._
 import com.twitter.util.Await
+import org.apache.commons.lang3.StringUtils
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
@@ -21,12 +21,6 @@ class TXConsumer {
   /* 补偿queue key*/
   @Value("${tx.compensate.consumer.poolSize}")
   val consumerPoolSize :Int = 0
-  /* 补偿queue key*/
-  @Value("${tx.compensate.queue}")
-  val compensateQueue: String = null
-
-  @Autowired
-  val redisService: RedisService = null
 
   @Autowired
   val txManager: TXManager = null
@@ -42,39 +36,37 @@ class TXConsumer {
       executorService.schedule(new Runnable {
         override def run(): Unit = {
           while (true) {
-            process(i)
+            val txId = process(i)
+            //取不到值sleep一秒
+            if (StringUtils.isBlank(txId)) {
+              Thread.sleep(1000)
+              logger.info(s"TXConsumer[${i}] sleep ...")
+            }
           }
         }
       }, 2, TimeUnit.SECONDS)
     }
   }
 
-  def process(index: Int): Unit = {
+  /**
+    * 处理事务
+    * @param index
+    * @return
+    */
+  def process(index: Int): String = {
     logger.info(s"TXConsumer[${index}] start ...")
-    val txId = {
+    val txId = txManager.consumerTX()
+    if (StringUtils.isNotBlank(txId)) {
       try {
-        redisService.rpop(compensateQueue)
-      } catch {
-        case t: Throwable => {
-          logger.error(s"redisService rpop ${compensateQueue} error")
-          null
-        }
-      }
-    }
-    if (txId == null) {
-      //取不到值sleep一秒
-      Thread.sleep(1000)
-      logger.info(s"TXConsumer[${index}] sleep ...")
-    } else {
-      //finish Activity
-      val result_f = txManager.finishActivity(txId)
-      try {
-        Await.result(result_f)
+        //finish Activity
+        Await.result(txManager.finishActivity(txId))
       } catch {
         case t:Throwable => {
           logger.error(s"finishActivity tx:[${txId}] error", t)
         }
       }
     }
+    logger.info(s"TXConsumer[${index}] end ...")
+    txId
   }
 }

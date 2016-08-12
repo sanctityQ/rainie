@@ -9,42 +9,22 @@ import org.scalatest.{BeforeAndAfterEach, WordSpec}
   */
 class TXConsumerTest extends WordSpec with BeforeAndAfterEach {
 
-//  "txConsumer-process" when {
-//    "tx status = SUCCESS & finish actions success" should {
-//      "finishActivity" in {
-//        val txId = "tx1"
-//        val status = Status.Activity.SUCCESS
-//        when(redisServiceM.rpop("tx.compensate.queue")).thenReturn(txId)
-//        when(consumerManagerM.synchroActivityStatus(txId)).thenReturn(Future(status))
-//        when(consumerManagerM.finishActions(txId, status)).thenReturn(Future(true))
-//        txConsumer.process(1)
-//        verify(txRepositoryM, times(1)).finishActivity(txId)
-//      }
-//    }
-//
-//    "tx status = SUCCESS & finish actions fail" should {
-//      "reclaimTX" in {
-//        val txId = "tx1"
-//        val status = Status.Activity.SUCCESS
-//        when(redisServiceM.rpop("tx.compensate.queue")).thenReturn(txId)
-//        when(consumerManagerM.synchroActivityStatus(txId)).thenReturn(Future(status))
-//        when(consumerManagerM.finishActions(txId, status)).thenReturn(Future(false))
-//        txConsumer.process(1)
-//        verify(txRepositoryM, times(0)).finishActivity(txId)
-//        verify(txRepositoryM, times(1)).reclaimTX(txId)
-//      }
-//    }
-//
-//    "synchroActivityStatus fail" should {
-//      "reclaimTX" in {
-//        val txId = "tx1"
-//        val status = Status.Activity.SUCCESS
-//        when(redisServiceM.rpop("tx.compensate.queue")).thenReturn(txId)
-//        when(consumerManagerM.synchroActivityStatus(txId)).thenReturn(Future.exception(new SynchroException))
-//        txConsumer.process(1)
-//        verify(txRepositoryM, times(0)).finishActivity(txId)
-//        verify(txRepositoryM, times(1)).reclaimTX(txId)
-//      }
-//    }
-//  }
+  val txManagerM = mock(classOf[TXManager])
+
+  val txConsumer = new TXConsumer {
+    override val txManager = txManagerM
+  }
+
+  "txConsumer-process" when {
+    "consumerTX = tx1 & finish finishActivity success" should {
+      "return tx1" in {
+        val txId = "tx1"
+        when(txManagerM.consumerTX()).thenReturn(txId)
+        when(txManagerM.finishActivity(txId)).thenReturn(Future.Unit)
+        assert(txConsumer.process(1) == txId)
+        verify(txManagerM, times(1)).consumerTX()
+        verify(txManagerM, times(1)).finishActivity(txId)
+      }
+    }
+  }
 }

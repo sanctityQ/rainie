@@ -126,6 +126,14 @@ class TXManager {
   }
 
   /**
+    * 消费一个TX
+    * @return
+    */
+  def consumerTX(): String = {
+    txRepository.consumerTX()
+  }
+
+  /**
     * 回收处理超时任务
     */
   def reclaimHandleTimeoutTX(): Unit = {

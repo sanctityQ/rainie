@@ -32,16 +32,6 @@ public interface ActivityDao extends PagingAndSortingRepository<Activity, Long> 
     int updateStatus(String txId, int status, int preStatus);
 
     /**
-     * 修改主事务状态及finish
-     * @param txId
-     * @param status
-     * @return
-     */
-    @Modifying
-    @Query("update Activity a set a.finish = 1 where a.txId = ?1 and a.status = ?2 and a.finish = 0")
-    int updateActivityFinish(String txId,int status);
-
-    /**
      * 修改完成标志
      * @param txId
      * @return
@@ -89,6 +79,15 @@ public interface ActivityDao extends PagingAndSortingRepository<Activity, Long> 
     int collect(String txId, int maxRetryCount);
 
     /**
+    * 开始处理tx
+    * @param txId
+    * @return
+    */
+    @Modifying
+    @Query("update Activity set collect=2 where txId=?1 and collect=1 and finish = 0")
+    int handle(String txId);
+
+    /**
      * 回收tx; 重试次数+1,未收集状态
      * @param txId
      * @return
@@ -105,7 +104,7 @@ public interface ActivityDao extends PagingAndSortingRepository<Activity, Long> 
     @Query(value = "update dts_activity dat " +
             "set dat.collect = 0 " +
             "where dat.finish = 0 " +
-            "and dat.collect = 1 " +
+            "and dat.collect = 2 " +
             "and DATE_ADD(dat.m_time,INTERVAL ?1 SECOND) < now() ", nativeQuery = true)
     int reclaimHandleTimeout(int handleTimeout);
 
