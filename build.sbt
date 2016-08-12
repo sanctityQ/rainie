@@ -359,3 +359,57 @@ lazy val dtsServerIdl = (project in file("dts/dts-server-idl")).
   dependsOn(
     thrift
   )
+
+lazy val dtsClientDemo = (project in file("examples/dts-demo/dts-client-demo")).
+  settings(rainieSettings).
+  settings(
+    name := "dts-client-demo",
+    moduleName := "dts-client-demo",
+    libraryDependencies ++= Seq(
+      "mysql" % "mysql-connector-java" % versions.mysqlConnectorJava
+    )
+  ).
+  dependsOn(
+    dtsClient,
+    dtsClientDemoIdl,
+    dtsClientActionDemoIdl
+  )
+lazy val dtsClientDemoIdl = (project in file("examples/dts-demo/dts-client-demo-idl")).
+  settings(rainieSettings).
+  settings(
+    name := "dts-client-demo-idl",
+    moduleName := "dts-client-demo-idl",
+    scroogeThriftSourceFolder in Compile <<= baseDirectory {
+      base => base / "thrift"
+    }
+  ).
+  dependsOn(
+    thrift
+  )
+
+
+lazy val dtsClientActionDemo = (project in file("examples/dts-demo/dts-client-action-demo")).
+  settings(rainieSettings).
+  settings(
+    name := "dts-client-action-demo",
+    moduleName := "dts-client-action-demo",
+    libraryDependencies ++= Seq(
+      "mysql" % "mysql-connector-java" % versions.mysqlConnectorJava
+    )
+  ).
+  dependsOn(
+    dtsClient,
+    dtsClientActionDemoIdl
+  )
+lazy val dtsClientActionDemoIdl = (project in file("examples/dts-demo/dts-client-action-demo-idl")).
+  settings(rainieSettings).
+  settings(
+    name := "dts-client-action-demo-idl",
+    moduleName := "dts-client-action-demo-idl",
+    scroogeThriftSourceFolder in Compile <<= baseDirectory {
+      base => base / "thrift"
+    }
+  ).
+  dependsOn(
+    thrift
+  )
