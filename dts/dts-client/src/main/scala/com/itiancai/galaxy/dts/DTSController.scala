@@ -20,17 +20,13 @@ class DTSController {
     * 1.生成id并存放在TreadLocal
     * 2.开启主事务(主事务状态为UNKNOWN)
     *
-    * @param bizId   业务id
-    * @param typeName    服务名称
+    * @param businessId   业务id
+    * @param businessType    服务名称
     * @param timeOut 超时时间
     */
-  def startActivity(bizId: String, typeName: String, timeOut: Int): String = {
-    logger.info("DTSController.startActivity Paramter{bizId=" + bizId + ",typeName=" + typeName + ",timeout=" + timeOut)
-    if (nameChecker.checkName(typeName)) {
-      manager.startActivity(bizId, typeName, timeOut)
-    }else {
-      throw new DTSException(s"Controller start Activity is fail, name=${typeName} => path is not exist")
-    }
+  def startActivity(businessId: String, businessType: String, timeOut: Int): String = {
+    logger.info("DTSController.startActivity Paramter{bizId=" + businessId + ",typeName=" + businessType + ",timeout=" + timeOut)
+    manager.startActivity(businessId, businessType, timeOut)
   }
 
   /**

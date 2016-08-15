@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component
 import scala.collection.mutable
 
 @Component
-class ClientFactory extends RecoveryClientFactory {
+class ClientFactory extends RecoveryClientFactory{
   val logger = LoggerFactory.getLogger(getClass)
   @Value("${dts.server.url}")
   private val serverPath: String = null
@@ -30,7 +30,7 @@ class ClientFactory extends RecoveryClientFactory {
     serverClient = Thrift.newIface[DTSServerApi.FutureIface](serverPath)
   }
 
-  override def getClient(sysName: String, moduleName: String): Future[Service[Request, Response]] = {
+  def getClient(sysName: String, moduleName: String): Future[Service[Request, Response]] = {
     val pathKey = NameResolver.pathKey(sysName, moduleName)
     clientMap.getOrElse(pathKey, {
       getPath(sysName, moduleName).map(path => {
