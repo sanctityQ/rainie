@@ -4,7 +4,7 @@ import com.itiancai.galaxy.dts.interceptor.TransactionAttribute
 
 trait TransactionManager {
 
-   def begin(transactionAttribute: TransactionAttribute)
+   def begin(transactionAttribute: TransactionAttribute): TransactionStatus
 
    def commit(transactionStatus: TransactionStatus)
 
