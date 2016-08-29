@@ -5,14 +5,11 @@ import com.itiancai.galaxy.dts.thrift.{DTSServerApi, ServiceNotFindException}
 import com.itiancai.galaxy.dts.utils.NameResolver
 import com.itiancai.galaxy.thrift.Controller
 import com.twitter.util.Future
-import org.apache.commons.lang3.StringUtils
+import org.apache.commons.lang.StringUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.env.Environment
 import org.springframework.stereotype.Component
 
-/**
-  * Created by bao on 16/8/10.
-  */
 @Component
 class DTSServerController extends Controller with DTSServerApi.BaseServiceIface {
 

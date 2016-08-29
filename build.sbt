@@ -7,7 +7,7 @@ lazy val aggregated = taskKey[Unit]("Print currently aggregated tasks under the 
 
 lazy val buildSettings = Seq(
   name := "rainie",
-  version := "0.0.4-SNAPSHOT",
+  version := "0.0.5-SNAPSHOT",
   scalaVersion := "2.11.7",
   crossScalaVersions := Seq("2.10.5", "2.11.7")
 )
@@ -17,7 +17,7 @@ lazy val versions = new {
   val finagle = "6.34.0"
   val scrooge = "4.6.0"
   val twitterServer = "1.19.0"
-  val utilVersion = "6.35.0"
+  val utilVersion = "6.34.0"
 
   val logback = "1.0.13"
   val spring = "3.2.15.RELEASE"
@@ -31,13 +31,11 @@ lazy val versions = new {
   val jodaTime = "2.5"
   val servletApi = "2.5"
   val druid = "1.0.23"
-  val springDataJpa = "1.5.3.RELEASE"
   val hibernateEntitymanage = "3.6.10.Final"
   val mysqlConnectorJava = "5.1.37"
   val commonsBeanutils = "1.9.2"
 
   val redis = "2.7.2"
-  val commons_lang3 = "3.1"
   val fastjson = "1.2.6"
 }
 
@@ -261,8 +259,6 @@ lazy val dtsCore = (project in file("dts/dts-core")).
       "org.springframework" % "spring-beans" % versions.spring,
       "org.springframework" % "spring-orm" % versions.spring,
       "org.springframework" % "spring-context" % versions.spring,
-      "org.springframework.data" % "spring-data-jpa" % versions.springDataJpa,
-      "org.hibernate" % "hibernate-entitymanager" % versions.hibernateEntitymanage,
       "com.alibaba" % "druid" % versions.druid,
       "com.twitter" %% "finagle-core" % versions.finagle,
       "com.twitter" %% "finagle-stats" % versions.finagle,
@@ -298,8 +294,7 @@ lazy val dtsServer = (project in file("dts/dts-server")).
     name := "dts-server",
     moduleName := "dts-server",
     libraryDependencies ++= Seq(
-      "redis.clients" % "jedis" % versions.redis,
-      "org.apache.commons" % "commons-lang3" % versions.commons_lang3,
+      "commons-lang" % "commons-lang" % versions.commonsLang,
       "mysql" % "mysql-connector-java" % versions.mysqlConnectorJava,
       "com.alibaba" % "fastjson" % versions.fastjson,
       "org.springframework" % "spring-test" % versions.spring  % "test"
@@ -323,6 +318,8 @@ lazy val dtsServer = (project in file("dts/dts-server")).
       case PathList(ps@_*) if Assembly.isReadme(ps.last) || Assembly.isLicenseFile(ps.last) =>
         MergeStrategy.rename
       case PathList("org", "apache", "commons", "logging", xs@_*) => MergeStrategy.first
+      case PathList("org", "aspectj", "internal", "lang", xs@_*) => MergeStrategy.first
+      case PathList("org", "aspectj", "runtime", "reflect", xs@_*) => MergeStrategy.first
       case PathList("META-INF", xs@_*) =>
         (xs map {
           _.toLowerCase

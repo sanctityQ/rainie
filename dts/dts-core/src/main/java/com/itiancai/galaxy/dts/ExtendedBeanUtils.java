@@ -1,6 +1,8 @@
 package com.itiancai.galaxy.dts;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.BeanUtilsBean;
+
 import java.lang.reflect.InvocationTargetException;
 
 public class ExtendedBeanUtils extends BeanUtils {

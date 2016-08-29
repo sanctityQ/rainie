@@ -1,8 +1,5 @@
 package com.itiancai.galaxy.dts.utils
 
-/**
-  * Created by bao on 16/8/11.
-  */
 object NameResolver {
   val ACTIVITY_HANDLE_PATH = "/dts/activity"
 

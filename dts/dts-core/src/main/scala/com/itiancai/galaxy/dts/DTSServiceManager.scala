@@ -17,8 +17,6 @@ import scala.collection.JavaConversions._
 
 @Service
 class DTSServiceManager {
-
-  val logger = LoggerFactory.getLogger(getClass)
   @Autowired
   val clientFactory: RecoveryClientFactory = null
   @Autowired
@@ -28,7 +26,9 @@ class DTSServiceManager {
   @Autowired
   val idGenerator: IdGenerator = null
   @Autowired
-  val dtsRepository:DTSRepository = null
+  val dtsRepository: DTSRepository = null
+
+  val logger = LoggerFactory.getLogger(getClass)
 
   /**
     * 开启主事务,流程如下
@@ -41,12 +41,38 @@ class DTSServiceManager {
     * @param timeOut      超时时间
     * @throws Exception
     */
-  @Transactional
+  @Transactional(value = "dtsTransactionManager")
   def startActivity(bizId: String, businessType: String, timeOut: Int):String ={
     val txId: String = idGenerator.getTxId(businessType)
     val activity: Activity = new Activity(txId, Status.Activity.UNKNOWN, businessType, new Date, timeOut, new Date, 0, bizId)
     activityDao.save(activity)
     txId
+  }
+
+  /**
+    * 开启子事务,流程如下:
+    * 1.判断name对应的bean及tx_id是否存在,且缓存
+    * 2.组装Action 保存数据
+    *
+    * @param instructionId 幂等id
+    * @param serviceName   服务名称
+    * @param context       请求参数json
+    */
+  @Transactional(value = "dtsTransactionManager")
+  def startAction(instructionId: String, serviceName: String, context: String): String = {
+    val actionId: String = idGenerator.getActionId(serviceName)
+    val action: Action = new Action(TXIdLocal.current_txId, actionId, Status.Action.UNKNOWN, serviceName,
+      new Date(), new Date(), context, instructionId)
+    actionDao.save(action)
+    action.getActionId
+  }
+
+  @Transactional(value = "dtsTransactionManager")
+  def finishAction(status: Status.Action, actionId: String): Unit ={
+    val action = actionDao.findByActionId(actionId)
+    if(Option(action).isDefined){
+      actionDao.updateStatus(actionId, status.getStatus, action.getStatus)
+    }
   }
 
   /**
@@ -64,48 +90,36 @@ class DTSServiceManager {
     logger.error(s"finishActivity tx:${txId} start")
     //修改Activity状态
     val flag = dtsRepository.updateActivityStatus(txId, status)
-    if(flag) {
-      logger.warn(s"activity tx:${txId} update status:${status} success")
-      if (isImmediately) { //立即提交
-        //finishActions
-        val finishActions_f = finishActions(txId, status)
-        finishActions_f.map(flag => {
-          if(flag) { //子事务提交成功
-            dtsRepository.finishActivity(txId)
-            logger.error(s"finishActivity tx:${txId} success")
-          } else {
-            logger.error(s"finishActivity tx:${txId} error")
-          }
-        })
-      }
+    if(flag && isImmediately) {
+      finishActivity(txId, status)
     } else {
       logger.warn(s"activity tx:${txId} status had changed")
     }
   }
 
   /**
-    * 开启子事务,流程如下:
-    * 1.判断name对应的bean及tx_id是否存在,且缓存
-    * 2.组装Action 保存数据
-    *
-    * @param instructionId 幂等id
-    * @param serviceName   服务名称
-    * @param context       请求参数json
+    * 完成主事务
+    * @param txId
+    * @param status
     */
-  @Transactional
-  def startAction(instructionId: String, serviceName: String, context: String): String = {
-    val actionId: String = idGenerator.getActionId(serviceName)
-    val action: Action = new Action(TXIdLocal.current_txId, actionId, Status.Action.UNKNOWN, serviceName,
-      new Date(), new Date(), context, instructionId)
-    actionDao.save(action)
-    action.getActionId
-  }
-
-  @Transactional
-  def finishAction(status: Status.Action, actionId: String): Unit ={
-    val action = actionDao.findByActionId(actionId)
-    if(Option(action).isDefined){
-      actionDao.updateStatus(actionId,status.getStatus,action.getStatus.getStatus)
+  def finishActivity(txId: String, status: Status.Activity): Unit = {
+    if(dtsRepository.handleTX(txId)) {
+      val finishActions_f = finishActions(txId, status)
+      finishActions_f.map(flag => {
+        //如果子事务都处理成功
+        if (flag) {
+          //修改Activity完成标志
+          dtsRepository.finishActivity(txId)
+          logger.info(s"tx:${txId} finish success")
+        } else {
+          logger.warn(s"tx:${txId} finish fail")
+        }
+      }).handle({
+        case t:Throwable => {
+          logger.warn(s"reclaimTX tx:[${txId}]", t)
+          dtsRepository.reclaimTX(txId)
+        }
+      })
     }
   }
 
@@ -136,7 +150,14 @@ class DTSServiceManager {
             false
           } else {
             logger.info(s"finishAction ${sysName}-${serviceName} success")
-            val flag = dtsRepository.finishAction(action.getActionId, actionStatus)
+            val flag = {
+              if (dtsRepository.finishAction(action.getActionId, actionStatus)) {
+                true
+              } else {  //确认action status是否修改成功
+                val entity = actionDao.findByActionId(action.getActionId)
+                entity.getStatus == status
+              }
+            }
             if (flag) {
               logger.info(s"action [${action.getId}] updateStatus ${actionStatus} success")
             } else {
@@ -157,7 +178,7 @@ class DTSServiceManager {
         }
       })
     }
-    val finishList_f = Future collect actionDao.findByTxId(txId).map(finishAction)
+    val finishList_f = Future collect actionDao.listByTxId(txId).map(finishAction)
     finishList_f.map(!_.contains(false))
   }
 }

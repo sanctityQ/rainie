@@ -11,9 +11,6 @@ import org.springframework.stereotype.Component
 
 import scala.collection.mutable
 
-/**
-  * Created by bao on 16/8/4.
-  */
 @Component
 class ClientFactory extends RecoveryClientFactory {
 
