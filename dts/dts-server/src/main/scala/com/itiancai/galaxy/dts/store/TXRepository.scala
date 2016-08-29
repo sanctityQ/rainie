@@ -1,6 +1,6 @@
 package com.itiancai.galaxy.dts.repository
 
-import com.itiancai.galaxy.dts.dao.{ActionDao, ActivityDao}
+import com.itiancai.galaxy.dts.store.{ActionDao, ActivityDao}
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component

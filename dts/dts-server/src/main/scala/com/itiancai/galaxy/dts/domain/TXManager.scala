@@ -1,7 +1,7 @@
 package com.itiancai.galaxy.dts.domain
 
 import com.itiancai.galaxy.dts.DTSServiceManager
-import com.itiancai.galaxy.dts.dao.ActivityDao
+import com.itiancai.galaxy.dts.store.ActivityDao
 import com.itiancai.galaxy.dts.repository.{DTSRepository, TXRepository}
 import com.itiancai.galaxy.dts.utils.{NameResolver, RecoveryClientFactory, SynchroException}
 import com.twitter.finagle.http.{Method, Request, Version}

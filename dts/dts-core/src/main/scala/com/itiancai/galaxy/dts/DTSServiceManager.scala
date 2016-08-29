@@ -2,7 +2,7 @@ package com.itiancai.galaxy.dts
 
 import java.util.Date
 
-import com.itiancai.galaxy.dts.dao.{ActionDao, ActivityDao}
+import com.itiancai.galaxy.dts.store.{ActionDao, ActivityDao}
 import com.itiancai.galaxy.dts.domain._
 import com.itiancai.galaxy.dts.repository.DTSRepository
 import com.itiancai.galaxy.dts.utils.{NameResolver, RecoveryClientFactory}
