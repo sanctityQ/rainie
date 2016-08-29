@@ -15,7 +15,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 @Configuration
 @ComponentScan(basePackages = "com.itiancai.galaxy.dts")
 @PropertySource({"classpath:/config/test/server.properties"})
-@Import({DTSDatasource.class, SpringBoot.class})
+@Import({SpringBoot.class})
 public class ServerBootTest {
 
   private static AnnotationConfigApplicationContext context;

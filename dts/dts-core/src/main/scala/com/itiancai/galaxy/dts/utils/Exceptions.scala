@@ -1,8 +1,5 @@
 package com.itiancai.galaxy.dts.utils
 
-/**
-  * Created by bao on 16/8/3.
-  */
 class CollectException(message: String, cause: Throwable) extends Exception(message, cause){
   def this() = this(null, null)
   def this(cause: Throwable) = this(null, cause)
