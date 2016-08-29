@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.hibernate3.HibernateExceptionTranslator;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -24,7 +25,7 @@ import javax.sql.DataSource;
 @EnableAspectJAutoProxy(proxyTargetClass=false)
 @EnableTransactionManagement
 @EnableJpaRepositories(
-        basePackages = "com.itiancai.galaxy.dts.dao",
+        basePackages = "com.itiancai.galaxy.dts.store",
         entityManagerFactoryRef = "dtsEntityManagerFactory",
         transactionManagerRef = "dtsTransactionManager"
 )
@@ -71,6 +72,7 @@ public class DTSDatasource {
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         vendorAdapter.setGenerateDdl(ddl);
         vendorAdapter.setShowSql(show);
+        vendorAdapter.setDatabase(Database.MYSQL);
 
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setJpaVendorAdapter(vendorAdapter);
