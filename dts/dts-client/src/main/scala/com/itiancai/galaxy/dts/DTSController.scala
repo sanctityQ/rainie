@@ -1,6 +1,7 @@
 package com.itiancai.galaxy.dts
 
 import com.itiancai.galaxy.dts.domain.Status
+import com.itiancai.galaxy.dts.domain.Status.ActionStatus
 import com.itiancai.galaxy.dts.utils.NameChecker
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
@@ -8,12 +9,14 @@ import org.springframework.stereotype.Component
 
 @Component
 class DTSController {
+
+  private val logger: Logger = LoggerFactory.getLogger(getClass)
+
   @Autowired
   private val manager: DTSServiceManager = null
   @Autowired
   private val nameChecker: NameChecker = null
 
-  private val logger: Logger = LoggerFactory.getLogger(getClass)
 
   /**
     * 开启主事务,流程:
@@ -40,7 +43,7 @@ class DTSController {
     *
     */
   def finishActivity(isImmediately: Boolean, activityStatus: Status.Activity) {
-    logger.info("DTSController.finishActivity Paramter{isImmediately=" + isImmediately + ",status=" + activityStatus.getStatus)
+    logger.info("DTSController.finishActivity Paramter{isImmediately=" + isImmediately + ",status=" + activityStatus.value())
     manager.finishActivity(activityStatus, isImmediately)
   }
 
@@ -68,8 +71,8 @@ class DTSController {
     * @param actionId
     *
     */
-  def finishAction(status: Status.Action, actionId: String) {
-    logger.info("DTSController.finishAction Paramter{status=" + status.getStatus + ",actionId=" + actionId)
+  def finishAction(status: ActionStatus, actionId: String) {
+    logger.info("DTSController.finishAction Paramter{status=" + status.value() + ",actionId=" + actionId)
     manager.finishAction(status, actionId)
   }
 }

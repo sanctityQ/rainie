@@ -2,14 +2,12 @@ package com.itiancai.galaxy.dts.utils
 
 import java.util.concurrent.TimeUnit
 
+import com.itiancai.galaxy.dts.support.ClientFactory
 import com.twitter.util.{Duration, Await}
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-/**
-  * Created by bao on 16/8/11.
-  */
 
 @Component
 class NameChecker {

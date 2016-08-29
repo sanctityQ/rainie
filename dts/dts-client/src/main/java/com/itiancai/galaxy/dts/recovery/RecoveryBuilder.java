@@ -35,6 +35,20 @@ public class RecoveryBuilder implements ApplicationContextAware {
         return this.activityStateResolverHashMap.get(name);
     }
 
+    public boolean exists(String type, String name) {
+
+        if(type.equals("action")){
+            return actionServiceHandlerMap.containsKey(name);
+        }
+
+        if(type.equals("activity")){
+            return activityStateResolverHashMap.containsKey(name);
+        }
+
+        return false;
+    }
+
+
 
     public ActionServiceHandler getActionServiceHandler(String name) {
         if (actionServiceHandlerMap.isEmpty()) {

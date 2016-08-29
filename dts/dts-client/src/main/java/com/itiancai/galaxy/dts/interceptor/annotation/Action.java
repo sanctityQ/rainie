@@ -11,7 +11,7 @@ import java.lang.annotation.*;
 public @interface Action {
 
     /**
-     * 服务名称,唯一值(例如:系统名.模块名.服务名)
+     * 服务名称,唯一值(例如:系统名:模块名:服务名)
      * @return string
      */
     String name() default "";

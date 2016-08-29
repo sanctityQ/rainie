@@ -1,5 +1,6 @@
 package com.itiancai.galaxy.dts.recovery
 
+
 import com.itiancai.galaxy.http.internal.server.BaseHttpServer
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response, Status, Version}
@@ -14,7 +15,6 @@ trait RecoveryService extends BaseHttpServer { self =>
 
   val routers = ArrayBuffer[Route]()
 
-
   def add(route: Route) = {
     routers += route
     self
@@ -25,6 +25,8 @@ trait RecoveryService extends BaseHttpServer { self =>
   override def warmup(){
 
     super.warmup()
+//    new TxComponentProvider(environment).findCandidateComponents("");
+
     val activity = injector.instance[RecoveryBuilder]
 
 
@@ -39,7 +41,7 @@ trait RecoveryService extends BaseHttpServer { self =>
       Future.value(response)
     }))
 
-    add(Route("activity", "/dts/action", { request =>
+    add(Route("action", "/dts/action", { request =>
       //TODO 校验
       val name = request.getParam("name")
       val actionMethod = request.getParam("method")
@@ -60,6 +62,14 @@ trait RecoveryService extends BaseHttpServer { self =>
           response404
         }
       }
+      Future.value(response)
+    }))
+
+    add(Route("check", "/dts/ping", {request =>
+      val recType = request.getParam("checkType")
+      val recName = request.getParam("name")
+      val response = Response(Version.Http11, Status.Ok)
+      response.setContentString(String.valueOf(activity.exists(recType, recName)))
       Future.value(response)
     }))
 

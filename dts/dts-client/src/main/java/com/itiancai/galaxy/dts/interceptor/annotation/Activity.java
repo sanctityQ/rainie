@@ -1,5 +1,7 @@
 package com.itiancai.galaxy.dts.interceptor.annotation;
 
+import com.itiancai.galaxy.dts.recovery.ActivityStateResolver;
+
 import java.lang.annotation.*;
 
 /**
@@ -17,14 +19,14 @@ public @interface Activity {
     boolean isImmediately() default true;
 
     /**
-     * 服务名称,唯一值(例如:p2p.lending:xxx)
+     * 服务名称,唯一值(例如 p2p:lending:activityType)
      * @return string
      */
-    String businessType() default "";
+    Class<? extends ActivityStateResolver> businessType();
 
     /**
      * 主线程超时时间 单位:毫秒
      * @return
      */
-    int timeOut() default 30000;
+    int timeOut() default 3000;
 }
