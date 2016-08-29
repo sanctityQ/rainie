@@ -13,10 +13,10 @@ class TXRepositoryTest extends WordSpec with BeforeAndAfterEach {
 
   val actionDaoM = mock(classOf[ActionDao])
 
-  val txRepository = new TXRepository {
-    override val activityDao = activityDaoM
-    override val actionDao = actionDaoM
-  }
+//  val txRepository = new TXRepository {
+//    override val activityDao = activityDaoM
+//    override val actionDao = actionDaoM
+//  }
 
   override protected def beforeEach(): Unit = {
     reset(activityDaoM, actionDaoM)

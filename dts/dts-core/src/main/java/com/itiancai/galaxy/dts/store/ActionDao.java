@@ -2,14 +2,9 @@ package com.itiancai.galaxy.dts.store;
 
 import com.itiancai.galaxy.dts.domain.Action;
 
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
-
 import java.util.List;
 
-
-public interface ActionDao extends PagingAndSortingRepository<Action,Long> {
+public interface ActionDao {
 
     /**
      * 根据actionId查询Action记录
@@ -23,7 +18,7 @@ public interface ActionDao extends PagingAndSortingRepository<Action,Long> {
      * @param txId 子事务id
      * @return Action
      */
-    List<Action> findByTxId(String txId);
+    List<Action> listByTxId(String txId);
 
     /**
      * 修改子事务状态
@@ -32,8 +27,11 @@ public interface ActionDao extends PagingAndSortingRepository<Action,Long> {
      * @param preStatus
      * @return
      */
-    @Modifying
-    @Query("update Action set status=?2 where actionId=?1 and status=?3")
+//    @Modifying
+//    @Transactional(value = "dtsTransactionManager")
+//    @Query("update Action set status=?2 where actionId=?1 and status=?3")
     int updateStatus(String actionId, int status, int preStatus);
+
+    void save(Action action);
 
 }
