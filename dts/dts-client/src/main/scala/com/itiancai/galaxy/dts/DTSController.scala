@@ -1,7 +1,7 @@
 package com.itiancai.galaxy.dts
 
 import com.itiancai.galaxy.dts.domain.Status
-import com.itiancai.galaxy.dts.domain.Status.ActionStatus
+import com.itiancai.galaxy.dts.domain.Status.Action
 import com.itiancai.galaxy.dts.utils.NameChecker
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired

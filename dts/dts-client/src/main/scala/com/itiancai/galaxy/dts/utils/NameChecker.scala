@@ -25,9 +25,9 @@ class NameChecker {
         false
       }
     })
-    try{
-      Await.result(isSuccess,Duration(15,TimeUnit.SECONDS))
-    }catch {
+    try {
+      Await.result(isSuccess, Duration(15, TimeUnit.SECONDS))
+    } catch {
       case t: Throwable => {
         logger.error(s"dtsServer http timeout 15s.${sysName}.${moduleName} error", t)
         false

@@ -1,5 +1,6 @@
 package com.itiancai.galaxy.dts.interceptor
 
+import com.itiancai.galaxy.dts.TransactionManager
 import com.itiancai.galaxy.dts.interceptor.annotation.{ActionAnnotationAttribute, ActivityAnnotationAttribute}
 import com.twitter.finagle.context.Contexts
 import org.aopalliance.intercept.{MethodInvocation, MethodInterceptor}
@@ -17,6 +18,8 @@ class TransactionInterceptor(transactionAttributeSource: TransactionAttributeSou
     val targetClass: Class[_] =  if (invocation.getThis != null) AopUtils.getTargetClass(invocation.getThis) else null
 
     val txAttr: TransactionAttribute = transactionAttributeSource.getTransactionAttribute(invocation.getMethod, targetClass)
+    val tm: TransactionManager = determineTransactionManager(txAttr)
+
 
 
     txAttr match {
@@ -24,8 +27,10 @@ class TransactionInterceptor(transactionAttributeSource: TransactionAttributeSou
       case activity: ActivityAnnotationAttribute => {
         activity.value(invocation.getArguments)
 
+        //transcation begin
+        val transactionStatus = tm.begin(activity)
         //activityBegin
-        Contexts.local.let(txId_key, txId)(
+        Contexts.local.let(txId_key, transactionStatus.txId())(
 
           try {
             invocation.proceed()
@@ -48,11 +53,9 @@ class TransactionInterceptor(transactionAttributeSource: TransactionAttributeSou
       case _ => invocation.proceed()
 
     }
+  }
 
-
-
-
-
+  def determineTransactionManager(txAttr: TransactionAttribute): TransactionManager = {
 
   }
 

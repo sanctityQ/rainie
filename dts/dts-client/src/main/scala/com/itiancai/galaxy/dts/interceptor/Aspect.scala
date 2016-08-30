@@ -1,63 +1,63 @@
 package com.itiancai.galaxy.dts.interceptor
 
-//import java.lang.reflect.Method
-//
-//import com.itiancai.galaxy.dts._
-//import com.itiancai.galaxy.dts.domain.Status
-//import com.itiancai.galaxy.dts.interceptor.annotation.{ParseActivityAnnotation, ParseActionAnnotation}
-//import com.twitter.util.Future
-//import org.aspectj.lang.ProceedingJoinPoint
-//import org.aspectj.lang.annotation.{Around, Aspect, Pointcut}
-//import org.aspectj.lang.reflect.MethodSignature
-//import org.slf4j.{Logger, LoggerFactory}
-//import org.springframework.beans.factory.annotation.Autowired
-//import org.springframework.stereotype.Component
+import java.lang.reflect.Method
+
+import com.itiancai.galaxy.dts._
+import com.itiancai.galaxy.dts.domain.Status
+import com.itiancai.galaxy.dts.interceptor.annotation.{ParseActivityAnnotation, ParseActionAnnotation}
+import com.twitter.util.Future
+import org.aspectj.lang.ProceedingJoinPoint
+import org.aspectj.lang.annotation.{Around, Aspect, Pointcut}
+import org.aspectj.lang.reflect.MethodSignature
+import org.slf4j.{Logger, LoggerFactory}
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 
 //@Aspect
 //@Component
 class ActivityAspect {
 
-//  val futureClassName: String = "com.twitter.util.Future"
-//
-//  @Autowired
-//  val controller: DTSController = null
-//
-//  private val logger: Logger = LoggerFactory.getLogger(classOf[ActivityAspect])
-//
-//
-//  /**
-//    * 定义切入点
-//    */
-//  @Pointcut("@annotation(com.itiancai.galaxy.dts.interceptor.annotation.Activity)")
-//  def activityAspect {}
-//
-//  /**
-//    * 切点处理befor after throw 三种情况
-//    *
-//    * @param joinPoint
-//    * @throws Exception
-//    */
-//  @Around("activityAspect()")
-//  def doAround(joinPoint: ProceedingJoinPoint): Object = {
-//    val method: Method = joinPoint.getSignature().asInstanceOf[MethodSignature].getMethod
-//
-//    val parseActivity = ParseActivityAnnotation(method)
-//
-//    val businessId = parseActivity.businessId(joinPoint.getArgs)
-//
-//    //事务开启
-//    logger.info("activity start methodArgs=" + JsonUtil.toJson(JsonUtil.toJson(joinPoint.getArgs)
-//      + ",businessType=" + parseActivity.businessType
-//      + ",timeOut=" + parseActivity.timeOut
-//      + ",bizId" + businessId))
-//    val txId = controller.startActivity(businessId, parseActivity.businessType, parseActivity.timeOut)
-//
-//    TXIdLocal.let_txId(txId) {
-//      handleActivityTransaction(parseActivity.isImmediately, txId, joinPoint)
-//
-//    }
+  val futureClassName: String = "com.twitter.util.Future"
 
-//  }
+  @Autowired
+  val controller: DTSController = null
+
+  private val logger: Logger = LoggerFactory.getLogger(classOf[ActivityAspect])
+
+
+  /**
+    * 定义切入点
+    */
+  @Pointcut("@annotation(com.itiancai.galaxy.dts.interceptor.annotation.Activity)")
+  def activityAspect {}
+
+  /**
+    * 切点处理befor after throw 三种情况
+    *
+    * @param joinPoint
+    * @throws Exception
+    */
+  @Around("activityAspect()")
+  def doAround(joinPoint: ProceedingJoinPoint): Object = {
+    val method: Method = joinPoint.getSignature().asInstanceOf[MethodSignature].getMethod
+
+    val parseActivity = ParseActivityAnnotation(method)
+
+    val businessId = parseActivity.businessId(joinPoint.getArgs)
+
+    //事务开启
+    logger.info("activity start methodArgs=" + JsonUtil.toJson(JsonUtil.toJson(joinPoint.getArgs)
+      + ",businessType=" + parseActivity.businessType
+      + ",timeOut=" + parseActivity.timeOut
+      + ",bizId" + businessId))
+    val txId = controller.startActivity(businessId, parseActivity.businessType, parseActivity.timeOut)
+
+    TXIdLocal.let_txId(txId) {
+      handleActivityTransaction(parseActivity.isImmediately, txId, joinPoint)
+
+    }
+
+  }
 
   /**
     * 事务协调处理
