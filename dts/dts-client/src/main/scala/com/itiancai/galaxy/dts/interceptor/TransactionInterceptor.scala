@@ -25,6 +25,7 @@ class TransactionInterceptor(transactionAttributeSource: TransactionAttributeSou
     txAttr match {
 
       case activity: ActivityAnnotationAttribute => {
+
         activity.value(invocation.getArguments)
 
         //transcation begin

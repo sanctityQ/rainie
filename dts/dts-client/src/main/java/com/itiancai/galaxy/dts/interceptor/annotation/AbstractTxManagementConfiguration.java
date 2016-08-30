@@ -61,6 +61,7 @@ public class AbstractTxManagementConfiguration implements ImportBeanDefinitionRe
         }
 
 
+        //register
 //        logger.info("111111111111111111111 ");
 
     }
@@ -79,7 +80,6 @@ public class AbstractTxManagementConfiguration implements ImportBeanDefinitionRe
         Set<String> packages = new HashSet<String>();
         packages.addAll(Arrays.asList(value));
         packages.addAll(Arrays.asList(basePackages));
-
 
         return packages;
     }

@@ -37,20 +37,21 @@ object ActivityAnnotationParse extends TransactionAnnotationParser {
   }
 }
 
-//class ActivityConfig(annotationAttributes: AnnotationAttributes) {
-//  val businessType = annotationAttributes.getClass[ActivityStateResolver]("businessType")
-//  val timeOut = annotationAttributes.getNumber("timeOut")
-//  val isImmediately = annotationAttributes.getBoolean("isImmediately")
-//}
-
 
 case class ActivityAnnotationAttribute(businessType: String, timeOut: Int, isImmediately: Boolean,
                                    param: ParamAnnotationAttribute) extends TransactionAttribute{
 
   override def name(): String = businessType
 
-  def value(args: Array[AnyRef]): String = {
-    param.value(args)
+  //default set null
+  var value_ : Option[String] = None
+
+  def parseParamValue(params: Array[AnyRef]) = {
+    this.value_ = Option(param.value(params))
+  }
+
+  def paramValue() : String = {
+    this.value_.get
   }
 
 }

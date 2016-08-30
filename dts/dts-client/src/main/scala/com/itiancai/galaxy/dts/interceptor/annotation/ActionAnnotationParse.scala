@@ -22,10 +22,11 @@ object ActionAnnotationParse extends TransactionAnnotationParser {
 
 case class ActionAnnotationAttribute(name: String, param: ParamAnnotationAttribute) extends TransactionAttribute {
 
-  def value(args: Array[AnyRef]): String = {
+  var value_ : Option[String] = None
 
-    param.value(args)
-
+  def parseParamValue(params: Array[AnyRef]) = {
+    this.value_ = Option(param.value(params))
   }
 
+  override def paramValue(): String = value_.get
 }

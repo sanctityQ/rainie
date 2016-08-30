@@ -5,4 +5,6 @@ trait TransactionAttribute {
 
   def name(): String
 
+  def paramValue(): String
+
 }
