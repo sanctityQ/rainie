@@ -52,14 +52,10 @@ public class Activity {
   public Activity() {
   }
 
-  public Activity(String txId, Status.Activity status, String businessType, Date cTime, int timeOut,
-                  Date mTime, Integer finish, String businessId) {
+  public Activity(String txId, Status.Activity status, String businessType, int timeOut, String businessId) {
     this.txId = txId;
     this.status = status.getStatus();
     this.businessType = businessType;
-    this.cTime = cTime;
-    this.mTime = mTime;
-    this.finish = finish;
     this.businessId = businessId;
     this.timeOut = timeOut;
   }

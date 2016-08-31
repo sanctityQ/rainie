@@ -41,23 +41,14 @@ public class Action {
    */
   private Date mTime;
 
-  /**
-   * 请求参数
-   */
-  private String context;
-
   public Action() {
   }
 
-  public Action(String txId, String actionId, Status.Action status, String serviceName, Date cTime,
-                Date mTime, String context, String instructionId) {
+  public Action(String txId, String actionId, Status.Action status, String serviceName, String instructionId) {
     this.txId = txId;
     this.actionId = actionId;
     this.status = status.getStatus();
     this.serviceName = serviceName;
-    this.cTime = cTime;
-    this.mTime = mTime;
-    this.context = context;
     this.instructionId = instructionId;
   }
 
@@ -123,13 +114,5 @@ public class Action {
 
   public void setmTime(Date mTime) {
     this.mTime = mTime;
-  }
-
-  public String getContext() {
-    return context;
-  }
-
-  public void setContext(String context) {
-    this.context = context;
   }
 }
