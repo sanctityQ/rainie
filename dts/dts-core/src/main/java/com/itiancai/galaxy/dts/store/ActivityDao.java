@@ -1,6 +1,7 @@
 package com.itiancai.galaxy.dts.store;
 
 import com.itiancai.galaxy.dts.domain.Activity;
+import com.itiancai.galaxy.dts.domain.Status;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface ActivityDao {
   /**
    * 更新状态
    */
-  int updateStatus(String txId, int status, int preStatus);
+  int updateStatusByTxIdStatus(String txId, int status, int preStatus);
 
   /**
    * 修改完成标志
@@ -34,7 +35,7 @@ public interface ActivityDao {
   /**
    * 开始处理tx
    */
-  int handle(String txId, int maxRetryCount);
+  int lockTXByTxIdAndStatus(String txId, Status.Activity status, int maxRetryCount);
 
   /**
    * 回收tx; 重试次数+1,未收集状态

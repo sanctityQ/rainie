@@ -30,7 +30,7 @@ public interface ActionDao {
 //    @Modifying
 //    @Transactional(value = "dtsTransactionManager")
 //    @Query("update Action set status=?2 where actionId=?1 and status=?3")
-    int updateStatus(String actionId, int status, int preStatus);
+    int updateStatusByIdStatus(String actionId, int status, int preStatus);
 
     void save(Action action);
 

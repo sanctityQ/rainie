@@ -4,17 +4,17 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.stereotype.Component;
 
 @Component
-public class IdGenerator {
+public class IDFactory {
 
   private static final String TX = "tx:";
   private static final String ACTION = "ac:";
 
-  public String getTxId(String servceName) {
-    return TX + servceName + ":" + randomHex();
+  public String generateTxId(String serviceName) {
+    return TX + serviceName + ":" + randomHex();
   }
 
-  public String getActionId(String servceName) {
-    return ACTION + servceName + ":" + randomHex();
+  public String getActionId(String serviceName) {
+    return ACTION + serviceName + ":" + randomHex();
   }
 
   private String randomHex() {
@@ -24,8 +24,8 @@ public class IdGenerator {
   }
 
   public static void main(String[] args) {
-    IdGenerator idGenerator = new IdGenerator();
-    System.out.println(idGenerator.getTxId("p2p.lending.name"));
+    IDFactory idGenerator = new IDFactory();
+    System.out.println(idGenerator.generateTxId("p2p.lending.name"));
     System.out.println(idGenerator.getActionId("p2p.lending.name"));
 
   }
