@@ -1,7 +1,8 @@
 package com.itiancai.galaxy.dts.store.impl;
 
-import com.itiancai.galaxy.dts.store.ActivityDao;
 import com.itiancai.galaxy.dts.domain.Activity;
+import com.itiancai.galaxy.dts.domain.Status;
+import com.itiancai.galaxy.dts.store.ActivityDao;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,34 +29,20 @@ public class ActivityDaoImpl implements ActivityDao {
             "status status, business_type businessType, finish, " +
             "retry_count retryCount, time_out timeOut, c_time cTime,m_time mTime " +
             "from dts_activity where tx_id=?";
-    try {
-      return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Activity.class), txId);
-    } catch (Throwable t) {
-      logger.error("findByTxId error:"+txId, t);
-      return null;
-    }
+
+    return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Activity.class), txId);
   }
 
   @Override
-  public int updateStatus(String txId, int status, int preStatus) {
+  public int updateStatusByTxIdStatus(String txId, int status, int preStatus) {
     String sql = "update dts_activity set status=? where tx_id=? and status=? and finish = 0";
-    try {
-      return jdbcTemplate.update(sql, status, txId, preStatus);
-    } catch (Throwable t) {
-      logger.error("updateStatus error:"+txId, t);
-      return 0;
-    }
+    return jdbcTemplate.update(sql, status, txId, preStatus);
   }
 
   @Override
   public int finishActivity(String txId) {
     String sql = "update dts_activity set finish=1 where tx_id=? and finish = 2";
-    try {
-      return jdbcTemplate.update(sql, txId);
-    } catch (Throwable t) {
-      logger.error("finishActivity error:"+txId, t);
-      return 0;
-    }
+    return jdbcTemplate.update(sql, txId);
   }
 
   @Override
@@ -68,12 +55,7 @@ public class ActivityDaoImpl implements ActivityDao {
             "and dat.id % ? = ? " +
             "order by dat.c_time " +
             "LIMIT 0, 199";
-    try {
-      return jdbcTemplate.query(sql, new SingleColumnRowMapper<String>(), total, index, maxRetryCount);
-    } catch (Throwable t) {
-      logger.error("listSuccessOrFail", t);
-      return null;
-    }
+    return jdbcTemplate.query(sql, new SingleColumnRowMapper<String>(), total, index, maxRetryCount);
   }
 
   @Override
@@ -87,58 +69,35 @@ public class ActivityDaoImpl implements ActivityDao {
             "and dat.retry_count < ? " +
             "order by dat.c_time " +
             "LIMIT 0, 199";
-    try {
-      return jdbcTemplate.query(sql, new SingleColumnRowMapper<String>(), total, index, maxRetryCount);
-    } catch (Throwable t) {
-      logger.error("listSuccessOrFail", t);
-      return null;
-    }
+    return jdbcTemplate.query(sql, new SingleColumnRowMapper<String>(), total, index, maxRetryCount);
   }
 
+
   @Override
-  public int handle(String txId, int maxRetryCount) {
-    String sql = "update dts_activity set finish=2, retry_count=retry_count+1 where tx_id=? and finish = 0 and retry_count < ?";
-    try {
-      return jdbcTemplate.update(sql, txId, maxRetryCount);
-    } catch (Throwable t) {
-      logger.error("handleTX error:"+txId, t);
-      return 0;
-    }
+  public int lockTXByTxIdAndStatus(String txId, Status.Activity status, int maxRetryCount) {
+    String sql = "update dts_activity set finish=2, retry_count=retry_count+1 where tx_id=? and status = ?  and finish = 0 and retry_count < ?";
+    return jdbcTemplate.update(sql, txId, status.getStatus(), maxRetryCount);
   }
 
   @Override
   public int reclaim(String txId) {
     String sql = "update dts_activity set finish=0 where tx_id=? and finish = 2";
-    try {
-      return jdbcTemplate.update(sql, txId);
-    } catch (Throwable t) {
-      logger.error("reclaimTX error:"+txId, t);
-      return 0;
-    }
+    return jdbcTemplate.update(sql, txId);
   }
 
   @Override
   public int reclaimHandleTimeout(int handleTimeout) {
-    try {
-      String sql = "update dts_activity dat " +
+    String sql = "update dts_activity dat " +
               "set dat.finish = 0 " +
               "where dat.finish = 2 " +
               "and DATE_ADD(dat.m_time,INTERVAL ? SECOND) < now() ";
-      return jdbcTemplate.update(sql, handleTimeout);
-    } catch (Throwable t) {
-      logger.error("reclaimHandleTimeout error", t);
-      return 0;
-    }
+    return jdbcTemplate.update(sql, handleTimeout);
   }
 
   @Override
   public void save(Activity entity) {
-    try {
-      String sql = "INSERT INTO dts_activity (tx_id, business_id, business_type, time_out, status) " +
-              "VALUES (?, ?, ?, ?, ?)";
-      jdbcTemplate.update(sql, entity.getTxId(), entity.getBusinessId(), entity.getBusinessType(), entity.getTimeOut(), entity.getStatus());
-    } catch (Throwable t) {
-      logger.error("findByTxId error:"+entity.getTxId(), t);
-    }
+    String sql = "INSERT INTO dts_activity (tx_id, business_id, business_type, time_out, status) " +
+            "VALUES (?, ?, ?, ?, ?)";
+    jdbcTemplate.update(sql, entity.getTxId(), entity.getBusinessId(), entity.getBusinessType(), entity.getTimeOut(), entity.getStatus());
   }
 }

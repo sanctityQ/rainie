@@ -2,7 +2,6 @@ package com.itiancai.galaxy.dts.recovery
 
 import java.util.concurrent.ConcurrentHashMap
 
-import com.itiancai.galaxy.dts.utils.NameResolver
 import com.twitter.finagle.Http
 import com.twitter.conversions.time._
 import com.twitter.finagle.http.{Method, Version, Request}

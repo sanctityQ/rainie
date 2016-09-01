@@ -1,16 +1,13 @@
 package com.itiancai.galaxy.dts.interceptor.annotation
 
-import java.lang.reflect.{AnnotatedElement, Method}
+import java.lang.reflect.AnnotatedElement
 import java.util.{Map => JMap}
 
-import com.itiancai.galaxy.dts.ExtendedBeanUtils
-import com.itiancai.galaxy.dts.interceptor.TransactionAttribute
+import com.itiancai.galaxy.dts.interceptor.{ExtendTransactionAttribute, TransactionAttribute}
 import com.itiancai.galaxy.dts.recovery.ActivityStateResolver
 import org.springframework.beans.BeanUtils
-import org.springframework.context.annotation.ImportBeanDefinitionRegistrar
 import org.springframework.core.`type`.MethodMetadata
-import org.springframework.core.annotation.{AnnotationAttributes, AnnotationUtils}
-import org.springframework.transaction.annotation.Transactional
+import org.springframework.core.annotation.AnnotationUtils
 
 
 object ActivityAnnotationParse extends TransactionAnnotationParser {
@@ -39,7 +36,7 @@ object ActivityAnnotationParse extends TransactionAnnotationParser {
 
 
 case class ActivityAnnotationAttribute(businessType: String, timeOut: Int, isImmediately: Boolean,
-                                   param: ParamAnnotationAttribute) extends TransactionAttribute{
+                                   param: ParamAnnotationAttribute) extends TransactionAttribute with ExtendTransactionAttribute{
 
   override def name(): String = businessType
 
@@ -54,6 +51,7 @@ case class ActivityAnnotationAttribute(businessType: String, timeOut: Int, isImm
     this.value_.get
   }
 
+  override def timeOut_(): Int = timeOut
 }
 
 

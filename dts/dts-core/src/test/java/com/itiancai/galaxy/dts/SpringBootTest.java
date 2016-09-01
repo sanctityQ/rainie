@@ -1,6 +1,7 @@
 package com.itiancai.galaxy.dts;
 
-import com.itiancai.galaxy.dts.utils.RecoveryClientFactory;
+//import com.itiancai.galaxy.dts.utils.RecoveryClientFactory;
+import com.itiancai.galaxy.dts.recovery.RecoveryClientSource;
 import com.twitter.finagle.Service;
 import com.twitter.finagle.http.Request;
 import com.twitter.finagle.http.Response;
@@ -29,12 +30,7 @@ public class SpringBootTest {
   }
 
   @Bean
-  public static RecoveryClientFactory recoveryClientFactory() {
-    return new RecoveryClientFactory() {
-      @Override
-      public Future<Service<Request, Response>> getClient(String sysName, String moduleName) {
-        return null;
-      }
-    };
+  public static RecoveryClientSource recoveryClientSource() {
+    return null;
   }
 }
