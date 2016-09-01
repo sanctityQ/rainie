@@ -1,11 +1,15 @@
 package com.itiancai.galaxy.dts.interceptor
 
-import com.itiancai.galaxy.dts.interceptor.annotation.AnnotationTransactionAttributeSource
+import javax.inject.Inject
+
 import org.springframework.aop.Pointcut
 import org.springframework.aop.support.AbstractBeanFactoryPointcutAdvisor
+import org.springframework.stereotype.Component
 
 
-class BeanFactoryTransactionAttributeSourceAdvisor(transactionAttributeSource: TransactionAttributeSource) extends AbstractBeanFactoryPointcutAdvisor{
+@Component
+class BeanFactoryTransactionAttributeSourceAdvisor @Inject()(transactionAttributeSource: TransactionAttributeSource)
+    extends AbstractBeanFactoryPointcutAdvisor{
 
   val pointcut: Pointcut = new TransactionAttributeSourcePointcut {
     override  def getTransactionAttributeSource: TransactionAttributeSource = transactionAttributeSource

@@ -1,6 +1,6 @@
 package com.itiancai.galaxy.inject
 
-import com.itiancai.galaxy.inject.config.{ConfigureEnvironment2, ConfigureEnvironment}
+import com.itiancai.galaxy.inject.config.ConfigureEnvironment
 import org.springframework.beans.factory.BeanFactory
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.context.annotation.{Bean, ComponentScan, Configuration, AnnotationConfigApplicationContext}
@@ -36,7 +36,7 @@ private[inject] object ContextHolder {
 
 case class Binder(beanFactory: ConfigurableBeanFactory) {
   def bind(anyRef: AnyRef): Unit = {
-    beanFactory.registerSingleton(anyRef.getClass.getCanonicalName, anyRef)
+    beanFactory.registerSingleton(anyRef.getClass.getName, anyRef)
   }
 }
 

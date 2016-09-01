@@ -262,10 +262,10 @@ lazy val dtsCore = (project in file("dts/dts-core")).
       "com.alibaba" % "druid" % versions.druid,
       "com.twitter" %% "finagle-core" % versions.finagle,
       "com.twitter" %% "finagle-stats" % versions.finagle,
-      "org.aspectj" % "aspectjweaver" % versions.aspectj,
+
       "org.springframework" % "spring-test" % versions.spring % "test",
-      "mysql" % "mysql-connector-java" % versions.mysqlConnectorJava % "test",
-      "commons-beanutils" % "commons-beanutils" % versions.commonsBeanutils
+      "mysql" % "mysql-connector-java" % versions.mysqlConnectorJava % "test"
+
     )
   ).dependsOn(
     inject,
@@ -279,11 +279,14 @@ lazy val dtsClient = (project in file("dts/dts-client")).
     moduleName := "dts-client",
     libraryDependencies ++= Seq(
       "com.google.guava" % "guava" % versions.guava,
+
+      "commons-beanutils" % "commons-beanutils" % versions.commonsBeanutils,
+      "org.aspectj" % "aspectjweaver" % versions.aspectj,
       "org.springframework" % "spring-test" % versions.spring % "test"
     )
   ).
   dependsOn(
-    dtsCore,
+
     dtsServerIdl,
     http
   )

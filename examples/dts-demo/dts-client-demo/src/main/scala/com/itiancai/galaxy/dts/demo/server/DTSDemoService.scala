@@ -1,7 +1,7 @@
 package com.itiancai.galaxy.dts.demo.server
 
 import com.itiancai.galaxy.dts.action.demo.thrift.DTSActionDemoServerApi
-import com.itiancai.galaxy.dts.annotation.{Action, ActionInstruction, Activity, ActivityBusiness}
+import com.itiancai.galaxy.dts.interceptor.annotation.{Action, ActionInstruction, Activity, ActivityBusiness}
 import com.twitter.util.Future
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component

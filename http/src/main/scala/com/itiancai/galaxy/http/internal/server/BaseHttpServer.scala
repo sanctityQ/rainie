@@ -82,6 +82,7 @@ private[galaxy] trait BaseHttpServer extends TwitterServer {
    * @param server - the [[com.twitter.finagle.Http.Server]] to configure.
    * @return a configured Http.Server.
    */
+
   protected def configureHttpServer(server: Http.Server): Http.Server = {
     server
   }

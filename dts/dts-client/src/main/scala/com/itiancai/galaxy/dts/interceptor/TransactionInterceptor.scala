@@ -1,13 +1,18 @@
 package com.itiancai.galaxy.dts.interceptor
 
+import javax.inject.Inject
+
 import com.itiancai.galaxy.dts.TransactionManager
 import com.itiancai.galaxy.dts.interceptor.annotation.{ActionAnnotationAttribute, ActivityAnnotationAttribute}
 import com.twitter.finagle.context.Contexts
 import org.aopalliance.intercept.{MethodInvocation, MethodInterceptor}
 import org.springframework.aop.support.AopUtils
+import org.springframework.stereotype.Component
 
 
-class TransactionInterceptor(transactionAttributeSource: TransactionAttributeSource) extends MethodInterceptor with Serializable{
+@Component
+class TransactionInterceptor @Inject()
+  (transactionAttributeSource: TransactionAttributeSource,transactionManager: TransactionManager) extends MethodInterceptor with Serializable{
 
   val txId_key = new Contexts.local.Key[String]
 
@@ -58,6 +63,7 @@ class TransactionInterceptor(transactionAttributeSource: TransactionAttributeSou
 
   def determineTransactionManager(txAttr: TransactionAttribute): TransactionManager = {
     null
+
   }
 
 

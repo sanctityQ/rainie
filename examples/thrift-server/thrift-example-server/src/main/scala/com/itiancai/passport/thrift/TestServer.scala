@@ -1,12 +1,12 @@
 package com.itiancai.passport.thrift
 
-import com.itiancai.galaxy.dts.recovery.RecoveryService
+import com.itiancai.galaxy.dts.TransactionHttpServer
 import com.itiancai.galaxy.thrift.filter._
 import com.itiancai.galaxy.thrift.{ThriftRouter, ThriftServer}
 import com.itiancai.passport.SpringBoot
 
 
-object TestServer extends ThriftServer with RecoveryService{
+object TestServer extends ThriftServer with TransactionHttpServer{
 
   addAnnotationClass[SpringBoot]
 
@@ -23,10 +23,10 @@ object TestServer extends ThriftServer with RecoveryService{
       .add[PassportController]
   }
 
-  override def warmup() {
-    super.warmup()
-    info("Warm-up done.")
-
-  }
+//  override def warmup() {
+//    super.warmup()
+//    info("Warm-up done.")
+//
+//  }
 
 }

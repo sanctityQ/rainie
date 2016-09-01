@@ -7,7 +7,6 @@ import org.springframework.core.BridgeMethodResolver
 import org.springframework.util.{ClassUtils, ObjectUtils}
 
 import scala.collection.JavaConverters._
-import scala.collection.concurrent.Map
 
 
 abstract class AbstractFallbackTransactionAttributeSource extends TransactionAttributeSource {
@@ -16,7 +15,7 @@ abstract class AbstractFallbackTransactionAttributeSource extends TransactionAtt
 
   val attributeCache = new ConcurrentHashMap[Object, TransactionAttribute](1024).asScala
 
-  protected override def getTransactionAttribute(method: Method, targetClass: Class[_]): TransactionAttribute = {
+   override def getTransactionAttribute(method: Method, targetClass: Class[_]): TransactionAttribute = {
 
     val cacheKey: AnyRef = getCacheKey(method, targetClass)
     val cached: AnyRef = attributeCache.get(cacheKey)
@@ -45,7 +44,7 @@ abstract class AbstractFallbackTransactionAttributeSource extends TransactionAtt
 
     var txAtt: TransactionAttribute = findTransactionAttribute(specificMethod)
     if (txAtt != null) {
-      txAtt
+      return txAtt
     }
 
     if (specificMethod ne method) {
@@ -60,13 +59,17 @@ abstract class AbstractFallbackTransactionAttributeSource extends TransactionAtt
 
   private[this] class DefaultCacheKey(val method: Method, val targetClass: Class[_]) {
 
+    def canEqual(other: Any): Boolean = other.isInstanceOf[DefaultCacheKey]
+
     override def equals(other: Any): Boolean = other match {
       case that: DefaultCacheKey => {
+
         if (other == this) {
           true
         }
 
-        this.method == that.method && ObjectUtils.nullSafeEquals(this.targetClass, that.targetClass)
+        (that canEqual this) && (this.method == that.method) &&
+            ObjectUtils.nullSafeEquals(this.targetClass, that.targetClass)
       }
       case _ => false
     }

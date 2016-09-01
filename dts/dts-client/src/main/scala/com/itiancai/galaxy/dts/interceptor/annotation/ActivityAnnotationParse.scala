@@ -43,7 +43,7 @@ case class ActivityAnnotationAttribute(businessType: String, timeOut: Int, isImm
   //default set null
   var value_ : Option[String] = None
 
-  def parseParamValue(params: Array[AnyRef]) = {
+  private[interceptor] def parseParamValue(params: Array[AnyRef]) = {
     this.value_ = Option(param.value(params))
   }
 

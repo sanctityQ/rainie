@@ -1,8 +1,8 @@
 package com.itiancai.dts.client
 
-import com.itiancai.galaxy.dts.recovery.RecoveryService
+import com.itiancai.galaxy.dts.TransactionHttpServer
 
 
-object TestHttpServer extends RecoveryService{
+object TestHttpServer extends TransactionHttpServer{
   addAnnotationClass[SpringBoot]
 }

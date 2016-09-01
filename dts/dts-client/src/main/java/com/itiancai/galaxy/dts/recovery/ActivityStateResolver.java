@@ -1,8 +1,7 @@
 package com.itiancai.galaxy.dts.recovery;
 
 /**
- *
- * 主事务回调接口
+ * 主事务协调者查询接口
  */
 public interface ActivityStateResolver {
 

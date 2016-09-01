@@ -2,11 +2,10 @@ package com.itiancai.galaxy.inject.config
 
 import java.io.IOException
 
-import org.springframework.core.env.{SystemEnvironmentPropertySource, MapPropertySource, MutablePropertySources, StandardEnvironment}
+import org.springframework.core.env.{MutablePropertySources, StandardEnvironment}
 import org.springframework.core.io.support.{ResourcePropertySource, PathMatchingResourcePatternResolver, ResourcePatternResolver}
-import org.springframework.util.Assert
 
-import scala.reflect.io.{File, Path}
+import scala.reflect.io.{File}
 
 
 class ConfigureEnvironment(env: com.twitter.app.Flag[String], configPath: com.twitter.app.Flag[String]) extends StandardEnvironment {

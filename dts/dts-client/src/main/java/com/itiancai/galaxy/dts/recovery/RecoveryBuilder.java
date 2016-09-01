@@ -36,7 +36,7 @@ public class RecoveryBuilder implements ApplicationContextAware {
     }
 
     public boolean exists(String type, String name) {
-
+        init();
         if(type.equals("action")){
             return actionServiceHandlerMap.containsKey(name);
         }

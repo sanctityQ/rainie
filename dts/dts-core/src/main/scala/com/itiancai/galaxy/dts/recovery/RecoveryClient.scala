@@ -12,7 +12,7 @@ import scala.collection.JavaConverters._
 
 class RecoveryClient(val path:String) {
 
-  val client = Http.client.withRequestTimeout(42.seconds).newService(path)
+  val client = Http.client.withRequestTimeout(5.seconds).newService(path)
 
   def request(actionRequest: ActionRequest): Future[Boolean] = {
     client(actionRequest.request).map( _.contentString == "true")

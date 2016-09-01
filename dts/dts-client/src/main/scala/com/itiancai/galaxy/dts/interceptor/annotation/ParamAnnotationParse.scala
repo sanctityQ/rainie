@@ -3,7 +3,7 @@ package com.itiancai.galaxy.dts.interceptor.annotation
 import java.lang.annotation.Annotation
 import java.lang.reflect.{Method, AnnotatedElement}
 
-import com.itiancai.galaxy.dts.ExtendedBeanUtils
+import com.itiancai.galaxy.dts.util.ExtendedBeanUtils
 import org.apache.commons.lang.StringUtils
 import org.springframework.core.MethodParameter
 

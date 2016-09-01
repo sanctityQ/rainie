@@ -12,8 +12,7 @@ import org.apache.commons.lang.StringUtils
 
 trait ThriftServer extends TwitterServer with Logging {
 
-  addFrameworkModule(
-    Slf4jBridgeModule)
+  addFrameworkModule(Slf4jBridgeModule)
 
   protected def defaultFinatraThriftPort: String = ":9999"
   private val thriftPortFlag = flag("thrift.port", defaultFinatraThriftPort, "External Thrift server port")

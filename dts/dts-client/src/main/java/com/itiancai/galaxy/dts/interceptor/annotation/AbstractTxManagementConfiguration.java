@@ -27,6 +27,8 @@ import java.util.Set;
 public class AbstractTxManagementConfiguration implements ImportBeanDefinitionRegistrar,
         ResourceLoaderAware, EnvironmentAware {
 
+
+
     private Logger logger  = LoggerFactory.getLogger(AbstractTxManagementConfiguration.class);
 
     private static final String BASE_PACKAGES = "basePackages";
@@ -46,8 +48,7 @@ public class AbstractTxManagementConfiguration implements ImportBeanDefinitionRe
 
         this.metadata = annotationMetadata;
 
-        this.enableTx = AnnotationAttributes.fromMap(
-                annotationMetadata.getAnnotationAttributes(getAnnotation().getName(), false));
+        this.enableTx = AnnotationAttributes.fromMap(annotationMetadata.getAnnotationAttributes(getAnnotation().getName(), false));
 
         if (this.enableTx == null) {
             throw new IllegalArgumentException(
@@ -61,10 +62,35 @@ public class AbstractTxManagementConfiguration implements ImportBeanDefinitionRe
         }
 
 
-        //register
-//        logger.info("111111111111111111111 ");
+        //register all bean
+
+        logger.info("111111111111111111111 ");
 
     }
+
+
+//    @Bean
+//    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+//    public BeanFactoryTransactionAttributeSourceAdvisor transactionAdvisor(){
+//        BeanFactoryTransactionAttributeSourceAdvisor transactionAdvisor = new BeanFactoryTransactionAttributeSourceAdvisor();
+//        transactionAdvisor.setAdvice();
+//    }
+//
+//    @Bean
+//    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+//    public TransactionAttributeSource transactionAttributeSource() {
+//        return new AnnotationTransactionAttributeSource();
+//    }
+//
+//    @Bean
+//    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+//    public TransactionInterceptor transactionInterceptor() {
+//        TransactionInterceptor interceptor = new TransactionInterceptor(transactionAttributeSource());
+//        if (this.txManager != null) {
+//            interceptor.setTransactionManager(this.txManager);
+//        }
+//        return interceptor;
+//    }
 
     private Iterable<String> getBasePackages() {
 
