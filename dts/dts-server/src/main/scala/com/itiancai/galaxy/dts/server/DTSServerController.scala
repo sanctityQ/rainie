@@ -1,7 +1,6 @@
 package com.itiancai.galaxy.dts.server
 
-import com.itiancai.galaxy.dts.thrift.DTSServerApi.ServicePath
-import com.itiancai.galaxy.dts.thrift.{DTSServerApi, ServiceNotFindException}
+import com.itiancai.galaxy.dts.server.DTSServerApi.ServicePath
 import com.itiancai.galaxy.thrift.Controller
 import com.twitter.util.Future
 import org.apache.commons.lang.StringUtils
