@@ -1,7 +1,7 @@
 package com.itiancai.galaxy.dts
 
 import com.itiancai.dts.client.recovery.ActivityStateResolverAImpl
-import com.itiancai.galaxy.dts.interceptor.annotation.{Param, Action, Activity}
+import com.itiancai.galaxy.dts.annotation.{Param, Action, Activity}
 import com.twitter.util.Future
 import org.springframework.stereotype.Component
 

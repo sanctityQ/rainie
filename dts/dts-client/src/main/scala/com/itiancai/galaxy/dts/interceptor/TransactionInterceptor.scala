@@ -3,7 +3,7 @@ package com.itiancai.galaxy.dts.interceptor
 import javax.inject.Inject
 
 import com.itiancai.galaxy.dts.TransactionManager
-import com.itiancai.galaxy.dts.interceptor.annotation.{ActionAnnotationAttribute, ActivityAnnotationAttribute}
+import com.itiancai.galaxy.dts.annotation.{ActionAnnotationAttribute, ActivityAnnotationAttribute}
 import com.twitter.finagle.context.Contexts
 import org.aopalliance.intercept.{MethodInvocation, MethodInterceptor}
 import org.springframework.aop.support.AopUtils

@@ -1,4 +1,4 @@
-package com.itiancai.galaxy.dts.interceptor.annotation
+package com.itiancai.galaxy.dts.annotation
 
 import java.lang.reflect.Method
 
@@ -15,11 +15,11 @@ class AnnotationTransactionAttributeSource extends AbstractFallbackTransactionAt
       HashSet[TransactionAnnotationParser](ActivityAnnotationParse, ActionAnnotationParse)
 
   override def findTransactionAttribute(specificMethod: Method): TransactionAttribute = {
-    annotationParsers.foreach(annotationParser => {
+    for (annotationParser <- annotationParsers) {
       val attr = annotationParser.parseTransactionAnnotation(specificMethod)
       if (attr.isDefined)
-        attr
-    })
+        return attr.get
+    }
     null
   }
 
