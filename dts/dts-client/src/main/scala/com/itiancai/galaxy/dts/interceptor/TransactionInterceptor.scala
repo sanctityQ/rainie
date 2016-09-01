@@ -26,7 +26,7 @@ class TransactionInterceptor(transactionAttributeSource: TransactionAttributeSou
 
       case activity: ActivityAnnotationAttribute => {
 
-        activity.value(invocation.getArguments)
+        activity.parseParamValue(invocation.getArguments)
 
         //transcation begin
         val transactionStatus = tm.begin(activity)
@@ -57,7 +57,7 @@ class TransactionInterceptor(transactionAttributeSource: TransactionAttributeSou
   }
 
   def determineTransactionManager(txAttr: TransactionAttribute): TransactionManager = {
-
+    null
   }
 
 
