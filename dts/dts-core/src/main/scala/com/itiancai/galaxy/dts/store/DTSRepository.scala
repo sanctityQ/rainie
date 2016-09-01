@@ -21,6 +21,13 @@ class DTSRepository {
   val logger = LoggerFactory.getLogger(getClass)
 
   /**
+    * 查询主事务
+    * @param txId
+    * @return
+    */
+  def findActivity(txId: String) = activityDao.findByTxId(txId)
+
+  /**
     * 同步主事务状态
     *
     * @param txId
@@ -102,6 +109,7 @@ class DTSRepository {
 
   /**
     * 子事务prepare
+    *
     * @param actionId
     */
   @Transactional(value = "dtsTransactionManager")

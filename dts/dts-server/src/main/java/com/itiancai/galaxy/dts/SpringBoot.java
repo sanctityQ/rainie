@@ -1,18 +1,14 @@
 package com.itiancai.galaxy.dts;
 
+import com.itiancai.galaxy.dts.boot.TXBoot;
+
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportResource;
-
-/**
- * Created by bao on 15/11/17.
- */
+import org.springframework.context.annotation.Import;
 
 @Configuration
-//@EnableAspectJAutoProxy
 @ComponentScan(basePackages = "com.itiancai.galaxy.dts")
-//@PropertySource({"classpath:/config/${galaxias.env}/server.properties"})
-@ImportResource({"applicationContext-dts.xml"})
+@Import(TXBoot.class)
 public class SpringBoot {
 
 }
