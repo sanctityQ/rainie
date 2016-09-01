@@ -10,7 +10,7 @@ import org.springframework.aop.support.AopUtils
 import org.springframework.stereotype.Component
 
 
-@Component
+@Component("dtsTransactionInterceptor")
 class TransactionInterceptor @Inject()
   (transactionAttributeSource: TransactionAttributeSource,transactionManager: TransactionManager) extends MethodInterceptor with Serializable{
 

@@ -9,11 +9,12 @@ object ActionAnnotationParse extends TransactionAnnotationParser {
 
   val paramAnnotationParse: ParamAnnotationParse = new ParamAnnotationParse
 
-  override def parseTransactionAnnotation(annotatedElement: AnnotatedElement): TransactionAttribute = {
+  override def parseTransactionAnnotation(annotatedElement: AnnotatedElement): Option[TransactionAttribute] = {
 
     val action = AnnotationUtils.getAnnotation(annotatedElement, classOf[Action])
-
-    ActionAnnotationAttribute(action.name(), paramAnnotationParse.parseTransactionAnnotation(annotatedElement))
+    if(action == null)
+      return None
+    Some(ActionAnnotationAttribute(action.name(), paramAnnotationParse.parseTransactionAnnotation(annotatedElement)))
 
   }
 

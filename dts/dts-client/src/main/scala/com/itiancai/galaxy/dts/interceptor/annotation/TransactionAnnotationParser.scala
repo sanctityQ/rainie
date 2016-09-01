@@ -9,6 +9,6 @@ trait TransactionAnnotationParser {
 
 
 
-  def parseTransactionAnnotation(annotatedElement: AnnotatedElement): TransactionAttribute
+  def parseTransactionAnnotation(annotatedElement: AnnotatedElement): Option[TransactionAttribute]
 
 }

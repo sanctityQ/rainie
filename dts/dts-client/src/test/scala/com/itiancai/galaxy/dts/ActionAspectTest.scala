@@ -3,7 +3,6 @@ package com.itiancai.galaxy.dts
 import java.lang.reflect.Method
 
 import com.itiancai.dts.client.recovery.ActivityStateResolverAImpl
-import com.itiancai.galaxy.dts.interceptor.{ActivityAspect, ActionAspect}
 import com.itiancai.galaxy.dts.interceptor.annotation._
 import org.mockito.Mockito._
 import org.scalatest.{BeforeAndAfterEach, WordSpec}

@@ -25,6 +25,7 @@ class ActionTransactionManager @Inject()
     dtsRepository.prepareAction(actionId)
   }
 
+  //TODO TXIDLocal的问题,begin只有主事务使用
   def begin(attribute: TransactionAttribute): TransactionStatus = {
     val actionId = idFactory.getActionId(attribute.name)
     val action = new Action(TXIdLocal.current_txId(), actionId, Status.Action.UNKNOWN,

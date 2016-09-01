@@ -18,14 +18,15 @@ abstract class AbstractFallbackTransactionAttributeSource extends TransactionAtt
    override def getTransactionAttribute(method: Method, targetClass: Class[_]): TransactionAttribute = {
 
     val cacheKey: AnyRef = getCacheKey(method, targetClass)
-    val cached: AnyRef = attributeCache.get(cacheKey)
+    val cached: Option[Any] = attributeCache.get(cacheKey)
 
-    if (cached != null) {
+    if (!cached.isEmpty) {
       return cached.asInstanceOf[TransactionAttribute]
     } else {
-      val txAtt: TransactionAttribute = computeTransactionAttribute(method, targetClass)
-      this.attributeCache.put(cacheKey, txAtt)
-      txAtt
+      val txAtt = computeTransactionAttribute(method, targetClass)
+      //TODO ????
+      if(txAtt.isDefined) this.attributeCache.put(cacheKey, txAtt.get)
+      null
     }
 
   }
@@ -34,28 +35,30 @@ abstract class AbstractFallbackTransactionAttributeSource extends TransactionAtt
     new DefaultCacheKey(method, targetClass)
   }
 
-  protected def findTransactionAttribute(specificMethod: Method): TransactionAttribute
 
-  def computeTransactionAttribute(method: Method, targetClass: Class[_]): TransactionAttribute = {
+  def computeTransactionAttribute(method: Method, targetClass: Class[_]): Option[TransactionAttribute] = {
     val userClass: Class[_] = ClassUtils.getUserClass(targetClass)
     val specificMethod: Method = BridgeMethodResolver.findBridgedMethod(
       ClassUtils.getMostSpecificMethod(method, userClass)
     )
 
-    var txAtt: TransactionAttribute = findTransactionAttribute(specificMethod)
-    if (txAtt != null) {
+    var txAtt  = Option(findTransactionAttribute(specificMethod))
+    if (txAtt.isDefined) {
       return txAtt
     }
 
     if (specificMethod ne method) {
-      txAtt = findTransactionAttribute(method)
-      if (txAtt != null) {
+      txAtt = Option(findTransactionAttribute(method))
+      if (txAtt.isDefined) {
         return txAtt
       }
     }
 
-    null
+    None
   }
+
+  protected def findTransactionAttribute(specificMethod: Method): TransactionAttribute
+
 
   private[this] class DefaultCacheKey(val method: Method, val targetClass: Class[_]) {
 
@@ -65,7 +68,7 @@ abstract class AbstractFallbackTransactionAttributeSource extends TransactionAtt
       case that: DefaultCacheKey => {
 
         if (other == this) {
-          true
+         return true
         }
 
         (that canEqual this) && (this.method == that.method) &&

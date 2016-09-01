@@ -26,11 +26,13 @@ object ActivityAnnotationParse extends TransactionAnnotationParser {
 
   }
 
-  override def parseTransactionAnnotation(annotatedElement: AnnotatedElement): TransactionAttribute = {
+  override def parseTransactionAnnotation(annotatedElement: AnnotatedElement): Option[TransactionAttribute] = {
     val ann: Activity = AnnotationUtils.getAnnotation(annotatedElement, classOf[Activity])
+    if(ann == null)
+      return None
     val activityAnno = BeanUtils.instantiateClass(ann.businessType(), classOf[ActivityStateResolver])
-    ActivityAnnotationAttribute(activityAnno.name(), ann.timeOut(), ann.isImmediately,
-      paramAnnotationParse.parseTransactionAnnotation(annotatedElement))
+    Some(ActivityAnnotationAttribute(activityAnno.name(), ann.timeOut(), ann.isImmediately,
+      paramAnnotationParse.parseTransactionAnnotation(annotatedElement)))
   }
 }
 

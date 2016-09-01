@@ -17,7 +17,7 @@ class AnnotationTransactionAttributeSource extends AbstractFallbackTransactionAt
   override def findTransactionAttribute(specificMethod: Method): TransactionAttribute = {
     annotationParsers.foreach(annotationParser => {
       val attr = annotationParser.parseTransactionAnnotation(specificMethod)
-      if (attr != null)
+      if (attr.isDefined)
         attr
     })
     null

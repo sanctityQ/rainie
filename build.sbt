@@ -286,7 +286,7 @@ lazy val dtsClient = (project in file("dts/dts-client")).
     )
   ).
   dependsOn(
-
+    dtsCore,
     dtsServerIdl,
     http
   )
