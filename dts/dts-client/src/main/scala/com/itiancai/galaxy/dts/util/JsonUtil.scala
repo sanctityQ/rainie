@@ -1,4 +1,4 @@
-package com.itiancai.galaxy.dts
+package com.itiancai.galaxy.dts.util
 
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule

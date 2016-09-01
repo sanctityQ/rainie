@@ -1,4 +1,4 @@
-package com.itiancai.galaxy.dts;
+package com.itiancai.galaxy.dts.util;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.BeanUtilsBean;

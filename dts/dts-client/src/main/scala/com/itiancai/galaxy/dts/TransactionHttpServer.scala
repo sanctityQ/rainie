@@ -1,6 +1,6 @@
-package com.itiancai.galaxy.dts.recovery
+package com.itiancai.galaxy.dts
 
-
+import com.itiancai.galaxy.dts.recovery.{RecoveryBuilder, Route, Routers}
 import com.itiancai.galaxy.http.internal.server.BaseHttpServer
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response, Status, Version}
@@ -9,7 +9,7 @@ import com.twitter.util.Future
 import scala.collection.mutable.ArrayBuffer
 
 
-trait RecoveryService extends BaseHttpServer { self =>
+trait TransactionHttpServer extends BaseHttpServer { self =>
 
   val response404 = Response(Version.Http11, Status.NotFound)
 
@@ -25,7 +25,6 @@ trait RecoveryService extends BaseHttpServer { self =>
   override def warmup(){
 
     super.warmup()
-//    new TxComponentProvider(environment).findCandidateComponents("");
 
     val activity = injector.instance[RecoveryBuilder]
 
