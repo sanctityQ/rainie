@@ -1,14 +1,10 @@
 package com.itiancai.galaxy.dts.server
 
-import com.itiancai.galaxy.dts.utils.NameResolver
 import com.twitter.finagle.http.service.RoutingService
-import com.twitter.finagle.{Http, Service}
 import com.twitter.finagle.http.{Request, Response}
+import com.twitter.finagle.{Http, Service}
 import com.twitter.util.{Await, Future}
 
-/**
-  * Created by bao on 16/8/5.
-  */
 object HttpServer extends App {
 
   val service1: Service[Request, Response] = new Service[Request, Response] {
@@ -29,8 +25,8 @@ object HttpServer extends App {
 
   val routingService =
     RoutingService.byPath {
-      case NameResolver.ACTIVITY_HANDLE_PATH => service1
-      case NameResolver.ACTION_HANDLE_PATH => service2
+      case "/dts/activity" => service1
+      case "/dts/action" => service2
     }
 
   val server = Http.server.serve(":8080", routingService)
