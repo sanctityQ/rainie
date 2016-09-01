@@ -2,12 +2,12 @@ package com.itiancai.galaxy.dts.interceptor.config
 
 import javax.annotation.PostConstruct
 
-import com.itiancai.galaxy.dts.recovery.{RecoveryClient, RecoverServiceName, RecoveryClientSource}
-import com.itiancai.galaxy.dts.thrift.DTSServerApi
+import com.itiancai.galaxy.dts.recovery.{RecoverServiceName, RecoveryClient, RecoveryClientSource}
+import com.itiancai.galaxy.dts.server.DTSServerApi
 import com.twitter.finagle.Thrift
 import com.twitter.util.Await
-import org.springframework.stereotype.Component
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Component
 
 @Component
 class RecoveryClientSourceConfig extends RecoveryClientSource{

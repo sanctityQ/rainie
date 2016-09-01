@@ -11,7 +11,7 @@ import com.twitter.util.Future
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
-@Component
+@Component("actionTM")
 class ActionTransactionManager @Inject()
 (
   dtsRepository: DTSRepository,

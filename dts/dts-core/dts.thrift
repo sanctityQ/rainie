@@ -1,5 +1,4 @@
-namespace java com.itiancai.galaxy.dts.javathrift
-#@namespace scala com.itiancai.galaxy.dts.thrift
+#@namespace scala com.itiancai.galaxy.dts.server
 
 exception ServiceNotFindException {
 

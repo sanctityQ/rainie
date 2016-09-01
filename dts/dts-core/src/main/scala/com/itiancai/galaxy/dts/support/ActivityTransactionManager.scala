@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 
-@Component
+@Component("activityTM")
 class ActivityTransactionManager @Inject()
 (
   dtsRepository: DTSRepository,
