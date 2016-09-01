@@ -33,7 +33,7 @@ trait RecoveryClientSource {
     val cached: Option[Any] = attributeCache.get(recoverServiceName)
 
     if (cached.isDefined) {
-      return cached.asInstanceOf[RecoveryClient]
+      return cached.get.asInstanceOf[RecoveryClient]
     }
 
     val recoveryClient = findRecoveryClient(recoverServiceName)

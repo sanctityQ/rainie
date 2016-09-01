@@ -7,10 +7,13 @@ import com.itiancai.galaxy.dts.annotation.{ActionAnnotationAttribute, ActivityAn
 import com.twitter.finagle.context.Contexts
 import org.aopalliance.intercept.{MethodInvocation, MethodInterceptor}
 import org.springframework.aop.support.AopUtils
+import org.springframework.beans.factory.config.BeanDefinition
+import org.springframework.context.annotation.{Bean, Role}
 import org.springframework.stereotype.Component
 
 
 @Component("dtsTransactionInterceptor")
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 class TransactionInterceptor @Inject()
   (transactionAttributeSource: TransactionAttributeSource,transactionManager: TransactionManager) extends MethodInterceptor with Serializable{
 
