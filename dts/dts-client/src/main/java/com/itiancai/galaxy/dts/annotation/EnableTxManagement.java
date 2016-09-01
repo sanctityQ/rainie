@@ -1,4 +1,4 @@
-package com.itiancai.galaxy.dts.interceptor.annotation;
+package com.itiancai.galaxy.dts.annotation;
 
 import org.springframework.context.annotation.Import;
 

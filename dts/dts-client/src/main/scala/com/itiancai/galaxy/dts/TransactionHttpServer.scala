@@ -11,6 +11,8 @@ import scala.collection.mutable.ArrayBuffer
 
 trait TransactionHttpServer extends BaseHttpServer { self =>
 
+
+
   val response404 = Response(Version.Http11, Status.NotFound)
 
   val routers = ArrayBuffer[Route]()

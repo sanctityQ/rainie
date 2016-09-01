@@ -3,7 +3,7 @@ package com.itiancai.galaxy.dts.interceptor
 import javax.annotation.Resource
 import javax.inject.Inject
 
-import com.itiancai.galaxy.dts.interceptor.annotation.{ActionAnnotationAttribute, ActivityAnnotationAttribute}
+import com.itiancai.galaxy.dts.annotation.{ActionAnnotationAttribute, ActivityAnnotationAttribute}
 import com.itiancai.galaxy.dts.support.ActionTransactionManager
 import com.itiancai.galaxy.dts.{TXIdLocal, TransactionManager}
 import com.twitter.finagle.context.Contexts

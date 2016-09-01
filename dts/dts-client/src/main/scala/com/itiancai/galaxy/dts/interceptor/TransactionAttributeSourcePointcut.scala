@@ -2,6 +2,7 @@ package com.itiancai.galaxy.dts.interceptor
 
 import java.lang.reflect.Method
 
+import com.itiancai.galaxy.dts.recovery.{RecoverServiceName, RecoveryClientSource}
 import org.springframework.aop.support.StaticMethodMatcherPointcut
 
 abstract class TransactionAttributeSourcePointcut extends StaticMethodMatcherPointcut with Serializable {
@@ -10,9 +11,20 @@ abstract class TransactionAttributeSourcePointcut extends StaticMethodMatcherPoi
 
     val tas: TransactionAttributeSource = getTransactionAttributeSource
 
+    if (tas == null)
+      return false
+
+    val attribute = tas.getTransactionAttribute(method, targetClass)
+
+    if(attribute == null)
+      return false
+    //初始化client
+    getRecoveryClientSource.getTransactionClient(RecoverServiceName.parse(attribute.name()))
     return (tas == null || tas.getTransactionAttribute(method, targetClass) != null)
 
   }
 
   def getTransactionAttributeSource: TransactionAttributeSource
+
+  def getRecoveryClientSource: RecoveryClientSource
 }

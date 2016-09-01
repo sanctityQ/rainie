@@ -2,9 +2,9 @@ package com.itiancai.galaxy.dts.support
 
 import javax.annotation.PostConstruct
 
-import com.itiancai.galaxy.dts.thrift.DTSServerApi
+import com.itiancai.galaxy.dts.server.DTSServerApi
+import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response}
-import com.twitter.finagle.{Http, Service}
 import com.twitter.util.Future
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -22,7 +22,7 @@ class ClientFactory {
 
   private val pathMap = mutable.Map[String, String]()
 
-  private var serverClient: DTSServerApi.FutureIface = null
+  private var serverClient: DTSServerAapi.FutureIface = null
 
   @PostConstruct
   def init(): Unit = {

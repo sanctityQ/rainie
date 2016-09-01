@@ -2,9 +2,9 @@ package com.itiancai.galaxy.dts;
 
 
 import com.itiancai.dts.client.recovery.ActivityStateResolverAImpl;
-import com.itiancai.galaxy.dts.interceptor.annotation.Action;
-import com.itiancai.galaxy.dts.interceptor.annotation.Activity;
-import com.itiancai.galaxy.dts.interceptor.annotation.Param;
+import com.itiancai.galaxy.dts.annotation.Action;
+import com.itiancai.galaxy.dts.annotation.Activity;
+import com.itiancai.galaxy.dts.annotation.Param;
 import org.springframework.stereotype.Component;
 
 @Component

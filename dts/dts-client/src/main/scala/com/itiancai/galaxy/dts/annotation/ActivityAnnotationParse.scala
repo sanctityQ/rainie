@@ -1,4 +1,4 @@
-package com.itiancai.galaxy.dts.interceptor.annotation
+package com.itiancai.galaxy.dts.annotation
 
 import java.lang.reflect.AnnotatedElement
 import java.util.{Map => JMap}
@@ -45,7 +45,7 @@ case class ActivityAnnotationAttribute(businessType: String, timeOut: Int, isImm
   //default set null
   var value_ : Option[String] = None
 
-  private[interceptor] def parseParamValue(params: Array[AnyRef]) = {
+  private[dts] def parseParamValue(params: Array[AnyRef]) = {
     this.value_ = Option(param.value(params))
   }
 

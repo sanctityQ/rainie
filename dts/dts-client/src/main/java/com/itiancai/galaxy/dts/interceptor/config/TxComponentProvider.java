@@ -1,6 +1,6 @@
 package com.itiancai.galaxy.dts.interceptor.config;
 
-import com.itiancai.galaxy.dts.interceptor.annotation.Activity;
+import com.itiancai.galaxy.dts.annotation.Activity;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.annotation.ScannedGenericBeanDefinition;
@@ -37,9 +37,9 @@ public class TxComponentProvider extends ClassPathScanningCandidateComponentProv
                 return;
             }
 
-            String businessType = (String)attributes.get("businessType");
-
-            logger.info("businessType=");
+//            String businessType = (String)attributes.get("businessType");
+//
+//            logger.info("businessType=");
 //            attributes.get()
         }
     }

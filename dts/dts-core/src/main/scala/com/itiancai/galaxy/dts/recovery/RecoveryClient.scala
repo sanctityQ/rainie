@@ -30,9 +30,9 @@ trait RecoveryClientSource {
 
   def getTransactionClient(recoverServiceName: RecoverServiceName): RecoveryClient = {
 
-    val cached: AnyRef = attributeCache.get(recoverServiceName)
+    val cached: Option[Any] = attributeCache.get(recoverServiceName)
 
-    if (cached != null) {
+    if (cached.isDefined) {
       return cached.asInstanceOf[RecoveryClient]
     }
 
