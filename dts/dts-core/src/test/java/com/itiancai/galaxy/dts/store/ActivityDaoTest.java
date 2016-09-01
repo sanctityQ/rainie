@@ -3,10 +3,11 @@ package com.itiancai.galaxy.dts.store;
 import com.itiancai.galaxy.dts.SpringBootTest;
 import com.itiancai.galaxy.dts.domain.Action;
 import com.itiancai.galaxy.dts.domain.Activity;
-import com.itiancai.galaxy.dts.domain.IdGenerator;
+import com.itiancai.galaxy.dts.domain.IDFactory;
 import com.itiancai.galaxy.dts.domain.Status;
 
 import org.junit.Test;
+import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
@@ -15,11 +16,8 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Created by bao on 16/8/5.
- */
 @ContextConfiguration(classes = {SpringBootTest.class})
-@TransactionConfiguration(defaultRollback = false, transactionManager = "dtsTransactionManager")
+@TransactionConfiguration(defaultRollback = true, transactionManager = "dtsTransactionManager")
 public class ActivityDaoTest extends AbstractTransactionalJUnit4SpringContextTests {
 
 
@@ -31,20 +29,62 @@ public class ActivityDaoTest extends AbstractTransactionalJUnit4SpringContextTes
 
   @Test
   public void testFindByTxId() {
-    Activity activity = activityDao.findByTxId("tx:p2p:interact:triggerInteract:156cfe83f6a677b88ea");
-    System.out.println(activity);
+    Activity activity = new Activity();
+    activity.setBusinessId("BusinessId");
+    activity.setBusinessType("p2p:interact:triggerInteract");
+    activity.setStatus(Status.Activity.UNKNOWN.getStatus());
+    String txId = new IDFactory().generateTxId("p2p:interact:triggerInteract");
+    activity.setTxId(txId+"");
+    activity.setTimeOut(1000);
+    activityDao.save(activity);
+
+    Activity activity1 = activityDao.findByTxId(txId);
+    Assert.assertTrue(activity1 != null);
   }
 
   @Test
-  public void testSave() {
+  public void testUpdateStatusByTxIdStatus(){
     Activity activity = new Activity();
-    activity.setBusinessId("BusinessIdxxx2");
+    activity.setBusinessId("BusinessId");
     activity.setBusinessType("p2p:interact:triggerInteract");
-    activity.setStatus(Status.Activity.SUCCESS.getStatus());
-    String txId = new IdGenerator().getTxId("p2p:interact:triggerInteract");
-    activity.setTxId(txId + "");
+    activity.setStatus(Status.Activity.UNKNOWN.getStatus());
+    String txId = new IDFactory().generateTxId("p2p:interact:triggerInteract");
+    activity.setTxId(txId+"");
     activity.setTimeOut(1000);
     activityDao.save(activity);
+
+    int num = activityDao.updateStatusByTxIdStatus(txId,Status.Activity.SUCCESS.getStatus(),Status.Activity.UNKNOWN.getStatus());
+    Assert.assertTrue(num > 0);
+
+  }
+
+  @Test
+  public void testFinishActivityAndlockTXByTxIdAndStatus(){
+    Activity activity = new Activity();
+    activity.setBusinessId("BusinessId");
+    activity.setBusinessType("p2p:interact:triggerInteract");
+    activity.setStatus(Status.Activity.SUCCESS.getStatus());
+    String txId = new IDFactory().generateTxId("p2p:interact:triggerInteract");
+    activity.setTxId(txId+"");
+    activity.setTimeOut(1000);
+    activityDao.save(activity);
+    activityDao.lockTXByTxIdAndStatus(txId,Status.Activity.SUCCESS,10);
+    int num = activityDao.finishActivity(txId);
+    Assert.assertTrue(num == 1);
+  }
+
+  @Test
+  public void testListUnknownAndTimeout(){
+    Activity activity = new Activity();
+    activity.setBusinessId("BusinessId");
+    activity.setBusinessType("p2p:interact:triggerInteract");
+    activity.setStatus(Status.Activity.UNKNOWN.getStatus());
+    String txId = new IDFactory().generateTxId("p2p:interact:triggerInteract");
+    activity.setTxId(txId+"");
+    activity.setTimeOut(1000);
+    activityDao.save(activity);
+    List<String> list = activityDao.listUnknownAndTimeout(1,1,10);
+    Assert.assertTrue(list.isEmpty());
   }
 
   @Test
@@ -63,25 +103,23 @@ public class ActivityDaoTest extends AbstractTransactionalJUnit4SpringContextTes
       activity.setBusinessId("BusinessId"+i);
       activity.setBusinessType("p2p:interact:triggerInteract");
       activity.setStatus(Status.Activity.SUCCESS.getStatus());
-      String txId = new IdGenerator().getTxId("p2p:interact:triggerInteract");
+      String txId = new IDFactory().generateTxId("p2p:interact:triggerInteract");
       activity.setTxId(txId+"");
       activity.setTimeOut(1000);
 
       Action action1 = new Action();
       action1.setTxId(txId+"");
-      action1.setActionId(new IdGenerator().getActionId("p2p:lending:bindInviteCode"));
+      action1.setActionId(new IDFactory().getActionId("p2p:lending:bindInviteCode"));
       action1.setServiceName("p2p:lending:bindInviteCode");
       action1.setStatus(Status.Action.PREPARE.getStatus());
       action1.setInstructionId(UUID.randomUUID().toString());
-      action1.setContext("context");
 
       Action action2 = new Action();
       action2.setTxId(txId+"");
-      action2.setActionId(new IdGenerator().getActionId("p2p:user:bindInviteCode"));
+      action2.setActionId(new IDFactory().getActionId("p2p:user:bindInviteCode"));
       action2.setServiceName("p2p:user:bindInviteCode");
       action2.setStatus(Status.Action.PREPARE.getStatus());
       action2.setInstructionId(UUID.randomUUID().toString());
-      action2.setContext("context");
 
       activityDao.save(activity);
       actionDao.save(action1);
