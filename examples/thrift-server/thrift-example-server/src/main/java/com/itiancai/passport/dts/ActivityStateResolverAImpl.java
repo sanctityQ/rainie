@@ -13,6 +13,6 @@ public class ActivityStateResolverAImpl implements ActivityStateResolver {
 
     @Override
     public String name() {
-        return "activityB";
+        return "p2p:user:test1";
     }
 }

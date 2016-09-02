@@ -1,6 +1,6 @@
 package com.itiancai.passport;
 
-import com.itiancai.galaxy.dts.interceptor.annotation.EnableTxManagement;
+import com.itiancai.galaxy.dts.annotation.EnableTxManagement;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
