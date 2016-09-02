@@ -147,10 +147,13 @@ class DTSRepository {
     logger.info(s"reclaimHandleTimeoutTX count:${count}")
   }
 
-
-
   def listActionByTxId(txId:String):List[Action] = {
     actionDao.listByTxId(txId).toList
+  }
+
+  @Transactional(value = "dtsTransactionManager")
+  def incrementRetryCountByTxId(txId: String): Unit = {
+    activityDao.incrementRetryCountByTxId(txId)
   }
 }
 

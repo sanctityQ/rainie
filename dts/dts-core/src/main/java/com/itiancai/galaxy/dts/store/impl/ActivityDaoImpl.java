@@ -51,8 +51,8 @@ public class ActivityDaoImpl implements ActivityDao {
             "from dts_activity dat " +
             "where dat.finish = 0 " +
             "and dat.status in (2, 3) " +
-            "and dat.retry_count < ? " +
             "and dat.id % ? = ? " +
+            "and dat.retry_count < ? " +
             "order by dat.c_time " +
             "LIMIT 0, 199";
     return jdbcTemplate.query(sql, new SingleColumnRowMapper<String>(), total, index, maxRetryCount);
@@ -99,5 +99,11 @@ public class ActivityDaoImpl implements ActivityDao {
     String sql = "INSERT INTO dts_activity (tx_id, business_id, business_type, time_out, status) " +
             "VALUES (?, ?, ?, ?, ?)";
     jdbcTemplate.update(sql, entity.getTxId(), entity.getBusinessId(), entity.getBusinessType(), entity.getTimeOut(), entity.getStatus());
+  }
+
+  @Override
+  public int incrementRetryCountByTxId(String txId) {
+    String sql = "update dts_activity set retry_count=retry_count+1 where tx_id=? and finish = 0";
+    return jdbcTemplate.update(sql, txId);
   }
 }

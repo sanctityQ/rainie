@@ -48,4 +48,10 @@ public interface ActivityDao {
   int reclaimHandleTimeout(int handleTimeout);
 
   void save(Activity entity);
+
+  /**
+   * 增加处理次数
+   * @param txId
+   */
+  int incrementRetryCountByTxId(String txId);
 }

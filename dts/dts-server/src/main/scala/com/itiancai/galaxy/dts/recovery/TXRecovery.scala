@@ -1,10 +1,10 @@
-package com.itiancai.galaxy.dts.domain
+package com.itiancai.galaxy.dts.recovery
 
 import java.util.concurrent.{Executors, TimeUnit}
 import javax.annotation.PostConstruct
 import javax.inject.Inject
 
-import com.itiancai.galaxy.dts.recovery.{ActivityStatusRequest, RecoverServiceName, RecoveryClientSource}
+import com.itiancai.galaxy.dts.domain.Status
 import com.itiancai.galaxy.dts.repository.DTSRepository
 import com.itiancai.galaxy.dts.{TransactionManager, TransactionStatus}
 import com.twitter.util.{Await, Future}
@@ -34,37 +34,46 @@ class TXRecovery @Inject()
       recoveryScheduled.scheduleAtFixedRate(new Runnable {
         override def run(): Unit = {
           val txList = dtsRepository.listUnfinished(index, consumerPoolSize)
-          txList.foreach(txId => {
-            //处理tx
-            logger.info(s"Consumer ${index} handle tx[${txId}] begin")
-            try {
-              val result_f = synchroActivityStatus(txId).map(status => {
-                status match {
-                  case Status.Activity.SUCCESS => {
-                    txManager.commit(new TransactionStatus{
-                      override def txId(): String = txId
-                    })
+          if(txList.isEmpty) {
+            logger.debug(s"Consumer ${index} handle sleep")
+            Thread.sleep(1000)
+          } else {
+            logger.info(s"Consumer ${index} handle txList:[${txList}]")
+            txList.foreach(txId_ => {
+              //处理tx
+              logger.info(s"Consumer ${index} handle tx[${txId_}] begin")
+              try {
+                val result_f = synchroActivityStatus(txId_).map(status => {
+                  val txStatus = new TransactionStatus{
+                    override def txId(): String = txId_
                   }
-                  case Status.Activity.FAIL => {
-                    txManager.rollback(new TransactionStatus{
-                      override def txId(): String = txId
-                    })
+                  status match {
+                    case Status.Activity.SUCCESS => {
+                      //提交事务
+                      txManager.commit(txStatus)
+                    }
+                    case Status.Activity.FAIL => {
+                      //回归事务
+                      txManager.rollback(txStatus)
+                    }
+                    case _ => {
+                      //同步状态失败,增加处理次数
+                      dtsRepository.incrementRetryCountByTxId(txId_)
+                      logger.warn(s"Consumer ${index} synchroActivityStatus tx[${txId_}] status${status}")
+                    }
                   }
-                  case _ => {
-                    logger.warn(s"Consumer ${index} synchroActivityStatus tx[${txId}] status${status}")
-                  }
+                })
+                Await.result(result_f)
+              } catch {
+                case t:Throwable => {
+                  logger.error(s"Consumer ${index} handle tx[${txId_}]  error", t)
                 }
-              })
-              Await.result(result_f)
-            } catch {
-              case t:Throwable => {
-                logger.error(s"Consumer ${index} handle tx[${txId}]  error", t)
               }
-            }
-            logger.info(s"Consumer ${index} handle tx[${txId}] end")
-          })
+              logger.info(s"Consumer ${index} handle tx[${txId_}] end")
+            })
+          }
         }
-      }, 1000, 500, TimeUnit.MILLISECONDS)
+      }, 1000, 100, TimeUnit.MILLISECONDS)
     }
 
     //回收处理超时任务
@@ -76,7 +85,7 @@ class TXRecovery @Inject()
         dtsRepository.reclaimHandleTimeoutTX(10)
         logger.info("TXProducer execute end ...")
       }
-    }, 1, 10, TimeUnit.SECONDS)
+    }, 1000, 10000, TimeUnit.MILLISECONDS)
   }
 
 
@@ -100,9 +109,13 @@ class TXRecovery @Inject()
             //1失败
             case 1 => Status.Activity.FAIL
             //TODO 其他?
-            case _ => throw new RuntimeException("SynchroException")
+            case _ => Status.Activity.UNKNOWN
           }
+        })
+        .handle({
+          case t: Throwable => Status.Activity.UNKNOWN
         })
     }
   }
 }
+

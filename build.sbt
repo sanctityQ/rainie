@@ -279,7 +279,6 @@ lazy val dtsClient = (project in file("dts/dts-client")).
     moduleName := "dts-client",
     libraryDependencies ++= Seq(
       "com.google.guava" % "guava" % versions.guava,
-
       "commons-beanutils" % "commons-beanutils" % versions.commonsBeanutils,
       "org.aspectj" % "aspectjweaver" % versions.aspectj,
       "org.springframework" % "spring-test" % versions.spring % "test"
@@ -299,7 +298,7 @@ lazy val dtsServer = (project in file("dts/dts-server")).
     libraryDependencies ++= Seq(
       "commons-lang" % "commons-lang" % versions.commonsLang,
       "mysql" % "mysql-connector-java" % versions.mysqlConnectorJava,
-      "com.alibaba" % "fastjson" % versions.fastjson,
+      "org.aspectj" % "aspectjweaver" % versions.aspectj,
       "org.springframework" % "spring-test" % versions.spring  % "test"
     ),
     excludeDependencies ++= Seq(

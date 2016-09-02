@@ -10,6 +10,7 @@ object HttpServer extends App {
   val service1: Service[Request, Response] = new Service[Request, Response] {
     def apply(req: Request): Future[Response] = {
       val response = Response()
+      Thread.sleep(1000)
       response.setContentString("0")
       Future.value(response)
     }
