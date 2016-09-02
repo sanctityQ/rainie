@@ -3,7 +3,7 @@ package com.itiancai.galaxy.dts.annotation
 import java.lang.reflect.AnnotatedElement
 import java.util.{Map => JMap}
 
-import com.itiancai.galaxy.dts.interceptor.{ExtendTransactionAttribute, TransactionAttribute}
+import com.itiancai.galaxy.dts.interceptor.TransactionAttribute
 import com.itiancai.galaxy.dts.recovery.ActivityStateResolver
 import org.springframework.beans.BeanUtils
 import org.springframework.core.`type`.MethodMetadata
@@ -37,8 +37,8 @@ object ActivityAnnotationParse extends TransactionAnnotationParser {
 }
 
 
-case class ActivityAnnotationAttribute(businessType: String, timeOut: Int, isImmediately: Boolean,
-                                   param: ParamAnnotationAttribute) extends TransactionAttribute with ExtendTransactionAttribute{
+case class ActivityAnnotationAttribute(businessType: String, timeOut_ : Int, isImmediately: Boolean,
+                                   param: ParamAnnotationAttribute) extends TransactionAttribute {
 
   override def name(): String = businessType
 
@@ -53,7 +53,7 @@ case class ActivityAnnotationAttribute(businessType: String, timeOut: Int, isImm
     this.value_.get
   }
 
-  override def timeOut_(): Int = timeOut
+  override def timeOut(): Int = timeOut_
 }
 
 

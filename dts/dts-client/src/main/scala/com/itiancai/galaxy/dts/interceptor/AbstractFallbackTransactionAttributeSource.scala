@@ -21,7 +21,6 @@ abstract class AbstractFallbackTransactionAttributeSource extends TransactionAtt
     val cacheKey: AnyRef = getCacheKey(method, targetClass)
     val cached: Option[Any] = attributeCache.get(cacheKey)
 
-     logger.info(method.toString)
     if (!cached.isEmpty) {
       return cached.get.asInstanceOf[TransactionAttribute]
     } else {
@@ -70,11 +69,6 @@ abstract class AbstractFallbackTransactionAttributeSource extends TransactionAtt
 
     override def equals(other: Any): Boolean = other match {
       case that: DefaultCacheKey => {
-
-//        if (other == this) {
-//         return true
-//        }
-
         (that canEqual this) && (this.method == that.method) &&
             ObjectUtils.nullSafeEquals(this.targetClass, that.targetClass)
       }
@@ -84,11 +78,6 @@ abstract class AbstractFallbackTransactionAttributeSource extends TransactionAtt
     override def hashCode = {
       this.method.hashCode + (if (this.targetClass != null) this.targetClass.hashCode * 29 else 0);
     }
-  }
-
-   @PostConstruct
-  def finish(): Unit ={
-
   }
 
 

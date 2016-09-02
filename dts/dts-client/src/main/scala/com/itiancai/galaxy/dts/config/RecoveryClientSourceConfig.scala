@@ -1,4 +1,4 @@
-package com.itiancai.galaxy.dts.interceptor.config
+package com.itiancai.galaxy.dts.config
 
 import javax.annotation.PostConstruct
 

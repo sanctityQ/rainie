@@ -1,4 +1,4 @@
-package com.itiancai.galaxy.dts.interceptor.config;
+package com.itiancai.galaxy.dts.config;
 
 import com.itiancai.galaxy.dts.annotation.Activity;
 import org.springframework.beans.factory.config.BeanDefinition;

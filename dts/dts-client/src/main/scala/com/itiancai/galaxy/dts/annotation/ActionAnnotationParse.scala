@@ -30,4 +30,6 @@ case class ActionAnnotationAttribute(name: String, param: ParamAnnotationAttribu
   }
 
   override def paramValue(): String = value_.get
+
+  override def timeOut(): Int = 0
 }

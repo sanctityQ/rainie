@@ -1,7 +1,7 @@
 package com.itiancai.galaxy.dts.annotation;
 
 
-import com.itiancai.galaxy.dts.interceptor.config.TxComponentProvider;
+import com.itiancai.galaxy.dts.config.TxComponentProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;

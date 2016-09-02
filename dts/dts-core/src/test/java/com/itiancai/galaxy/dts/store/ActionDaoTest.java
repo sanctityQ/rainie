@@ -2,7 +2,6 @@ package com.itiancai.galaxy.dts.store;
 
 import com.itiancai.galaxy.dts.SpringBootTest;
 import com.itiancai.galaxy.dts.domain.Action;
-import com.itiancai.galaxy.dts.domain.IDFactory;
 import com.itiancai.galaxy.dts.domain.Status;
 
 import org.junit.Assert;
@@ -35,7 +34,7 @@ public class ActionDaoTest extends AbstractTransactionalJUnit4SpringContextTests
   public void testSave() {
     Action action1 = new Action();
     action1.setTxId("txId1");
-    action1.setActionId(new IDFactory().getActionId("p2p:lending:bindInviteCode"));
+    action1.setActionId("p2p:lending:bindInviteCode");
     action1.setServiceName("p2p:lending:bindInviteCode");
     action1.setStatus(Status.Action.PREPARE.getStatus());
     action1.setInstructionId(UUID.randomUUID().toString());
@@ -46,7 +45,7 @@ public class ActionDaoTest extends AbstractTransactionalJUnit4SpringContextTests
   public void testfindByActionId() {
     Action action1 = new Action();
     action1.setTxId("txId1");
-    String actionId = new IDFactory().getActionId("p2p:lending:bindInviteCode");
+    String actionId = "p2p:lending:bindInviteCode";
     action1.setActionId(actionId);
     action1.setServiceName("p2p:lending:bindInviteCode");
     action1.setStatus(Status.Action.PREPARE.getStatus());
@@ -62,7 +61,7 @@ public class ActionDaoTest extends AbstractTransactionalJUnit4SpringContextTests
   public void testUpdateStatusByIdStatus() {
     Action action1 = new Action();
     action1.setTxId("txId1");
-    String actionId = new IDFactory().getActionId("p2p:lending:bindInviteCode");
+    String actionId = "p2p:lending:bindInviteCode";
     action1.setActionId(actionId);
     action1.setServiceName("p2p:lending:bindInviteCode");
     action1.setStatus(Status.Action.UNKNOWN.getStatus());

@@ -4,8 +4,9 @@ import javax.annotation.Resource
 import javax.inject.Inject
 
 import com.itiancai.galaxy.dts.annotation.{ActionAnnotationAttribute, ActivityAnnotationAttribute}
-import com.itiancai.galaxy.dts.support.ActionTransactionManager
-import com.itiancai.galaxy.dts.{TXIdLocal, TransactionManager}
+import com.itiancai.galaxy.dts.recovery.RecoverServiceName
+import com.itiancai.galaxy.dts.support.{DefaultTransactionStatus, XidFactory, ResourceManager}
+import com.itiancai.galaxy.dts.{TransactionStatus, TransactionManager}
 import com.twitter.finagle.context.Contexts
 import com.twitter.util.Future
 import org.aopalliance.intercept.{MethodInterceptor, MethodInvocation}
@@ -27,9 +28,9 @@ class TransactionInterceptor @Inject()
   @Resource(name = "activityTM")
   val activityTM: TransactionManager = null
   @Resource(name = "actionTM")
-  val actionTM: ActionTransactionManager = null
+  val actionTM: ResourceManager = null
 
-  val txId_key = new Contexts.local.Key[String]
+  val txId_key = new Contexts.local.Key[TransactionStatus]
 
 
 
@@ -43,51 +44,56 @@ class TransactionInterceptor @Inject()
         activity.parseParamValue(invocation.getArguments)
         //transaction begin
         val transactionStatus = activityTM.begin(activity)
-        logger.info(s"tx:${transactionStatus.txId()} begin ...")
+        logger.info(s"tx:${transactionStatus.xId().getGlobalTransactionId} begin ...")
         //activityBegin
-        TXIdLocal.let_txId(transactionStatus.txId())(
+        Contexts.local.let(txId_key, transactionStatus)(
           try {
             val result = invocation.proceed()
             if(result.isInstanceOf[Future[_]]) {
               result.asInstanceOf[Future[_]]
                 .onSuccess(r => {
                   activityTM.commit(transactionStatus)
-                  logger.info(s"tx:${transactionStatus.txId()} commit!")
+                  logger.info(s"tx:${transactionStatus.xId()} commit!")
                 }).onFailure(r => {
                   activityTM.rollback(transactionStatus)
-                  logger.info(s"tx:${transactionStatus.txId()} rollback!")
+                  logger.info(s"tx:${transactionStatus.xId()} rollback!")
                 })
             } else {
               activityTM.commit(transactionStatus)
-              logger.info(s"tx:${transactionStatus.txId()} commit!")
+              logger.info(s"tx:${transactionStatus.xId()} commit!")
             }
             result
           } catch {
             case ex: Throwable => {
               activityTM.rollback(transactionStatus)
-              logger.info(s"tx:${transactionStatus.txId()} rollback!")
+              logger.info(s"tx:${transactionStatus.xId()} rollback!")
               throw ex
             }
           } finally {
-            TXIdLocal.clear_txId
+            Contexts.local.letClear(txId_key){}
           }
         )
       }
 
       case action:ActionAnnotationAttribute => {
         action.parseParamValue(invocation.getArguments)
+
+        val transactionStatus = Contexts.local.get(txId_key).get.asInstanceOf[DefaultTransactionStatus]
+        val xid = XidFactory.newBranch(transactionStatus.xId(), RecoverServiceName.parse(action.name))
+        transactionStatus.addResourceXid(xid)
+
         //action begin
-        val transactionStatus = actionTM.begin(action)
+        actionTM.begin(xid, action)
         val result = invocation.proceed()
         if(result.isInstanceOf[Future[_]]) {
           result.asInstanceOf[Future[_]]
             .onSuccess(r => {
-              actionTM.prepare(transactionStatus.txId())
-              logger.info(s"action:${transactionStatus.txId()} prepare success")
+              actionTM.prepare(xid)
+              logger.info(s"action:${xid} prepare success")
             })
         } else {
-          actionTM.prepare(transactionStatus.txId())
-          logger.info(s"action:${transactionStatus.txId()} prepare success")
+          actionTM.prepare(xid)
+          logger.info(s"action:${xid} prepare success")
         }
         result
       }

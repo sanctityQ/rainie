@@ -73,6 +73,10 @@ case class RecoverServiceName(val systemName: String, val moduleName: String, va
     val state = Seq(systemName, moduleName)
     state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
+
+  override def toString: String = {
+      s"${systemName}:${moduleName}:${serviceName}"
+  }
 }
 
 case class ActionRequest(val name: String, val actionMethod : String, val instructionId: String) {

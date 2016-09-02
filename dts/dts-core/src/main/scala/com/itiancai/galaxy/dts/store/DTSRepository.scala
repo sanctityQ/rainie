@@ -13,6 +13,8 @@ import scala.collection.JavaConversions._
 @Component
 class DTSRepository {
 
+
+
   @Autowired
   val activityDao: ActivityDao = null
   @Autowired
@@ -22,6 +24,7 @@ class DTSRepository {
 
   /**
     * 查询主事务
+    *
     * @param txId
     * @return
     */
@@ -154,6 +157,11 @@ class DTSRepository {
   @Transactional(value = "dtsTransactionManager")
   def incrementRetryCountByTxId(txId: String): Unit = {
     activityDao.incrementRetryCountByTxId(txId)
+  }
+
+
+  def findAction(actionId: String): Action = {
+    actionDao.findByActionId(actionId)
   }
 }
 

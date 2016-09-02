@@ -6,4 +6,6 @@ trait TransactionAttribute {
 
   def paramValue(): String
 
+  def timeOut(): Int
+
 }
