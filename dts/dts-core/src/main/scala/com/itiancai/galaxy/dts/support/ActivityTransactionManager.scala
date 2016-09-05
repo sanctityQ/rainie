@@ -3,7 +3,6 @@ package com.itiancai.galaxy.dts.support
 import javax.inject.Inject
 
 import com.itiancai.galaxy.dts.interceptor.TransactionAttribute
-import com.itiancai.galaxy.dts.recovery.RecoverServiceName
 import com.itiancai.galaxy.dts.{TransactionStatus, TransactionManager}
 import com.itiancai.galaxy.dts.domain.{Activity, Status}
 import com.itiancai.galaxy.dts.repository.DTSRepository
@@ -46,9 +45,9 @@ class ActivityTransactionManager @Inject()
   }
 
   override def begin(attribute: TransactionAttribute): TransactionStatus = {
-    val xid = XidFactory.newXid(RecoverServiceName.parse(attribute.name()))
+    val xid = XidFactory.newXid(attribute.name())
 
-    val activity = new Activity(xid.getGlobalTransactionId, Status.Activity.UNKNOWN, attribute.name,
+    val activity = new Activity(xid.getGlobalTransactionId, Status.Activity.UNKNOWN, attribute.name.toString,
       attribute.timeOut, attribute.paramValue)
     dtsRepository.saveActivity(activity)
 

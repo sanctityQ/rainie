@@ -1,8 +1,8 @@
-package com.itiancai.galaxy.dts.recovery
+package com.itiancai.galaxy.dts.http
 
 import java.util.{HashMap => JMap}
 
-import com.twitter.finagle.http.{Status, Version, Response, Request}
+import com.twitter.finagle.http.{Request, Response, Status, Version}
 import com.twitter.util.Future
 
 class Routers(routers: Array[Route]) {

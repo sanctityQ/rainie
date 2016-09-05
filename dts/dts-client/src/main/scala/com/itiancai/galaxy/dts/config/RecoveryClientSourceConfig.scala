@@ -2,8 +2,9 @@ package com.itiancai.galaxy.dts.config
 
 import javax.annotation.PostConstruct
 
-import com.itiancai.galaxy.dts.recovery.{RecoverServiceName, RecoveryClient, RecoveryClientSource}
+import com.itiancai.galaxy.dts.recovery.{RecoveryClient, RecoveryClientSource}
 import com.itiancai.galaxy.dts.server.DTSServerApi
+import com.itiancai.galaxy.dts.support.ServiceName
 import com.twitter.finagle.Thrift
 import com.twitter.util.Await
 import org.springframework.beans.factory.annotation.Value
@@ -23,7 +24,7 @@ class RecoveryClientSourceConfig extends RecoveryClientSource{
     serverClient = Thrift.newIface[DTSServerApi.FutureIface](serverPath)
   }
 
-  override def findRecoveryClient(serviceName: RecoverServiceName): RecoveryClient = {
+  override def findRecoveryClient(serviceName: ServiceName): RecoveryClient = {
     Await.result(
       serverClient.servicePath(serviceName.systemName, serviceName.moduleName).map(
         path => new RecoveryClient(path))

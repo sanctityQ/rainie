@@ -1,8 +1,10 @@
 package com.itiancai.galaxy.dts.interceptor
 
+import com.itiancai.galaxy.dts.support.ServiceName
+
 trait TransactionAttribute {
 
-  def name(): String
+  def name(): ServiceName
 
   def paramValue(): String
 

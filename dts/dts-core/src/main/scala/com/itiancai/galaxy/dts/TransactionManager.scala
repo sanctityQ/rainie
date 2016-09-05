@@ -4,10 +4,10 @@ import com.itiancai.galaxy.dts.interceptor.TransactionAttribute
 
 trait TransactionManager {
 
-   def begin(transactionAttribute: TransactionAttribute): TransactionStatus
+  def begin(transactionAttribute: TransactionAttribute): TransactionStatus
 
-   def commit(transactionStatus: TransactionStatus)
+  def commit(transactionStatus: TransactionStatus)
 
-   def rollback(transactionStatus: TransactionStatus)
+  def rollback(transactionStatus: TransactionStatus)
 
 }

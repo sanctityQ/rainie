@@ -2,6 +2,7 @@ package com.itiancai.galaxy.dts.recovery
 
 import java.util.concurrent.ConcurrentHashMap
 
+import com.itiancai.galaxy.dts.support.ServiceName
 import com.twitter.finagle.Http
 import com.twitter.conversions.time._
 import com.twitter.finagle.http.{Method, Version, Request}
@@ -28,7 +29,7 @@ trait RecoveryClientSource {
 
   val attributeCache = new ConcurrentHashMap[Object, RecoveryClient](1024).asScala
 
-  def getTransactionClient(recoverServiceName: RecoverServiceName): RecoveryClient = {
+  def getTransactionClient(recoverServiceName: ServiceName): RecoveryClient = {
 
     val cached: Option[Any] = attributeCache.get(recoverServiceName)
 
@@ -41,43 +42,11 @@ trait RecoveryClientSource {
     recoveryClient
   }
 
-  def findRecoveryClient(recoverServiceName: RecoverServiceName): RecoveryClient
+  def findRecoveryClient(recoverServiceName: ServiceName): RecoveryClient
 
 }
 
-object RecoverServiceName{
 
-  def parse(name:String): RecoverServiceName ={
-    val array = name.split(":")
-    if(array.length != 3) {
-      throw new RuntimeException(s"resolve name:[${name}] error")
-    }
-    RecoverServiceName(array(0), array(1), array(2))
-  }
-
-}
-
-case class RecoverServiceName(val systemName: String, val moduleName: String, val serviceName: String)  {
-
-  def canEqual(other: Any): Boolean = other.isInstanceOf[RecoverServiceName]
-
-  override def equals(other: Any): Boolean = other match {
-    case that: RecoverServiceName =>
-      (that canEqual this) &&
-        systemName == that.systemName &&
-        moduleName == that.moduleName
-    case _ => false
-  }
-
-  override def hashCode(): Int = {
-    val state = Seq(systemName, moduleName)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
-  }
-
-  override def toString: String = {
-      s"${systemName}:${moduleName}:${serviceName}"
-  }
-}
 
 case class ActionRequest(val name: String, val actionMethod : String, val instructionId: String) {
 

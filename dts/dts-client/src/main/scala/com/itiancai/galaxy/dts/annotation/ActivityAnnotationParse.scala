@@ -5,8 +5,8 @@ import java.util.{Map => JMap}
 
 import com.itiancai.galaxy.dts.interceptor.TransactionAttribute
 import com.itiancai.galaxy.dts.recovery.ActivityStateResolver
+import com.itiancai.galaxy.dts.support.ServiceName
 import org.springframework.beans.BeanUtils
-import org.springframework.core.`type`.MethodMetadata
 import org.springframework.core.annotation.AnnotationUtils
 
 
@@ -14,17 +14,6 @@ object ActivityAnnotationParse extends TransactionAnnotationParser {
 
   val paramAnnotationParse: ParamAnnotationParse = new ParamAnnotationParse
 
-  def apply(metadata: MethodMetadata):Unit = {
-
-    val attributes: JMap[String, AnyRef] = metadata.getAnnotationAttributes(classOf[Activity].getName)
-
-    if(attributes == null)
-      return
-    if (attributes.eq(None)) {
-      None
-    }
-
-  }
 
   override def parseTransactionAnnotation(annotatedElement: AnnotatedElement): Option[TransactionAttribute] = {
     val ann: Activity = AnnotationUtils.getAnnotation(annotatedElement, classOf[Activity])
@@ -40,7 +29,7 @@ object ActivityAnnotationParse extends TransactionAnnotationParser {
 case class ActivityAnnotationAttribute(businessType: String, timeOut_ : Int, isImmediately: Boolean,
                                    param: ParamAnnotationAttribute) extends TransactionAttribute {
 
-  override def name(): String = businessType
+  override def  name(): ServiceName = ServiceName(businessType)
 
   //default set null
   var value_ : Option[String] = None

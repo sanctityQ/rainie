@@ -2,9 +2,9 @@ package com.itiancai.galaxy.dts.support
 
 import javax.inject.Inject
 
-import com.itiancai.galaxy.dts.domain.{Action, IDFactory, Status}
+import com.itiancai.galaxy.dts.domain.{Action, Status}
 import com.itiancai.galaxy.dts.interceptor.TransactionAttribute
-import com.itiancai.galaxy.dts.recovery.{ActionRequest, RecoverServiceName, RecoveryClientSource}
+import com.itiancai.galaxy.dts.recovery.{ActionRequest, RecoveryClientSource}
 import com.itiancai.galaxy.dts.repository.DTSRepository
 import com.itiancai.galaxy.dts.{XAResource, Xid}
 import com.twitter.util.Future
@@ -26,7 +26,7 @@ class ResourceManager @Inject()
 
   def begin(xid: Xid, attribute: TransactionAttribute) = {
     val action = new Action(xid.getGlobalTransactionId, xid.getBranchId, Status.Action.UNKNOWN,
-      attribute.name, attribute.paramValue())
+      attribute.name.toString, attribute.paramValue())
     dtsRepository.saveAction(action)
 
   }
@@ -45,12 +45,12 @@ class ResourceManager @Inject()
       return Future.Unit
     }
 
-    val recoverServiceName = RecoverServiceName.parse(action.getServiceName)
+    val serviceName = ServiceName(action.getServiceName)
 
     val method = if (status == Status.Action.SUCCESS) "commit" else "rollback" //提交 | 回滚
 
-    actionClientSource.getTransactionClient(recoverServiceName)
-      .request(ActionRequest(recoverServiceName.serviceName, method, action.getInstructionId)).map(flag => {
+    actionClientSource.getTransactionClient(serviceName)
+      .request(ActionRequest(serviceName.serviceName, method, action.getInstructionId)).map(flag => {
       if (flag) {
         dtsRepository.finishAction(action.getActionId, status)
       }

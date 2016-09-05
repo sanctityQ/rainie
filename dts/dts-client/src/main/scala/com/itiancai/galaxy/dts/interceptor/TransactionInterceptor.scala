@@ -4,7 +4,6 @@ import javax.annotation.Resource
 import javax.inject.Inject
 
 import com.itiancai.galaxy.dts.annotation.{ActionAnnotationAttribute, ActivityAnnotationAttribute}
-import com.itiancai.galaxy.dts.recovery.RecoverServiceName
 import com.itiancai.galaxy.dts.support.{DefaultTransactionStatus, XidFactory, ResourceManager}
 import com.itiancai.galaxy.dts.{TransactionStatus, TransactionManager}
 import com.twitter.finagle.context.Contexts
@@ -79,7 +78,7 @@ class TransactionInterceptor @Inject()
         action.parseParamValue(invocation.getArguments)
 
         val transactionStatus = Contexts.local.get(txId_key).get.asInstanceOf[DefaultTransactionStatus]
-        val xid = XidFactory.newBranch(transactionStatus.xId(), RecoverServiceName.parse(action.name))
+        val xid = XidFactory.newBranch(transactionStatus.xId(), action.name)
         transactionStatus.addResourceXid(xid)
 
         //action begin

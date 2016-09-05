@@ -3,6 +3,7 @@ package com.itiancai.galaxy.dts.annotation
 import java.lang.reflect.AnnotatedElement
 
 import com.itiancai.galaxy.dts.interceptor.TransactionAttribute
+import com.itiancai.galaxy.dts.support.ServiceName
 import org.springframework.core.annotation.AnnotationUtils
 
 object ActionAnnotationParse extends TransactionAnnotationParser {
@@ -21,7 +22,7 @@ object ActionAnnotationParse extends TransactionAnnotationParser {
 }
 
 
-case class ActionAnnotationAttribute(name: String, param: ParamAnnotationAttribute) extends TransactionAttribute {
+case class ActionAnnotationAttribute(name_ : String, param: ParamAnnotationAttribute) extends TransactionAttribute {
 
   var value_ : Option[String] = None
 
@@ -32,4 +33,6 @@ case class ActionAnnotationAttribute(name: String, param: ParamAnnotationAttribu
   override def paramValue(): String = value_.get
 
   override def timeOut(): Int = 0
+
+  override def name(): ServiceName = ServiceName(name_)
 }
