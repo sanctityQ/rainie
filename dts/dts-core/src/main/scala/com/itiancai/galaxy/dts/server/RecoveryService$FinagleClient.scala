@@ -22,18 +22,18 @@ import scala.language.higherKinds
 
 
 @javax.annotation.Generated(value = Array("com.twitter.scrooge.Compiler"))
-class DTSServerApi$FinagleClient(
+class RecoveryService$FinagleClient(
     val service: com.twitter.finagle.Service[ThriftClientRequest, Array[Byte]],
     val protocolFactory: TProtocolFactory,
     val serviceName: String,
     stats: StatsReceiver,
     responseClassifier: ctfs.ResponseClassifier)
-  extends DTSServerApi[Future] {
+  extends RecoveryService[Future] {
 
   def this(
     service: com.twitter.finagle.Service[ThriftClientRequest, Array[Byte]],
     protocolFactory: TProtocolFactory = Protocols.binaryFactory(),
-    serviceName: String = "DTSServerApi",
+    serviceName: String = "RecoveryService",
     stats: StatsReceiver = NullStatsReceiver
   ) = this(
     service,
@@ -43,7 +43,7 @@ class DTSServerApi$FinagleClient(
     ctfs.ResponseClassifier.Default
   )
 
-  import DTSServerApi._
+  import RecoveryService._
 
   protected def encodeRequest(name: String, args: ThriftStruct) = {
     val buf = new TMemoryBuffer(512)

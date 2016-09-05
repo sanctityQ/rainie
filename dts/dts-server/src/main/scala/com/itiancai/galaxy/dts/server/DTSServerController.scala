@@ -1,6 +1,6 @@
 package com.itiancai.galaxy.dts.server
 
-import com.itiancai.galaxy.dts.server.DTSServerApi.ServicePath
+import com.itiancai.galaxy.dts.server.RecoveryService.ServicePath
 import com.itiancai.galaxy.thrift.Controller
 import com.twitter.util.Future
 import org.apache.commons.lang.StringUtils
@@ -9,7 +9,7 @@ import org.springframework.core.env.Environment
 import org.springframework.stereotype.Component
 
 @Component
-class DTSServerController extends Controller with DTSServerApi.BaseServiceIface {
+class RecoveryController extends Controller with RecoveryService.BaseServiceIface {
 
   @Autowired
   val env:Environment = null

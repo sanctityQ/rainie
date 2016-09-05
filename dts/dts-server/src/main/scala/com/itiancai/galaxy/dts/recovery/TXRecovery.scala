@@ -6,6 +6,7 @@ import javax.inject.Inject
 
 import com.itiancai.galaxy.dts.domain.Status
 import com.itiancai.galaxy.dts.repository.DTSRepository
+import com.itiancai.galaxy.dts.support.{DefaultTransactionStatus, DtsXid, XidFactory}
 import com.itiancai.galaxy.dts.{TransactionManager, TransactionStatus}
 import com.twitter.util.{Await, Future}
 import org.slf4j.LoggerFactory
@@ -44,9 +45,13 @@ class TXRecovery @Inject()
               logger.info(s"Consumer ${index} handle tx[${txId_}] begin")
               try {
                 val result_f = synchroActivityStatus(txId_).map(status => {
-                  val txStatus = new TransactionStatus{
-                    override def txId(): String = txId_
-                  }
+                  val xid = new DtsXid(txId_, XidFactory.noBranchQualifier)
+                  val txStatus = new DefaultTransactionStatus(xid)
+                  dtsRepository.listActionByTxId(txId_)
+                    .foreach({ action =>
+                      val branchId = new DtsXid(txId_, action.getActionId)
+                      txStatus.addResourceXid(branchId)
+                    })
                   status match {
                     case Status.Activity.SUCCESS => {
                       //提交事务
@@ -100,7 +105,7 @@ class TXRecovery @Inject()
       Future(Status.Activity.getStatus(activity.getStatus))
     } else {
       val recoveryService = RecoverServiceName.parse(activity.getBusinessType)
-      val activityRequest = ActivityStatusRequest(recoveryService.serviceName, activity.getBusinessId)
+      val activityRequest = ActivityStatusRequest(activity.getBusinessType, activity.getBusinessId)
       clientSource.getTransactionClient(recoveryService).request(activityRequest)
         .map(status => {
           status match {

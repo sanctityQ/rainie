@@ -4,7 +4,7 @@ exception ServiceNotFindException {
 
 }
 
-service DTSServerApi {
+service RecoveryService {
 
     /**
      * 通过sysName和moduleName获取servicePath

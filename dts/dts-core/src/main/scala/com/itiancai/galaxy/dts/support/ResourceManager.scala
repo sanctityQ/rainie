@@ -2,7 +2,7 @@ package com.itiancai.galaxy.dts.support
 
 import javax.inject.Inject
 
-import com.itiancai.galaxy.dts.domain.{Action, IDFactory, Status}
+import com.itiancai.galaxy.dts.domain.{Action, Status}
 import com.itiancai.galaxy.dts.interceptor.TransactionAttribute
 import com.itiancai.galaxy.dts.recovery.{ActionRequest, RecoverServiceName, RecoveryClientSource}
 import com.itiancai.galaxy.dts.repository.DTSRepository
@@ -53,12 +53,9 @@ class ResourceManager @Inject()
       .request(ActionRequest(recoverServiceName.serviceName, method, action.getInstructionId)).map(flag => {
       if (flag) {
         dtsRepository.finishAction(action.getActionId, status)
+      } else {//TODO 定义异常
+        throw new RuntimeException("finishAction error")
       }
-      //TODO 定义异常
-      else {
-
-      }
-
     })
   }
 

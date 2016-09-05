@@ -23,24 +23,24 @@ import scala.language.higherKinds
 
 
 @javax.annotation.Generated(value = Array("com.twitter.scrooge.Compiler"))
-class DTSServerApi$FinagleService(
-  iface: DTSServerApi[Future],
+class RecoveryService$FinagleService(
+  iface: RecoveryService[Future],
   protocolFactory: TProtocolFactory,
   stats: StatsReceiver,
   maxThriftBufferSize: Int,
   serviceName: String
 ) extends com.twitter.finagle.Service[Array[Byte], Array[Byte]] {
-  import DTSServerApi._
+  import RecoveryService._
 
   def this(
-    iface: DTSServerApi[Future],
+    iface: RecoveryService[Future],
     protocolFactory: TProtocolFactory,
     stats: StatsReceiver,
     maxThriftBufferSize: Int
-  ) = this(iface, protocolFactory, stats, maxThriftBufferSize, "DTSServerApi")
+  ) = this(iface, protocolFactory, stats, maxThriftBufferSize, "RecoveryService")
 
   def this(
-    iface: DTSServerApi[Future],
+    iface: RecoveryService[Future],
     protocolFactory: TProtocolFactory
   ) = this(iface, protocolFactory, NullStatsReceiver, Thrift.maxThriftBufferSize)
 
