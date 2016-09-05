@@ -2,6 +2,7 @@ package com.itiancai.galaxy.dts.recovery;
 
 
 import com.google.common.collect.Maps;
+import com.itiancai.galaxy.dts.XAResourceActionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -19,7 +20,7 @@ public class RecoveryBuilder implements ApplicationContextAware {
 
     private Map<String, ActivityStateResolver> activityStateResolverHashMap = Maps.newHashMap();
 
-    private Map<String, ActionServiceHandler> actionServiceHandlerMap = Maps.newHashMap();
+    private Map<String, XAResourceActionService> actionServiceHandlerMap = Maps.newHashMap();
 
     private ListableBeanFactory beanFactory;
 
@@ -50,7 +51,7 @@ public class RecoveryBuilder implements ApplicationContextAware {
 
 
 
-    public ActionServiceHandler getActionServiceHandler(String name) {
+    public XAResourceActionService getActionServiceHandler(String name) {
         if (actionServiceHandlerMap.isEmpty()) {
             init();
         }
@@ -66,9 +67,9 @@ public class RecoveryBuilder implements ApplicationContextAware {
             this.activityStateResolverHashMap.put(activityStateResolver.name(), activityStateResolver);
         }
 
-        Map<String, ActionServiceHandler> actionServiceHandlerMap = beanFactory.getBeansOfType(ActionServiceHandler.class);
+        Map<String, XAResourceActionService> actionServiceHandlerMap = beanFactory.getBeansOfType(XAResourceActionService.class);
 
-        for (ActionServiceHandler actionServiceHandler : actionServiceHandlerMap.values()) {
+        for (XAResourceActionService actionServiceHandler : actionServiceHandlerMap.values()) {
             logger.info("init actionServiceHandler name is {}", actionServiceHandler.name());
             this.actionServiceHandlerMap.put(actionServiceHandler.name(), actionServiceHandler);
         }

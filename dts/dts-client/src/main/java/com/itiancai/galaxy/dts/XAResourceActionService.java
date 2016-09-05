@@ -2,7 +2,6 @@ package com.itiancai.galaxy.dts;
 
 /**
  *
- * ActionServiceHandler
  * 用来提交协作者事务或者回滚
  */
 public interface XAResourceActionService {

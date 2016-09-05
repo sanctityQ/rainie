@@ -1,11 +1,11 @@
 package com.itiancai.galaxy.dts.action.demo;
 
 
-import com.itiancai.galaxy.dts.recovery.ActionServiceHandler;
+import com.itiancai.galaxy.dts.XAResourceActionService;
 import org.springframework.stereotype.Component;
 
 @Component("actionDemoDone")
-public class ActionDemoDone implements ActionServiceHandler {
+public class ActionDemoDone implements XAResourceActionService {
     @Override
     public boolean commit(String instructionId) {
         return true;

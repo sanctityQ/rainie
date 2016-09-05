@@ -12,7 +12,7 @@ import org.aopalliance.intercept.{MethodInterceptor, MethodInvocation}
 import org.slf4j.LoggerFactory
 import org.springframework.aop.support.AopUtils
 import org.springframework.beans.factory.config.BeanDefinition
-import org.springframework.context.annotation.{Bean, Role}
+import org.springframework.context.annotation.Role
 import org.springframework.stereotype.Component
 
 

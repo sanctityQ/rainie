@@ -1,10 +1,10 @@
 package com.itiancai.dts.client.recovery;
 
-import com.itiancai.galaxy.dts.recovery.ActionServiceHandler;
+import com.itiancai.galaxy.dts.XAResourceActionService;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ActionServiceHandlerAImpl implements ActionServiceHandler{
+public class ActionServiceHandlerAImpl implements XAResourceActionService {
 
 
 

@@ -1,6 +1,7 @@
 package com.itiancai.galaxy.dts
 
-import com.itiancai.galaxy.dts.recovery.{RecoveryBuilder, Route, Routers}
+import com.itiancai.galaxy.dts.http.{Routers, Route}
+import com.itiancai.galaxy.dts.recovery.RecoveryBuilder
 import com.itiancai.galaxy.http.internal.server.BaseHttpServer
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response, Status, Version}
