@@ -1,62 +1,42 @@
 package com.itiancai.galaxy.dts.annotation
 
-import java.lang.annotation.Annotation
-import java.lang.reflect.{Method, AnnotatedElement}
+import java.lang.reflect.{AnnotatedElement, Method}
 
-import com.itiancai.galaxy.dts.util.ExtendedBeanUtils
-import org.apache.commons.lang.StringUtils
 import org.springframework.core.MethodParameter
+
+
 
 
 class ParamAnnotationParse {
 
    def parseTransactionAnnotation(annotatedElement: AnnotatedElement): ParamAnnotationAttribute = {
     if (!annotatedElement.isInstanceOf[Method]) {
-       null
-    }
-    val handlerMethod = annotatedElement.asInstanceOf[Method]
-    val paramTypes: Array[Class[_]] = handlerMethod.getParameterTypes
-    val args: Array[AnyRef] = new Array[AnyRef](paramTypes.length)
-
-    var annotationsFound = 0
-    var annotationValue: String = null
-    var paramIndex = 0
-
-    args.toList.zipWithIndex.foreach({ case (arg, i) =>
-      val methodParam: MethodParameter = new MethodParameter(handlerMethod, i)
-      //GenericTypeResolver.resolveParameterType(methodParam, handler.getClass)
-      var paramName: String = null
-      val paramAnns: Array[Annotation] = methodParam.getParameterAnnotations
-
-
-      for (paramAnn <- paramAnns) {
-        if (classOf[Param].isInstance(paramAnn)) {
-          val param = paramAnn.asInstanceOf[Param]
-          annotationValue = param.value()
-          paramIndex = i
-          annotationsFound += 1
-        }
-      }
-
-      if (annotationsFound > 1) {
-        //TODO抛出异常
-      }
-    })
-
-    if (annotationsFound == 0) {
-      //TODO抛出异常
+       return null
     }
 
-    ParamAnnotationAttribute(paramIndex, annotationValue)
+     val handlerMethod = annotatedElement.asInstanceOf[Method]
+     val paramTypes = handlerMethod.getParameterTypes
+
+     val list = for (
+       i <- 0 until paramTypes.length;
+       methodParam = new MethodParameter(handlerMethod, i);
+       paramAnns = methodParam.getParameterAnnotations;
+       if (paramAnns.exists(_.isInstanceOf[Param]))
+     ) yield {
+       val paramList = paramAnns.filter(_.isInstanceOf[Param])
+       if (paramList.size > 1) throw new RuntimeException("param Annotation only one")
+       (i, paramList(0).asInstanceOf[Param])
+     }
+
+     if (list.size != 1) throw new RuntimeException("param Annotation only one")
+
+     ParamAnnotationAttribute(list(0)._1, list(0)._2.parse())
   }
 
 }
 
-case class ParamAnnotationAttribute(index: Int, propertyValue: String) {
+case class ParamAnnotationAttribute(index: Int, propertyValue: Class[_ <: ParamParser]) {
   def value(args: Array[AnyRef]): String = {
-    if (StringUtils.isNotBlank(propertyValue))
-      ExtendedBeanUtils.getProperty(args(index), propertyValue)
-    else
-      args(index).toString
+      propertyValue.newInstance().parse(args(index))
   }
 }
