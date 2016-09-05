@@ -14,6 +14,6 @@ object DTSServer extends ThriftServer {
       .filter[AccessLoggingFilter]
       .filter[StatsFilter]
       .filter[ThriftRateLimitingFilter]
-      .add[DTSServerController]
+      .add[RecoveryController]
   }
 }

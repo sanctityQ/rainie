@@ -30,7 +30,7 @@ import scala.language.higherKinds
 
 
 @javax.annotation.Generated(value = Array("com.twitter.scrooge.Compiler"))
-trait DTSServerApi[+MM[_]] extends ThriftService {
+trait RecoveryService[+MM[_]] extends ThriftService {
   /**
        * 通过sysName和moduleName获取servicePath
        * @param sysName
@@ -42,7 +42,7 @@ trait DTSServerApi[+MM[_]] extends ThriftService {
 
 
 
-object DTSServerApi { self =>
+object RecoveryService { self =>
 
   case class ServiceIface(
       servicePath : com.twitter.finagle.Service[self.ServicePath.Args, self.ServicePath.Result]
@@ -68,7 +68,7 @@ object DTSServerApi { self =>
   }
 
   class MethodIface(serviceIface: BaseServiceIface)
-    extends DTSServerApi[Future] {
+    extends RecoveryService[Future] {
     private[this] val __servicePath_service =
       ThriftServiceIface.resultFilter(self.ServicePath) andThen serviceIface.servicePath
     def servicePath(sysName: String, moduleName: String): Future[String] =
@@ -76,8 +76,8 @@ object DTSServerApi { self =>
   }
 
   implicit object MethodIfaceBuilder
-    extends com.twitter.finagle.thrift.MethodIfaceBuilder[ServiceIface, DTSServerApi[Future]] {
-    def newMethodIface(serviceIface: ServiceIface): DTSServerApi[Future] =
+    extends com.twitter.finagle.thrift.MethodIfaceBuilder[ServiceIface, RecoveryService[Future]] {
+    def newMethodIface(serviceIface: ServiceIface): RecoveryService[Future] =
       new MethodIface(serviceIface)
   }
 
@@ -579,7 +579,7 @@ object DTSServerApi { self =>
     }
 
     val name = "servicePath"
-    val serviceName = "DTSServerApi"
+    val serviceName = "RecoveryService"
     val argsCodec = Args
     val responseCodec = Result
     val oneway = false
@@ -593,7 +593,7 @@ object DTSServerApi { self =>
   type servicePath$result = ServicePath.Result
 
 
-  trait FutureIface extends DTSServerApi[Future] {
+  trait FutureIface extends RecoveryService[Future] {
     /**
          * 通过sysName和moduleName获取servicePath
          * @param sysName
@@ -606,10 +606,10 @@ object DTSServerApi { self =>
   class FinagledClient(
       service: com.twitter.finagle.Service[ThriftClientRequest, Array[Byte]],
       protocolFactory: TProtocolFactory = Protocols.binaryFactory(),
-      serviceName: String = "DTSServerApi",
+      serviceName: String = "RecoveryService",
       stats: com.twitter.finagle.stats.StatsReceiver = com.twitter.finagle.stats.NullStatsReceiver,
       responseClassifier: ctfs.ResponseClassifier = ctfs.ResponseClassifier.Default)
-    extends DTSServerApi$FinagleClient(
+    extends RecoveryService$FinagleClient(
       service,
       protocolFactory,
       serviceName,
@@ -628,7 +628,7 @@ object DTSServerApi { self =>
   class FinagledService(
       iface: FutureIface,
       protocolFactory: TProtocolFactory)
-    extends DTSServerApi$FinagleService(
+    extends RecoveryService$FinagleService(
       iface,
       protocolFactory)
 }

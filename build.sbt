@@ -286,7 +286,6 @@ lazy val dtsClient = (project in file("dts/dts-client")).
   ).
   dependsOn(
     dtsCore,
-    dtsServerIdl,
     http
   )
 
@@ -309,8 +308,7 @@ lazy val dtsServer = (project in file("dts/dts-server")).
   ).
   dependsOn(
     thrift,
-    dtsCore,
-    dtsServerIdl
+    dtsCore
   )
   .settings(
     mainClass in assembly := Some("com.itiancai.galaxy.dts.server.DTSServer"),
@@ -344,19 +342,6 @@ lazy val dtsServer = (project in file("dts/dts-server")).
         MergeStrategy.discard
       case _ => MergeStrategy.deduplicate
     }
-  )
-
-lazy val dtsServerIdl = (project in file("dts/dts-server-idl")).
-  settings(rainieSettings).
-  settings(
-    name := "dts-server-client",
-    moduleName := "dts-server-client",
-    scroogeThriftSourceFolder in Compile <<= baseDirectory {
-      base => base / "thrift"
-    }
-  ).
-  dependsOn(
-    thrift
   )
 
 lazy val dtsClientDemo = (project in file("examples/dts-demo/dts-client-demo")).

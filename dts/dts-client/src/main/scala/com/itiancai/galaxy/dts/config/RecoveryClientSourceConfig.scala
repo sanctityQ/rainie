@@ -3,8 +3,8 @@ package com.itiancai.galaxy.dts.config
 import javax.annotation.PostConstruct
 
 import com.itiancai.galaxy.dts.recovery.{RecoveryClient, RecoveryClientSource}
-import com.itiancai.galaxy.dts.server.DTSServerApi
 import com.itiancai.galaxy.dts.support.ServiceName
+import com.itiancai.galaxy.dts.server.RecoveryService
 import com.twitter.finagle.Thrift
 import com.twitter.util.Await
 import org.springframework.beans.factory.annotation.Value
@@ -16,12 +16,12 @@ class RecoveryClientSourceConfig extends RecoveryClientSource{
   @Value("${dts.server.url}")
   private val serverPath: String = null
 
-  private var serverClient: DTSServerApi.FutureIface = null
+  private var serverClient: RecoveryService.FutureIface = null
 
 
   @PostConstruct
   def init = {
-    serverClient = Thrift.newIface[DTSServerApi.FutureIface](serverPath)
+    serverClient = Thrift.newIface[RecoveryService.FutureIface](serverPath)
   }
 
   override def findRecoveryClient(serviceName: ServiceName): RecoveryClient = {

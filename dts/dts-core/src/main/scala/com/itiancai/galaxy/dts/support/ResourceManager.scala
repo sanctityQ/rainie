@@ -53,12 +53,9 @@ class ResourceManager @Inject()
       .request(ActionRequest(serviceName.serviceName, method, action.getInstructionId)).map(flag => {
       if (flag) {
         dtsRepository.finishAction(action.getActionId, status)
+      } else {//TODO 定义异常
+        throw new RuntimeException("finishAction error")
       }
-      //TODO 定义异常
-      else {
-
-      }
-
     })
   }
 
