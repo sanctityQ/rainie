@@ -1,7 +1,8 @@
-package com.itiancai.galaxy.dts.recovery;
+package com.itiancai.galaxy.dts.config;
 
 
 import com.google.common.collect.Maps;
+import com.itiancai.galaxy.dts.ActivityState;
 import com.itiancai.galaxy.dts.XAResourceActionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,11 +15,11 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 @Component
-public class RecoveryBuilder implements ApplicationContextAware {
+public class ActivityStateAndXAResourceActionSource implements ApplicationContextAware {
 
-    private static final Logger logger = LoggerFactory.getLogger(RecoveryBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(ActivityStateAndXAResourceActionSource.class);
 
-    private Map<String, ActivityStateResolver> activityStateResolverHashMap = Maps.newHashMap();
+    private Map<String, ActivityState> activityStateResolverHashMap = Maps.newHashMap();
 
     private Map<String, XAResourceActionService> actionServiceHandlerMap = Maps.newHashMap();
 
@@ -29,7 +30,7 @@ public class RecoveryBuilder implements ApplicationContextAware {
         this.beanFactory = applicationContext;
     }
 
-    public ActivityStateResolver getActivityStateResolver(String name) {
+    public ActivityState getActivityStateResolver(String name) {
         if (activityStateResolverHashMap.isEmpty()) {
             init();
         }
@@ -61,8 +62,8 @@ public class RecoveryBuilder implements ApplicationContextAware {
 
     private void init() {
 
-        Map<String, ActivityStateResolver> activityStateResolverMap = beanFactory.getBeansOfType(ActivityStateResolver.class);
-        for (ActivityStateResolver activityStateResolver : activityStateResolverMap.values()) {
+        Map<String, ActivityState> activityStateResolverMap = beanFactory.getBeansOfType(ActivityState.class);
+        for (ActivityState activityStateResolver : activityStateResolverMap.values()) {
             logger.info("init ActivityStateResolver name is {}", activityStateResolver.name());
             this.activityStateResolverHashMap.put(activityStateResolver.name(), activityStateResolver);
         }

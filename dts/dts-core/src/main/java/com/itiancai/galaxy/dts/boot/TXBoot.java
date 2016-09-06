@@ -3,7 +3,6 @@ package com.itiancai.galaxy.dts.boot;
 import com.alibaba.druid.pool.DruidDataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,7 +15,6 @@ import javax.sql.DataSource;
 @Configuration
 @EnableAspectJAutoProxy
 @EnableTransactionManagement
-@ComponentScan(basePackages = "com.itiancai.galaxy.dts")
 public class TXBoot {
 
   @Value("${dts.db.driver}")

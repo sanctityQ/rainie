@@ -1,8 +1,7 @@
 package com.itiancai.galaxy.dts.interceptor
 
 import java.lang.reflect.Method
-
-import com.itiancai.galaxy.dts.recovery.RecoveryClientSource
+import com.itiancai.galaxy.dts.http.HttpClientSource
 import org.springframework.aop.support.StaticMethodMatcherPointcut
 
 abstract class TransactionAttributeSourcePointcut extends StaticMethodMatcherPointcut with Serializable {
@@ -26,5 +25,5 @@ abstract class TransactionAttributeSourcePointcut extends StaticMethodMatcherPoi
 
   def getTransactionAttributeSource: TransactionAttributeSource
 
-  def getRecoveryClientSource: RecoveryClientSource
+  def getRecoveryClientSource: HttpClientSource
 }

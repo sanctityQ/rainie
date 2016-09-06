@@ -4,6 +4,7 @@ import javax.annotation.Resource
 import javax.inject.Inject
 
 import com.itiancai.galaxy.dts.annotation.{ActionAnnotationAttribute, ActivityAnnotationAttribute}
+import com.itiancai.galaxy.dts.config.TransactionManagementConfigUtils
 import com.itiancai.galaxy.dts.support.{DefaultTransactionStatus, XidFactory, ResourceManager}
 import com.itiancai.galaxy.dts.{TransactionStatus, TransactionManager}
 import com.twitter.finagle.context.Contexts
@@ -16,7 +17,7 @@ import org.springframework.context.annotation.Role
 import org.springframework.stereotype.Component
 
 
-@Component("dtsTransactionInterceptor")
+@Component(TransactionManagementConfigUtils.TRANSACTION_INTERCEPTOR_BEAN)
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 class TransactionInterceptor @Inject()
 (
@@ -24,9 +25,9 @@ class TransactionInterceptor @Inject()
 ) extends MethodInterceptor with Serializable {
   val logger = LoggerFactory.getLogger(getClass)
 
-  @Resource(name = "activityTM")
+  @Resource(name = TransactionManagementConfigUtils.TRANSACTION_MANAGER_BEAN)
   val activityTM: TransactionManager = null
-  @Resource(name = "actionTM")
+  @Resource(name = TransactionManagementConfigUtils.RESOURCE_MANAGER_BEAN)
   val actionTM: ResourceManager = null
 
   val txId_key = new Contexts.local.Key[TransactionStatus]

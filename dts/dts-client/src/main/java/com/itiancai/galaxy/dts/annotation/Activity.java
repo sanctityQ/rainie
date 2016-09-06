@@ -1,6 +1,6 @@
 package com.itiancai.galaxy.dts.annotation;
 
-import com.itiancai.galaxy.dts.recovery.ActivityStateResolver;
+import com.itiancai.galaxy.dts.ActivityState;
 
 import java.lang.annotation.*;
 
@@ -22,7 +22,7 @@ public @interface Activity {
      * 服务名称,唯一值(例如 p2p:lending:activityType)
      * @return string
      */
-    Class<? extends ActivityStateResolver> businessType();
+    Class<? extends ActivityState> businessType();
 
     /**
      * 主线程超时时间 单位:毫秒

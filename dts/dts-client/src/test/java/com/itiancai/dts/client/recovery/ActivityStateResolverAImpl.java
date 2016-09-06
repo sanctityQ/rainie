@@ -1,10 +1,10 @@
 package com.itiancai.dts.client.recovery;
 
-import com.itiancai.galaxy.dts.recovery.ActivityStateResolver;
+import com.itiancai.galaxy.dts.ActivityState;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ActivityStateResolverAImpl implements ActivityStateResolver {
+public class ActivityStateResolverAImpl implements ActivityState {
 
     @Override
     public int isDone(String businessId) {

@@ -1,11 +1,7 @@
 package com.itiancai.galaxy.dts;
 
 //import com.itiancai.galaxy.dts.utils.RecoveryClientFactory;
-import com.itiancai.galaxy.dts.recovery.RecoveryClientSource;
-import com.twitter.finagle.Service;
-import com.twitter.finagle.http.Request;
-import com.twitter.finagle.http.Response;
-import com.twitter.util.Future;
+import com.itiancai.galaxy.dts.http.HttpClientSource;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -30,7 +26,7 @@ public class SpringBootTest {
   }
 
   @Bean
-  public static RecoveryClientSource recoveryClientSource() {
+  public static HttpClientSource recoveryClientSource() {
     return null;
   }
 }

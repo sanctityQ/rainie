@@ -1,7 +1,7 @@
 package com.itiancai.galaxy.dts;
 
 /**
- * 主事务协调者查询接口
+ * 主事务查询接口
  */
 public interface ActivityState {
 

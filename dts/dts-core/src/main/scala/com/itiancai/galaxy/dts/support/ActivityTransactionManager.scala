@@ -2,6 +2,7 @@ package com.itiancai.galaxy.dts.support
 
 import javax.inject.Inject
 
+import com.itiancai.galaxy.dts.config.TransactionManagementConfigUtils
 import com.itiancai.galaxy.dts.interceptor.TransactionAttribute
 import com.itiancai.galaxy.dts.{TransactionStatus, TransactionManager}
 import com.itiancai.galaxy.dts.domain.{Activity, Status}
@@ -11,7 +12,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 
-@Component("activityTM")
+@Component(TransactionManagementConfigUtils.TRANSACTION_MANAGER_BEAN)
 class ActivityTransactionManager @Inject()
 (
   dtsRepository: DTSRepository,

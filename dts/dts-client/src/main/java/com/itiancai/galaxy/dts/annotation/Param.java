@@ -7,5 +7,5 @@ import java.lang.annotation.*;
 @Documented
 public @interface Param {
 
-    Class<? extends ParamParser> parse() default DefaultParser.class;
+    Class<? extends ParamParser> parse() default DefaultParamParser.class;
 }

@@ -2,20 +2,21 @@ package com.itiancai.galaxy.dts.support
 
 import javax.inject.Inject
 
+import com.itiancai.galaxy.dts.config.TransactionManagementConfigUtils
 import com.itiancai.galaxy.dts.domain.{Action, Status}
+import com.itiancai.galaxy.dts.http.{ActionRequest, HttpClientSource}
 import com.itiancai.galaxy.dts.interceptor.TransactionAttribute
-import com.itiancai.galaxy.dts.recovery.{ActionRequest, RecoveryClientSource}
 import com.itiancai.galaxy.dts.repository.DTSRepository
 import com.itiancai.galaxy.dts.{XAResource, Xid}
 import com.twitter.util.Future
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
-@Component("actionTM")
+@Component(TransactionManagementConfigUtils.RESOURCE_MANAGER_BEAN)
 class ResourceManager @Inject()
 (
   dtsRepository: DTSRepository,
-  actionClientSource: RecoveryClientSource
+  actionClientSource: HttpClientSource
 ) extends XAResource {
 
   val logger = LoggerFactory.getLogger(getClass)

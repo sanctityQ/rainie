@@ -2,9 +2,8 @@ package com.itiancai.galaxy.dts.annotation
 
 import java.lang.reflect.AnnotatedElement
 import java.util.{Map => JMap}
-
+import com.itiancai.galaxy.dts.ActivityState
 import com.itiancai.galaxy.dts.interceptor.TransactionAttribute
-import com.itiancai.galaxy.dts.recovery.ActivityStateResolver
 import com.itiancai.galaxy.dts.support.ServiceName
 import org.springframework.beans.BeanUtils
 import org.springframework.core.annotation.AnnotationUtils
@@ -19,7 +18,7 @@ object ActivityAnnotationParse extends TransactionAnnotationParser {
     val ann: Activity = AnnotationUtils.getAnnotation(annotatedElement, classOf[Activity])
     if(ann == null)
       return None
-    val activityAnno = BeanUtils.instantiateClass(ann.businessType(), classOf[ActivityStateResolver])
+    val activityAnno = BeanUtils.instantiateClass(ann.businessType(), classOf[ActivityState])
     Some(ActivityAnnotationAttribute(activityAnno.name(), ann.timeOut(), ann.isImmediately,
       paramAnnotationParse.parseTransactionAnnotation(annotatedElement)))
   }

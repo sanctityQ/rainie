@@ -49,7 +49,4 @@ public class Status {
 
   }
 
-  public static void main(String[] args) {
-    System.out.println(Action.getStatus(1).name());
-  }
 }

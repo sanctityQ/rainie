@@ -25,7 +25,7 @@ class HttpClient(val path: String) {
 
 }
 
-trait RecoveryClientSource {
+trait HttpClientSource {
 
   val attributeCache = new ConcurrentHashMap[Object, HttpClient](1024).asScala
 
@@ -50,6 +50,7 @@ trait RecoveryClientSource {
 case class ActionRequest(val name: String, val actionMethod: String, val instructionId: String) {
 
   val path = s"/dts/action?id=${instructionId}&name=${name}&method=${actionMethod}"
+
 
   val request = Request(Version.Http11, Method.Get, path)
 

@@ -1,7 +1,7 @@
 package com.itiancai.galaxy.dts
 
+import com.itiancai.galaxy.dts.config.ActivityStateAndXAResourceActionSource
 import com.itiancai.galaxy.dts.http.{Routers, Route}
-import com.itiancai.galaxy.dts.recovery.RecoveryBuilder
 import com.itiancai.galaxy.http.internal.server.BaseHttpServer
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response, Status, Version}
@@ -11,8 +11,6 @@ import scala.collection.mutable.ArrayBuffer
 
 
 trait TransactionHttpServer extends BaseHttpServer { self =>
-
-
 
   val response404 = Response(Version.Http11, Status.NotFound)
 
@@ -29,7 +27,7 @@ trait TransactionHttpServer extends BaseHttpServer { self =>
 
     super.warmup()
 
-    val activity = injector.instance[RecoveryBuilder]
+    val activity = injector.instance[ActivityStateAndXAResourceActionSource]
 
 
     add(Route("activity", "/dts/activity", { request =>

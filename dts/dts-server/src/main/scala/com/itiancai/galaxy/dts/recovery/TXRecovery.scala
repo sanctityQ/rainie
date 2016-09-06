@@ -5,6 +5,7 @@ import javax.annotation.PostConstruct
 import javax.inject.Inject
 
 import com.itiancai.galaxy.dts.domain.Status
+import com.itiancai.galaxy.dts.http.{ActivityStatusRequest, HttpClientSource}
 import com.itiancai.galaxy.dts.repository.DTSRepository
 import com.itiancai.galaxy.dts.support.{DefaultTransactionStatus, DtsXid, XidFactory}
 import com.itiancai.galaxy.dts.{TransactionManager, TransactionStatus}
@@ -18,7 +19,7 @@ class TXRecovery @Inject()
 (
   txManager: TransactionManager,
   dtsRepository: DTSRepository,
-  clientSource: RecoveryClientSource
+  clientSource: HttpClientSource
 ){
 
   val logger = LoggerFactory.getLogger(getClass)
@@ -96,6 +97,7 @@ class TXRecovery @Inject()
 
   /**
     * 同步主事务状态
+ *
     * @return
     */
   def synchroActivityStatus(txId: String): Future[Status.Activity] = {

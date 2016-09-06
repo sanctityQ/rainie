@@ -7,8 +7,6 @@ import com.itiancai.galaxy.dts.interceptor.TransactionAttribute
 
 trait TransactionAnnotationParser {
 
-
-
   def parseTransactionAnnotation(annotatedElement: AnnotatedElement): Option[TransactionAttribute]
 
 }
