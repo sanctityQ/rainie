@@ -8,5 +8,7 @@ import org.springframework.stereotype.Component;
 public class UserService {
 
     @Activity(businessType = ActivityStateResolverAImpl.class)
-    public void test1(@Param String id){}
+    public void test1(@Param String id){
+        System.out.println(id);
+    }
 }
