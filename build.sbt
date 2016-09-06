@@ -17,7 +17,7 @@ lazy val versions = new {
   val finagle = "6.34.0"
   val scrooge = "4.6.0"
   val twitterServer = "1.19.0"
-  val utilVersion = "6.34.0"
+  val utilVersion = "6.33.0"
 
   val logback = "1.0.13"
   val spring = "3.2.15.RELEASE"

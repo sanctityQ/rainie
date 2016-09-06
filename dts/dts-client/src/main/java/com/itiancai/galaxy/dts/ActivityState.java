@@ -1,9 +1,9 @@
-package com.itiancai.galaxy.dts.recovery;
+package com.itiancai.galaxy.dts;
 
 /**
  * 主事务协调者查询接口
  */
-public interface ActivityStateResolver {
+public interface ActivityState {
 
     /**
      * 根据业务id查询接口事务处理完成
