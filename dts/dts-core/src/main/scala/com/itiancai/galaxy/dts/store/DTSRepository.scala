@@ -71,7 +71,7 @@ class DTSRepository {
   @Transactional(value = "dtsTransactionManager")
   def lockTX(txId: String, status: Status.Activity): Boolean = {
     logger.info(s"lockTXByTxIdAndStatus:${txId}")
-    activityDao.lockTXByTxIdAndStatus(txId, status, 10) == 1
+    activityDao.lockTXByTxIdAndStatus(txId, status) == 1
   }
 
   /**

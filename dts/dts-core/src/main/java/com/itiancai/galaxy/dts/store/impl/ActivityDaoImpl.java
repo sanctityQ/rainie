@@ -59,9 +59,9 @@ public class ActivityDaoImpl implements ActivityDao {
 
 
   @Override
-  public int lockTXByTxIdAndStatus(String txId, Status.Activity status, int maxRetryCount) {
-    String sql = "update dts_activity set finish=2, retry_count=retry_count+1 where tx_id=? and status = ?  and finish = 0 and retry_count < ?";
-    return jdbcTemplate.update(sql, txId, status.getStatus(), maxRetryCount);
+  public int lockTXByTxIdAndStatus(String txId, Status.Activity status) {
+    String sql = "update dts_activity set finish=2, retry_count=retry_count+1 where tx_id=? and status = ?  and finish = 0";
+    return jdbcTemplate.update(sql, txId, status.getStatus());
   }
 
   @Override

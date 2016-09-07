@@ -30,7 +30,7 @@ public interface ActivityDao {
   /**
    * 开始处理tx
    */
-  int lockTXByTxIdAndStatus(String txId, Status.Activity status, int maxRetryCount);
+  int lockTXByTxIdAndStatus(String txId, Status.Activity status);
 
   /**
    * 回收tx; 重试次数+1,未收集状态

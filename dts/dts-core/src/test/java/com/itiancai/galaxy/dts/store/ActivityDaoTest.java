@@ -65,7 +65,7 @@ public class ActivityDaoTest extends AbstractJUnit4SpringContextTests {
     String txId = XidFactory.newXid(ServiceName.apply("p2p:interact:triggerInteract")).getGlobalTransactionId();
     activity.setTxId(txId+"");
     activityDao.save(activity);
-    activityDao.lockTXByTxIdAndStatus(txId,Status.Activity.SUCCESS,10);
+    activityDao.lockTXByTxIdAndStatus(txId,Status.Activity.SUCCESS);
     int num = activityDao.finishActivity(txId);
     Assert.assertTrue(num == 1);
   }
