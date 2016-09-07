@@ -31,15 +31,18 @@ class RecoveryTask @Inject()
   val logger = LoggerFactory.getLogger(getClass)
 
   /* 补偿queue key*/
-  @Value("${tx.compensate.consumer.poolSize}")
-  val consumerPoolSize: Int = 0
+  @Value("${tx.recovery.poolSize}")
+  val recoveryPoolSize: Int = 0
+
+  @Value("${tx.recovery.interval}")
+  val recoveryInterval: Int = 0
 
   override def execute(): Unit = {
-    val recoveryScheduled = Executors.newScheduledThreadPool(consumerPoolSize)
-    for (index <- 0 until consumerPoolSize) {
+    val recoveryScheduled = Executors.newScheduledThreadPool(recoveryPoolSize)
+    for (index <- 0 until recoveryPoolSize) {
       recoveryScheduled.scheduleAtFixedRate(new Runnable {
         override def run(): Unit = {
-          val list = recovery(index, consumerPoolSize)
+          val list = recovery(index, recoveryPoolSize)
           if (list.isEmpty) {
             Thread.sleep(1000)
           }
@@ -84,7 +87,7 @@ class RecoveryTask @Inject()
       }
     }
     //查询未完成的事务
-    val txList = dtsRepository.listUnfinished(index, total)
+    val txList = dtsRepository.listUnfinished(index, total, recoveryInterval)
     if (!txList.isEmpty) {
       logger.info(s"Consumer ${index} handle txList:[${txList}]")
       txList.foreach(txId_ => {
