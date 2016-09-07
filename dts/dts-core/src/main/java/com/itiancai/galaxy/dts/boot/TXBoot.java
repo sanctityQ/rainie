@@ -10,6 +10,10 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Arrays;
+
 import javax.sql.DataSource;
 
 @Configuration
@@ -27,7 +31,7 @@ public class TXBoot {
   private String password;
 
   @Bean(name="dtsDataSource")
-  public DataSource dtsDataSource() {
+  public DataSource dtsDataSource() throws SQLException {
     DruidDataSource dataSource = new DruidDataSource();
     dataSource.setDriverClassName(driver);
     dataSource.setUrl(url);
@@ -45,17 +49,22 @@ public class TXBoot {
     dataSource.setMinEvictableIdleTimeMillis(300000);
     dataSource.setValidationQuery("SELECT 'x'");
     dataSource.setTestWhileIdle(true);
+
+    //validate dts db config
+    Connection conn = dataSource.getConnection();
+    if(conn != null) conn.close();
+
     return dataSource;
   }
 
   @Bean(name="dtsJdbcTemplate")
-  public JdbcTemplate dtsJdbcTemplate() {
+  public JdbcTemplate dtsJdbcTemplate() throws SQLException {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(dtsDataSource());
     return jdbcTemplate;
   }
 
   @Bean(name = "dtsTransactionManager")
-  public PlatformTransactionManager dtsTransactionManager() {
+  public PlatformTransactionManager dtsTransactionManager() throws SQLException {
     DataSourceTransactionManager txManager = new DataSourceTransactionManager();
     txManager.setDataSource(dtsDataSource());
     return txManager;
