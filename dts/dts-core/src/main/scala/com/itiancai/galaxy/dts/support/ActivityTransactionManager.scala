@@ -49,7 +49,7 @@ class ActivityTransactionManager @Inject()
     val xid = XidFactory.newXid(attribute.name())
 
     val activity = new Activity(xid.getGlobalTransactionId, Status.Activity.UNKNOWN, attribute.name.toString,
-      attribute.timeOut, attribute.paramValue)
+       attribute.paramValue)
     dtsRepository.saveActivity(activity)
 
     new DefaultTransactionStatus(xid)

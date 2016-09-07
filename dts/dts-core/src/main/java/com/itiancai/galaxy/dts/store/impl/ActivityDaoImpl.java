@@ -27,7 +27,7 @@ public class ActivityDaoImpl implements ActivityDao {
   public Activity findByTxId(String txId) {
     String sql = "select id, tx_id txId, business_id businessId, " +
             "status status, business_type businessType, finish, " +
-            "retry_count retryCount, time_out timeOut, c_time cTime,m_time mTime " +
+            "retry_count retryCount, c_time cTime,m_time mTime " +
             "from dts_activity where tx_id=?";
 
     return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Activity.class), txId);
@@ -46,30 +46,15 @@ public class ActivityDaoImpl implements ActivityDao {
   }
 
   @Override
-  public List<String> listSuccessOrFail(int index, int total, int maxRetryCount) {
+  public List<String> listUnfinished(int index, int total, int recoveryInterval) {
     String sql = "select tx_id " +
             "from dts_activity dat " +
             "where dat.finish = 0 " +
-            "and dat.status in (2, 3) " +
             "and dat.id % ? = ? " +
-            "and dat.retry_count < ? " +
+            "and DATE_ADD(dat.c_time,INTERVAL (dat.retry_count+1)*?/1000 SECOND) <= now() " +
             "order by dat.c_time " +
-            "LIMIT 0, 199";
-    return jdbcTemplate.query(sql, new SingleColumnRowMapper<String>(), total, index, maxRetryCount);
-  }
-
-  @Override
-  public List<String> listUnknownAndTimeout(int index, int total, int maxRetryCount) {
-    String sql = "select tx_id " +
-            "from dts_activity dat " +
-            "where dat.finish = 0 " +
-            "and dat.status = 0 " +
-            "and dat.id % ? = ? " +
-            "and DATE_ADD(dat.c_time,INTERVAL dat.time_out/1000 SECOND) < now() " +
-            "and dat.retry_count < ? " +
-            "order by dat.c_time " +
-            "LIMIT 0, 199";
-    return jdbcTemplate.query(sql, new SingleColumnRowMapper<String>(), total, index, maxRetryCount);
+            "LIMIT 0, 99";
+    return jdbcTemplate.query(sql, new SingleColumnRowMapper<String>(), total, index, recoveryInterval);
   }
 
 
@@ -96,9 +81,9 @@ public class ActivityDaoImpl implements ActivityDao {
 
   @Override
   public void save(Activity entity) {
-    String sql = "INSERT INTO dts_activity (tx_id, business_id, business_type, time_out, status) " +
-            "VALUES (?, ?, ?, ?, ?)";
-    jdbcTemplate.update(sql, entity.getTxId(), entity.getBusinessId(), entity.getBusinessType(), entity.getTimeOut(), entity.getStatus());
+    String sql = "INSERT INTO dts_activity (tx_id, business_id, business_type, status) " +
+            "VALUES (?, ?, ?, ?)";
+    jdbcTemplate.update(sql, entity.getTxId(), entity.getBusinessId(), entity.getBusinessType(), entity.getStatus());
   }
 
   @Override

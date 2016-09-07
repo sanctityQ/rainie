@@ -19,13 +19,13 @@ object ActivityAnnotationParse extends TransactionAnnotationParser {
     if(ann == null)
       return None
     val activityAnno = BeanUtils.instantiateClass(ann.businessType(), classOf[ActivityState])
-    Some(ActivityAnnotationAttribute(activityAnno.name(), ann.timeOut(), ann.isImmediately,
+    Some(ActivityAnnotationAttribute(activityAnno.name(), ann.isImmediately,
       paramAnnotationParse.parseTransactionAnnotation(annotatedElement)))
   }
 }
 
 
-case class ActivityAnnotationAttribute(businessType: String, timeOut_ : Int, isImmediately: Boolean,
+case class ActivityAnnotationAttribute(businessType: String, isImmediately: Boolean,
                                    param: ParamAnnotationAttribute) extends TransactionAttribute {
 
   override def  name(): ServiceName = ServiceName(businessType)
@@ -40,8 +40,6 @@ case class ActivityAnnotationAttribute(businessType: String, timeOut_ : Int, isI
   def paramValue() : String = {
     this.value_.get
   }
-
-  override def timeOut(): Int = timeOut_
 }
 
 

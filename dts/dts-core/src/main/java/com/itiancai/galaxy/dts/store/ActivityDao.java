@@ -23,14 +23,9 @@ public interface ActivityDao {
   int finishActivity(String txId);
 
   /**
-   * 查询未完成事务(成功|失败)
+   * 查询未完成事务
    */
-  List<String> listSuccessOrFail(int index, int total, int maxRetryCount);
-
-  /**
-   * 查询未知超时事务 finish =未处理 & status=未知 & timeout & 重试次数<max
-   */
-  List<String> listUnknownAndTimeout(int index, int total, int maxRetryCount);
+  List<String> listUnfinished(int index, int total, int recoveryInterval);
 
   /**
    * 开始处理tx

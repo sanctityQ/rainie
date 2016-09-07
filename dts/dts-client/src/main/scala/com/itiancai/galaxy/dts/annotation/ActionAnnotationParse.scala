@@ -32,7 +32,5 @@ case class ActionAnnotationAttribute(name_ : String, param: ParamAnnotationAttri
 
   override def paramValue(): String = value_.get
 
-  override def timeOut(): Int = 0
-
   override def name(): ServiceName = ServiceName(name_)
 }

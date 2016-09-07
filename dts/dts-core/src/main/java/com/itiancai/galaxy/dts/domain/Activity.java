@@ -44,20 +44,14 @@ public class Activity {
    */
   private Date mTime;
 
-  /**
-   * 超时时间 毫秒
-   */
-  private int timeOut;
-
   public Activity() {
   }
 
-  public Activity(String txId, Status.Activity status, String businessType, int timeOut, String businessId) {
+  public Activity(String txId, Status.Activity status, String businessType, String businessId) {
     this.txId = txId;
     this.status = status.getStatus();
     this.businessType = businessType;
     this.businessId = businessId;
-    this.timeOut = timeOut;
   }
 
   public Long getId() {
@@ -122,14 +116,6 @@ public class Activity {
 
   public void setmTime(Date mTime) {
     this.mTime = mTime;
-  }
-
-  public int getTimeOut() {
-    return timeOut;
-  }
-
-  public void setTimeOut(int timeOut) {
-    this.timeOut = timeOut;
   }
 
   public int getRetryCount() {

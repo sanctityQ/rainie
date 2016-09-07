@@ -23,10 +23,4 @@ public @interface Activity {
      * @return string
      */
     Class<? extends ActivityState> businessType();
-
-    /**
-     * 主线程超时时间 单位:毫秒
-     * @return
-     */
-    int timeOut() default 3000;
 }

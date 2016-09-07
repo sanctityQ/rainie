@@ -13,8 +13,6 @@ import scala.collection.JavaConversions._
 @Component
 class DTSRepository {
 
-
-
   @Autowired
   val activityDao: ActivityDao = null
   @Autowired
@@ -128,11 +126,9 @@ class DTSRepository {
     *
     * @return
     */
-  def listUnfinished(index: Int, total:Int): Seq[String] = {
+  def listUnfinished(index: Int, total:Int, recoveryInterval:Int): Seq[String] = {
     try {
-      val list1 = activityDao.listSuccessOrFail(index, total, 10)
-      val list2 = activityDao.listUnknownAndTimeout(index, total, 10)
-      (list1 ++ list2).toList
+      activityDao.listUnfinished(index, total, recoveryInterval)
     } catch {
       case t: Throwable => {
         logger.error("listUnfinished fail", t)

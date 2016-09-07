@@ -18,7 +18,6 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 //@EnableAspectJAutoProxy
 @ComponentScan(basePackages = "com.itiancai.galaxy.dts")
 @PropertySource({"classpath:/config/test/server.properties"})
-@ImportResource({"applicationContext-dts.xml"})
 public class SpringBootTest {
   @Bean
   public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
