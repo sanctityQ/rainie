@@ -7,7 +7,7 @@ lazy val aggregated = taskKey[Unit]("Print currently aggregated tasks under the 
 
 lazy val buildSettings = Seq(
   name := "rainie",
-  version := "0.0.5-SNAPSHOT",
+  version := "0.0.5",
   scalaVersion := "2.11.7",
   crossScalaVersions := Seq("2.10.5", "2.11.7")
 )
@@ -67,7 +67,7 @@ lazy val publishSettings = Seq(
     if (isSnapshot.value)
       Some("snapshots" at nexus + "content/repositories/snapshots")
     else
-      Some("releases" at nexus + "service/local/staging/deploy/maven2")
+      Some("releases" at nexus + "content/repositories/releases")
   },
   autoAPIMappings := true,
   pomPostProcess := { (node: scala.xml.Node) =>
@@ -129,7 +129,9 @@ lazy val rainieModules = Seq(
   inject,
   thrift,
   slf4j,
-  utils
+  utils,
+  dtsCore,
+  dtsClient
 )
 
 lazy val exampleModules =
