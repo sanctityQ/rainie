@@ -12,6 +12,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.Map;
 
 @Component
@@ -29,6 +30,7 @@ public class ActivityStateAndXAResourceActionSource implements ApplicationContex
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.beanFactory = applicationContext;
     }
+
 
     public ActivityState getActivityStateResolver(String name) {
         if (activityStateResolverHashMap.isEmpty()) {
@@ -59,9 +61,8 @@ public class ActivityStateAndXAResourceActionSource implements ApplicationContex
         return this.actionServiceHandlerMap.get(name);
     }
 
-
-    private void init() {
-
+    @PostConstruct
+    void init() {
         Map<String, ActivityState> activityStateResolverMap = beanFactory.getBeansOfType(ActivityState.class);
         for (ActivityState activityStateResolver : activityStateResolverMap.values()) {
             logger.info("init ActivityStateResolver name is {}", activityStateResolver.name());
