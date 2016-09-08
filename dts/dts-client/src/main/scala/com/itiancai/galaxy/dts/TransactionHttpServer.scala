@@ -35,8 +35,9 @@ trait TransactionHttpServer extends BaseHttpServer { self =>
       val businessType = request.getParam("businessType")
       val businessId = request.getParam("businessId")
 
-      val response = Response(Version.Http11, Status.Ok)
       val result = activity.getActivityStateResolver(businessType).isDone(businessId)
+
+      val response = Response(Version.Http11, Status.Ok)
       response.setContentString(String.valueOf(result))
       Future.value(response)
     }))

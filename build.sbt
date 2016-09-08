@@ -130,6 +130,7 @@ lazy val rainieModules = Seq(
   thrift,
   slf4j,
   utils,
+  http,
   dtsCore,
   dtsClient
 )
@@ -219,6 +220,9 @@ lazy val thriftExampleServer = (project in file("examples/thrift-server/thrift-e
     scroogeThriftIncludeFolders in Compile := Seq(
       file("thrift/src/main/thrift"),
       file("examples/thrift-server/thrift-example-idl/src/main/thrift")
+    ),
+    libraryDependencies ++= Seq(
+      "mysql" % "mysql-connector-java" % versions.mysqlConnectorJava
     )
   ).
   dependsOn(
